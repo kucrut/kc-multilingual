@@ -12,6 +12,7 @@ class kcMultilingual_backend {
 
 
 	public static function init() {
+		//define( 'KC_SETTINGS_SNS_DEBUG', true );
 		self::$prettyURL = (bool) get_option('permalink_structure');
 
 		add_filter( 'rewrite_rules_array', array(__CLASS__, 'add_rewrite_rules') );
@@ -55,7 +56,7 @@ class kcMultilingual_backend {
 		}
 
 		add_filter( 'kc_term_settings', array('kcMultilingual_backend', 'fields_term') );
-		add_filter( 'kc_post_settings', array('kcMultilingual_backend', 'fields_term') );
+		//add_filter( 'kc_post_settings', array('kcMultilingual_backend', 'fields_term') );
 		add_action( 'edit_page_form', array('kcMultilingual_backend', 'fields_post') );
 		add_action( 'edit_form_advanced', array('kcMultilingual_backend', 'fields_post') );
 		add_filter( 'kcv_termmeta_category_kcml_kcml-translation', array('kcMultilingual_backend', 'validate_termmeta') );
@@ -266,7 +267,7 @@ class kcMultilingual_backend {
 
 
 	public static function fields_term( $groups ) {
-		$objects = ( current_filter() === 'kc_term_settings' ) ? get_taxonomies( array('show_ui' => true) ) : get_post_types( array('show_ui' => true) );
+		$objects = get_taxonomies( array('show_ui' => true) );
 		if ( !$objects )
 			return $groups;
 
@@ -294,26 +295,11 @@ class kcMultilingual_backend {
 
 
 	public static function cb_translation_term( $args, $db_value ) {
-		if ( $args['mode'] === 'post' ) {
-			$text_rows = 10;
-			$labels  = array(
-				'title'   => __('Title'),
-				'content' => __('Content', 'kc_ml')
-			);
-		}
-		else {
-			$text_rows = 5;
-			$labels  = array(
-				'title'   => __('Name'),
-				'content' => __('Description')
-			);
-		}
-
 		if ( !$db_value )
 			$db_value = array();
 
 		$id_base = "{$args['section']}-{$args['field']['id']}";
-		$list   = "<ul class='kcml-langs'>\n";
+		$list   = "<ul class='kcml-langs kcs-tabs'>\n";
 		$fields = '';
 
 		foreach ( self::$languages as $code => $name ) {
@@ -328,12 +314,12 @@ class kcMultilingual_backend {
 			$fields .= "<div id='kcml-{$code}'>\n";
 			$fields .= "<h4 class='screen-reader-text'>{$name}</h4>\n";
 			$fields .= "<div class='field'>\n";
-			$fields .= "<label for='{$id_base}-{$code}-title'>{$labels['title']}</label>\n";
-			$fields .= "<input class='widefat' type='text' value='".esc_attr($value['title'])."' name='{$args['field']['name']}[{$code}][title]' id='{$id_base}-{$code}-title' />\n";
+			$fields .= "<label for='{$id_base}-{$code}-title'>".__('Name')."</label>\n";
+			$fields .= "<input class='widefat kcs-input' type='text' value='".esc_attr($value['title'])."' name='{$args['field']['name']}[{$code}][title]' id='{$id_base}-{$code}-title' />\n";
 			$fields .= "</div>\n";
 			$fields .= "<div class='field'>\n";
-			$fields .= "<label for='{$id_base}-{$code}-content'>{$labels['content']}</label>\n";
-			$fields .= "<textarea class='widefat' name='{$args['field']['name']}[{$code}][content]' id='{$id_base}-{$code}-content' cols='50' rows='{$text_rows}'>".esc_textarea($value['content'])."</textarea>\n";
+			$fields .= "<label for='{$id_base}-{$code}-content'>".__('Description')."</label>\n";
+			$fields .= "<textarea class='widefat kcs-input' name='{$args['field']['name']}[{$code}][content]' id='{$id_base}-{$code}-content' cols='50' rows='5'>".esc_textarea($value['content'])."</textarea>\n";
 			$fields .= "</div>\n";
 			$fields .= "</div>\n";
 		}

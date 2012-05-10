@@ -4,12 +4,8 @@ jQuery(document).ready(function($) {
 		.siblings('th').remove();
 	$div.siblings('label').remove();
 
-	$div.find('ul.kcml-langs a').click(function(e) {
-		e.preventDefault();
-		var $el = $(this);
-		var $t = $($el.attr('href'));
-		$el.parent().addClass('tabs').siblings('li').removeClass('tabs');
-		$t.siblings('div').hide();
-		$t.show();
-	}).first().trigger('click');
+	$('#addtag').on('kcsRefreshed', function() {
+		var $form = $(this);
+		$form.find('div.kcml-wrap').siblings('label').remove();
+	});
 });
