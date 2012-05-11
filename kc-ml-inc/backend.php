@@ -16,7 +16,7 @@ class kcMultilingual_backend {
 	public static function init() {
 		self::$prettyURL = (bool) get_option('permalink_structure');
 
-		add_filter( 'rewrite_rules_array', array(__CLASS__, 'add_rewrite_rules') );
+		add_filter( 'rewrite_rules_array', array(__CLASS__, 'add_rewrite_rules'), 999 );
 		add_filter( 'kc_plugin_settings', array(__CLASS__, 'settings') );
 		add_filter( 'kcv_setting_kc_ml_general_languages', array(__CLASS__, 'validate_settings') );
 		add_action( 'update_option_kc_ml_settings', array(__CLASS__, 'flush_rewrite_rules'), 0, 2 );
