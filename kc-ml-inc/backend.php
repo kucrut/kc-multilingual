@@ -13,7 +13,6 @@ class kcMultilingual_backend {
 
 
 	public static function init() {
-		//define( 'KC_SETTINGS_SNS_DEBUG', true );
 		self::$prettyURL = (bool) get_option('permalink_structure');
 
 		add_filter( 'rewrite_rules_array', array(__CLASS__, 'add_rewrite_rules') );
