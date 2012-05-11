@@ -27,8 +27,6 @@ class kcMultilingual_frontend {
 		add_filter( 'get_term', array(__CLASS__, 'filter_term'), 0 );
 		add_filter( 'get_terms', array(__CLASS__, 'filter_objects'), 0 );
 		add_filter( 'get_the_terms', array(__CLASS__, 'filter_objects'), 0 );
-
-		add_action( 'wp_footer', array(__CLASS__, '_debug'), 999 );
 	}
 
 
@@ -132,12 +130,6 @@ class kcMultilingual_frontend {
 		$term->description = self::filter_term_field( $term->description, $term->term_id, 'content' );
 
 		return $term;
-	}
-
-
-	public static function _debug() {
-		echo '<pre>'.print_r( get_post_meta(1, '_kcml-translation', true), true).'</pre>';
-		echo '<pre>'.print_r( kcMultilingual_frontend::get_translation('es_ES', 'post', 1, 'title'), true).'</pre>';
 	}
 }
 ?>
