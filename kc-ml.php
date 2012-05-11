@@ -53,7 +53,7 @@ class kcMultilingual {
 		$suffix = KC_ML_SNS_DEBUG ? '.dev' : '';
 
 		$screen = get_current_screen();
-		if ( in_array($screen->base, array('post', 'edit-tags', 'settings_page_kc-settings-kc_ml')) ) {
+		if ( in_array($screen->base, array('settings_page_kc-settings-kc_ml', 'post', 'edit-tags', 'media', 'media-upload')) ) {
 			wp_enqueue_style( 'kc_ml', self::$data['paths']['styles']."/kc-ml{$suffix}.css", array('kc-settings'), self::version );
 			wp_enqueue_script( 'kc_ml', self::$data['paths']['scripts']."/kc-ml{$suffix}.js", array('kc-settings'), self::version, true );
 		}

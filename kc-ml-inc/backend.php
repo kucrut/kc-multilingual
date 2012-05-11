@@ -56,8 +56,9 @@ class kcMultilingual_backend {
 			kcMultilingual_frontend::init();
 		}
 
-		add_filter( 'kc_term_settings', array(__CLASS__, 'fields_term_prepare') );
-		//add_filter( 'kc_post_settings', array(__CLASS__, 'fields_attachment') );
+		add_filter( 'kc_term_settings', array(__CLASS__, 'fields_term_attachment_prepare'), 1 );
+		add_filter( 'kc_post_settings', array(__CLASS__, 'fields_term_attachment_prepare'), 1 );
+		add_filter( 'kcv_termmeta_attachment_kcml_kcml-translation', array(__CLASS__, 'validate_translation') );
 		add_action( 'init', array(__CLASS__, 'fields_post_prepare'), 999 );
 	}
 
@@ -265,63 +266,92 @@ class kcMultilingual_backend {
 	}
 
 
-	public static function fields_term_prepare( $groups ) {
-		$taxonomies = get_taxonomies( array('show_ui' => true) );
-		if ( !$taxonomies )
-			return $taxonomy;
-
-		foreach ( $taxonomies as $taxonomy ) {
-			$groups[] = array(
-				$taxonomy => array(
+	public static function fields_term_attachment_prepare( $groups ) {
+		$section = array(
+			array(
+				'id'     => 'kcml',
+				'title'  => 'KC Multilingual',
+				'fields' => array(
 					array(
-						'id'     => 'kcml',
-						'title'  => 'KC Multilingual',
-						'fields' => array(
-							array(
-								'id'    => 'kcml-translation',
-								'title' => __('Translations', 'kc_ml'),
-								'type'  => 'special',
-								'cb'    => array(__CLASS__, 'fields_term_render')
-							)
-						)
+						'id'    => 'kcml-translation',
+						'title' => __('Translations', 'kc_ml'),
+						'type'  => 'special',
+						'cb'    => array(__CLASS__, 'fields_term_attachment_render')
 					)
 				)
-			);
+			)
+		);
 
+		# Attachment
+		if ( current_filter() === 'kc_post_settings' ) {
+			$groups[] = array( 'attachment' => $section );
+			return $groups;
+		}
+
+		# Terms
+		$taxonomies = get_taxonomies( array('show_ui' => true) );
+		if ( !$taxonomies )
+			return $groups;
+
+		foreach ( $taxonomies as $taxonomy ) {
+			$groups[] = array( $taxonomy => $section );
 			self::$taxonomies[] = $taxonomy;
-			add_filter( "kcv_postmeta_{$taxonomy}_kcml_kcml-translation", array(__CLASS__, 'validate_translation') );
+			add_filter( "kcv_termmeta_{$taxonomy}_kcml_kcml-translation", array(__CLASS__, 'validate_translation') );
 		}
 
 		return $groups;
 	}
 
 
-	public static function fields_term_render( $args, $db_value ) {
+	public static function fields_term_attachment_render( $args, $db_value ) {
 		if ( !$db_value )
 			$db_value = array();
 
-		$id_base = "{$args['section']}-{$args['field']['id']}";
+		$id_base = "{$args['section']}-{$args['mode']}-{$args['object_id']}-{$args['field']['id']}";
+		$labels = array(
+			'title' => __('Name'),
+			'content' => __('Description')
+		);
+		$input_class = " class='widefat kcs-input'";
+		if ( $args['mode'] === 'attachment' ) {
+			$labels['title']     = __('Title');
+			$labels['image_alt'] = __('Alternate Text');
+			$labels['excerpt']   = __('Caption');
+			$input_class = '';
+		}
 		$list   = "<ul class='kcml-langs kcs-tabs'>\n";
 		$fields = '';
 
-		foreach ( self::$languages as $code => $name ) {
-			if ( self::$default === $code )
+		foreach ( self::$languages as $locale => $name ) {
+			if ( self::$default === $locale )
 				continue;
 
-			$value = isset($db_value[$code]) ? $db_value[$code] : array();
-			$value = wp_parse_args( $value, array('title' => '', 'content' => '') );
+			$value = isset($db_value[$locale]) ? $db_value[$locale] : array();
+			$value = wp_parse_args( $value, array('title' => '', 'content' => '', 'excerpt' => '', 'image_alt' => '') );
 
-			$list .= "<li><a href='#kcml-{$code}'>{$name}</a></li>\n";
+			$list .= "<li><a href='#{$id_base}-{$locale}'>{$name}</a></li>\n";
 
-			$fields .= "<div id='kcml-{$code}'>\n";
+			$fields .= "<div id='{$id_base}-{$locale}'>\n";
 			$fields .= "<h4 class='screen-reader-text'>{$name}</h4>\n";
 			$fields .= "<div class='field'>\n";
-			$fields .= "<label for='{$id_base}-{$code}-title'>".__('Name')."</label>\n";
-			$fields .= "<input class='widefat kcs-input' type='text' value='".esc_attr($value['title'])."' name='{$args['field']['name']}[{$code}][title]' id='{$id_base}-{$code}-title' />\n";
+			$fields .= "<label for='{$id_base}-{$locale}-title'>{$labels['title']}</label>\n";
+			$fields .= "<input{$input_class} type='text' value='".esc_attr($value['title'])."' name='{$args['field']['name']}[{$locale}][title]' id='{$id_base}-{$locale}-title' />\n";
 			$fields .= "</div>\n";
+			if ( $args['mode'] === 'attachment' ) {
+				if ( strpos(get_post_mime_type($args['object_id']), 'image') !== false ) {
+					$fields .= "<div class='field'>\n";
+					$fields .= "<label for='{$id_base}-{$locale}-image_alt'>{$labels['image_alt']}</label>\n";
+					$fields .= "<input type='text' value='".esc_attr($value['image_alt'])."' name='{$args['field']['name']}[{$locale}][image_alt]' id='{$id_base}-{$locale}-image_alt' />\n";
+					$fields .= "</div>\n";
+				}
+				$fields .= "<div class='field'>\n";
+				$fields .= "<label for='{$id_base}-{$locale}-excerpt'>{$labels['excerpt']}</label>\n";
+				$fields .= "<input type='text' value='".esc_attr($value['excerpt'])."' name='{$args['field']['name']}[{$locale}][excerpt]' id='{$id_base}-{$locale}-excerpt' />\n";
+				$fields .= "</div>\n";
+			}
 			$fields .= "<div class='field'>\n";
-			$fields .= "<label for='{$id_base}-{$code}-content'>".__('Description')."</label>\n";
-			$fields .= "<textarea class='widefat kcs-input' name='{$args['field']['name']}[{$code}][content]' id='{$id_base}-{$code}-content' cols='50' rows='5'>".esc_textarea($value['content'])."</textarea>\n";
+			$fields .= "<label for='{$id_base}-{$locale}-content'>{$labels['content']}</label>\n";
+			$fields .= "<textarea{$input_class} name='{$args['field']['name']}[{$locale}][content]' id='{$id_base}-{$locale}-content' cols='50' rows='5'>".esc_textarea($value['content'])."</textarea>\n";
 			$fields .= "</div>\n";
 			$fields .= "</div>\n";
 		}
@@ -329,11 +359,6 @@ class kcMultilingual_backend {
 		$list   .= "</ul>\n";
 
 		return "<div class='kcml-wrap'>\n{$list}{$fields}</div>";
-	}
-
-
-	public static function validate_translation( $value ) {
-		return kc_array_remove_empty( (array) $value );
 	}
 
 
@@ -431,6 +456,13 @@ class kcMultilingual_backend {
 
 		_kc_update_meta( 'post', $post->post_type, $post_id, array('id' => 'kcml'), array('id' => 'kcml-translation', 'type' => 'special'), false );
 	}
+
+
+	public static function validate_translation( $value ) {
+		return kc_array_remove_empty( (array) $value );
+	}
+
+
 }
 kcMultilingual_backend::init();
 

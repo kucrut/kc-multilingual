@@ -23,6 +23,7 @@ class kcMultilingual_frontend {
 		add_filter( 'the_title', array(__CLASS__, 'filter_post_title'), 0, 2 );
 		add_filter( 'the_excerpt', array(__CLASS__, 'filter_post_excerpt'), 0 );
 		add_filter( 'the_content', array(__CLASS__, 'filter_post_content'), 0 );
+		add_filter( 'wp_get_attachment_image_attributes', array(__CLASS__, 'filter_attachment_attributes'), 0, 2 );
 
 		# Terms
 		add_filter( 'get_term', array(__CLASS__, 'filter_term'), 0 );
@@ -55,7 +56,7 @@ class kcMultilingual_frontend {
 	public static function get_translation( $locale, $type, $id, $field, $is_attachment = false ) {
 		$translation = wp_cache_get( $id, "kcml_{$type}_{$field}_{$locale}" );
 		if ( $translation === false ) {
-			$meta_prefix = ( $type === 'post' && !$is_attachment ) ? '_' : '';
+			$meta_prefix = ( $type === 'post' ) ? '_' : '';
 			$meta = get_metadata( $type, $id, "{$meta_prefix}kcml-translation", true );
 			if ( isset($meta[$locale][$field]) && !empty($meta[$locale][$field]) )
 				$translation = $meta[$locale][$field];
@@ -111,6 +112,16 @@ class kcMultilingual_frontend {
 			$excerpt = $translation;
 
 		return $excerpt;
+	}
+
+
+	public static function filter_attachment_attributes( $attr, $attachment ) {
+		if ( $alt = self::get_translation( kcMultilingual_backend::$locale, 'post', $attachment->ID, 'image_alt', true ) )
+			$attr['alt'] = $alt;
+		if ( $title = self::get_translation( kcMultilingual_backend::$locale, 'post', $attachment->ID, 'title', true ) )
+			$attr['title'] = $title;
+
+		return $attr;
 	}
 
 
