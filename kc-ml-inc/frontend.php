@@ -21,6 +21,7 @@ class kcMultilingual_frontend {
 		add_action( 'wp', array(__CLASS__, '_filter_single_page') );
 		# 1. Individual
 		add_filter( 'the_title', array(__CLASS__, 'filter_post_title'), 0, 2 );
+		add_filter( 'the_excerpt', array(__CLASS__, 'filter_post_excerpt'), 0 );
 		add_filter( 'the_content', array(__CLASS__, 'filter_post_content'), 0 );
 
 		# Terms
@@ -100,8 +101,22 @@ class kcMultilingual_frontend {
 	}
 
 
+	public static function filter_post_excerpt( $excerpt, $id = 0 ) {
+		if ( !$id ) {
+			global $post;
+			$id = $post->ID;
+		}
+
+		if ( $translation = self::get_translation( kcMultilingual_backend::$locale, 'post', $id, 'excerpt', get_post_type($id) === 'attachment' ) )
+			$excerpt = $translation;
+
+		return $excerpt;
+	}
+
+
 	public static function filter_post( $post ) {
-		$post->post_title = self::filter_post_title( $post->post_title, $post->ID );
+		$post->post_title   = self::filter_post_title( $post->post_title, $post->ID );
+		$post->post_excerpt = self::filter_post_excerpt( $post->post_excerpt, $post->ID );
 		$post->post_content = self::filter_post_content( $post->post_content, $post->ID );
 
 		return $post;
