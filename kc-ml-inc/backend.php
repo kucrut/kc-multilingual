@@ -1,14 +1,15 @@
 <?php
 
 class kcMultilingual_backend {
-	public static $settings  = array();
-	public static $prettyURL = false;
-	public static $is_active = false;
-	public static $locales   = array();
-	public static $default   = '';
-	public static $locale    = '';
-	public static $lang      = '';
-	public static $languages = array();
+	public static $settings   = array();
+	public static $prettyURL  = false;
+	public static $is_active  = false;
+	public static $locales    = array();
+	public static $default    = '';
+	public static $locale     = '';
+	public static $lang       = '';
+	public static $languages  = array();
+	public static $post_types = array();
 
 
 	public static function init() {
@@ -55,11 +56,10 @@ class kcMultilingual_backend {
 			kcMultilingual_frontend::init();
 		}
 
-		add_filter( 'kc_term_settings', array('kcMultilingual_backend', 'fields_term') );
-		//add_filter( 'kc_post_settings', array('kcMultilingual_backend', 'fields_term') );
-		add_action( 'edit_page_form', array('kcMultilingual_backend', 'fields_post') );
-		add_action( 'edit_form_advanced', array('kcMultilingual_backend', 'fields_post') );
-		add_filter( 'kcv_termmeta_category_kcml_kcml-translation', array('kcMultilingual_backend', 'validate_termmeta') );
+		add_filter( 'kc_term_settings', array(__CLASS__, 'fields_term') );
+		//add_filter( 'kc_post_settings', array(__CLASS__, 'fields_attachment') );
+		add_action( 'init', array(__CLASS__, 'fields_post_prepare'), 999 );
+		add_filter( 'kcv_termmeta_category_kcml_kcml-translation', array(__CLASS__, 'validate_termmeta') );
 	}
 
 
@@ -330,11 +330,101 @@ class kcMultilingual_backend {
 	}
 
 
-	public static function fields_post() {}
-
-
 	public static function validate_termmeta( $value ) {
 		return kc_array_remove_empty( (array) $value );
+	}
+
+
+	public static function fields_post_prepare() {
+		$_post_types = get_post_types( array('show_ui' => true ) );
+		if ( !$_post_types )
+			return;
+
+		$post_types = array();
+		foreach ( $_post_types as $pt ) {
+			$fields = array();
+			foreach ( array('title', 'excerpt', 'editor') as $feature )
+				if ( post_type_supports($pt, $feature) )
+					$fields[] = $feature;
+
+			if ( $fields )
+				$post_types[$pt] = $fields;
+		}
+
+		if ( !$post_types )
+			return;
+
+		self::$post_types = $post_types;
+
+		add_action( 'edit_page_form', array(__CLASS__, 'fields_post_render') );
+		add_action( 'edit_form_advanced', array(__CLASS__, 'fields_post_render') );
+		add_action( 'save_post', array(__CLASS__, 'fields_post_save'), 1, 2 );
+	}
+
+
+	public static function fields_post_render() {
+		$screen = get_current_screen();
+		if ( !isset(self::$post_types[$screen->post_type]) )
+			return;
+
+		global $post;
+		$post_id = $post->ID;
+
+		?>
+<div class="kcml-wrap">
+	<h3>KC Multilingual</h3>
+	<ul class='kcml-langs kcs-tabs'>
+		<?php foreach ( self::$languages as $locale => $name ) { if ( self::$default === $locale ) continue; ?>
+		<li><a href='#kcml-<?php echo $locale ?>'><?php echo $name ?></a></li>
+		<?php } ?>
+	</ul>
+	<?php wp_nonce_field( '___kcml_nonce___', "{$screen->post_type}_kcml_nonce" ) ?>
+	<?php
+		foreach ( self::$languages as $locale => $name ) {
+			if ( self::$default === $locale )
+				continue;
+	?>
+	<div id="kcml-<?php echo $locale ?>">
+		<h4 class="screen-reader-text"><?php echo $name ?></h4>
+		<?php foreach ( self::$post_types[$screen->post_type] as $field ) { ?>
+		<div class="field">
+		<?php switch ( $field ) { case 'title' : ?>
+			<label for="kcmlpost<?php echo $field . $locale ?>"><?php _e('Title') ?></label>
+			<input id="kcmlpost<?php echo $field . $locale ?>" name="kc-postmeta[kcml][kcml-translation][<?php echo $locale ?>][title]" type="text" class="kc-input widefat" value="<?php echo esc_attr(kcMultilingual_frontend::get_translation($locale, 'post', $post_id, 'title')) ?>" />
+			<?php break; case 'excerpt' : ?>
+			<label for="kcmlpost<?php echo $field . $locale ?>"><?php _e('Excerpt') ?></label>
+			<textarea id="kcmlpost<?php echo $field . $locale ?>" name="kc-postmeta[kcml][kcml-translation][<?php echo $locale ?>][excerpt]" class="kc-input widefat" cols="50" rows="5"><?php echo esc_textarea(kcMultilingual_frontend::get_translation($locale, 'post', $post_id, 'excerpt')) ?></textarea>
+			<?php break; case 'editor' : ?>
+			<label for="kcmlpost<?php echo $field . $locale ?>" class="screen-reader-text"><?php _e('Content') ?></label>
+			<?php
+				wp_editor(
+					kcMultilingual_frontend::get_translation($locale, 'post', $post_id, 'content'),
+					"kcmlposteditor{$locale}",
+					array( 'textarea_name' => "kc-postmeta[kcml][kcml-translation][{$locale}][content]" )
+				);
+			?>
+		<?php break; } ?>
+		</div>
+		<?php } ?>
+	</div>
+	<?php } ?>
+</div>
+
+	<?php }
+
+
+	public static function fields_post_save( $post_id, $post ) {
+		if ( !isset(self::$post_types[$post->post_type])
+		      || ( isset($_POST['action']) && in_array($_POST['action'], array('inline-save', 'trash', 'untrash')) )
+		      || $post->post_status == 'auto-draft'
+		      || !isset($_POST["{$post->post_type}_kcml_nonce"]) )
+			return $post_id;
+
+		$post_type_obj = get_post_type_object( $post->post_type );
+		if ( ( wp_verify_nonce($_POST["{$post->post_type}_kcml_nonce"], '___kcml_nonce___') && current_user_can($post_type_obj->cap->edit_post) ) !== true )
+			return $post_id;
+
+		_kc_update_meta( 'post', $post->post_type, $post_id, array('id' => 'kcml'), array('id' => 'kcml-translation', 'type' => 'special'), false );
 	}
 }
 kcMultilingual_backend::init();

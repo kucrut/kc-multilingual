@@ -30,3 +30,7 @@ ul.kcml-langs .tabs a {
 	display:block;
 	margin:.25em 0;
 }
+.edit-tags-php .kcml-wrap input.widefat {width:95%}
+.edit-tags-php .form-field h4 {margin:0}
+
+#poststuff .kcml-wrap h3 {padding:7px 0 15px;}

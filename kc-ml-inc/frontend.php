@@ -54,7 +54,7 @@ class kcMultilingual_frontend {
 
 
 	public static function get_translation( $lang, $type, $id, $field, $is_attachment = false ) {
-		$translation = wp_cache_get( $id, "kcml_{$type}_{$field}" );
+		$translation = wp_cache_get( $id, "kcml_{$type}_{$field}_{$lang}" );
 		if ( $translation === false ) {
 			$meta_prefix = ( $type === 'post' && !$is_attachment ) ? '_' : '';
 			$meta = get_metadata( $type, $id, "{$meta_prefix}kcml-translation", true );
@@ -63,7 +63,7 @@ class kcMultilingual_frontend {
 			else
 				$translation = NULL;
 
-			wp_cache_set( $id, $translation, "kcml_{$type}_{$field}" );
+			wp_cache_set( $id, $translation, "kcml_{$type}_{$field}_{$lang}" );
 		}
 
 		return $translation;
@@ -136,6 +136,8 @@ class kcMultilingual_frontend {
 
 
 	public static function _debug() {
+		echo '<pre>'.print_r( get_post_meta(1, '_kcml-translation', true), true).'</pre>';
+		echo '<pre>'.print_r( kcMultilingual_frontend::get_translation('es_ES', 'post', 1, 'title'), true).'</pre>';
 	}
 }
 ?>
