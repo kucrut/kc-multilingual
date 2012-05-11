@@ -1,11 +1,1 @@
-jQuery(document).ready(function($) {
-	var $div = $('div.kcml-wrap');
-	$div.closest('td').attr('colspan', 2)
-		.siblings('th').remove();
-	$div.siblings('label').remove();
-
-	$('#addtag').on('kcsRefreshed', function() {
-		var $form = $(this);
-		$form.find('div.kcml-wrap').siblings('label').remove();
-	});
-});
+jQuery(document).ready(function(b){var a=b("div.kcml-wrap");a.closest("td").attr("colspan",2).siblings("th").remove();a.siblings("label").remove();b("#addtag").on("kcsRefreshed",function(){var c=b(this);c.find("div.kcml-wrap").siblings("label").remove()})});
