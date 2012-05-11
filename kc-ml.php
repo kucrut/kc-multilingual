@@ -54,8 +54,8 @@ class kcMultilingual {
 
 		$screen = get_current_screen();
 		if ( in_array($screen->base, array('post', 'edit-tags', 'settings_page_kc-settings-kc_ml')) ) {
-			wp_enqueue_style( 'kc_ml', self::$data['paths']['styles']."/kc-ml{$suffix}.css", false, self::version );
-			wp_enqueue_script( 'kc_ml', self::$data['paths']['scripts']."/kc-ml{$suffix}.js", array('jquery'), self::version, true );
+			wp_enqueue_style( 'kc_ml', self::$data['paths']['styles']."/kc-ml{$suffix}.css", array('kc-settings'), self::version );
+			wp_enqueue_script( 'kc_ml', self::$data['paths']['scripts']."/kc-ml{$suffix}.js", array('kc-settings'), self::version, true );
 		}
 	}
 

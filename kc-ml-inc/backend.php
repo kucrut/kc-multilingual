@@ -10,6 +10,7 @@ class kcMultilingual_backend {
 	public static $lang       = '';
 	public static $languages  = array();
 	public static $post_types = array();
+	public static $taxonomies = array();
 
 
 	public static function init() {
@@ -55,10 +56,9 @@ class kcMultilingual_backend {
 			kcMultilingual_frontend::init();
 		}
 
-		add_filter( 'kc_term_settings', array(__CLASS__, 'fields_term') );
+		add_filter( 'kc_term_settings', array(__CLASS__, 'fields_term_prepare') );
 		//add_filter( 'kc_post_settings', array(__CLASS__, 'fields_attachment') );
 		add_action( 'init', array(__CLASS__, 'fields_post_prepare'), 999 );
-		add_filter( 'kcv_termmeta_category_kcml_kcml-translation', array(__CLASS__, 'validate_termmeta') );
 	}
 
 
@@ -265,14 +265,14 @@ class kcMultilingual_backend {
 	}
 
 
-	public static function fields_term( $groups ) {
-		$objects = get_taxonomies( array('show_ui' => true) );
-		if ( !$objects )
-			return $groups;
+	public static function fields_term_prepare( $groups ) {
+		$taxonomies = get_taxonomies( array('show_ui' => true) );
+		if ( !$taxonomies )
+			return $taxonomy;
 
-		foreach ( $objects as $object ) {
+		foreach ( $taxonomies as $taxonomy ) {
 			$groups[] = array(
-				$object => array(
+				$taxonomy => array(
 					array(
 						'id'     => 'kcml',
 						'title'  => 'KC Multilingual',
@@ -281,19 +281,22 @@ class kcMultilingual_backend {
 								'id'    => 'kcml-translation',
 								'title' => __('Translations', 'kc_ml'),
 								'type'  => 'special',
-								'cb'    => array(__CLASS__, 'cb_translation_term')
+								'cb'    => array(__CLASS__, 'fields_term_render')
 							)
 						)
 					)
 				)
 			);
+
+			self::$taxonomies[] = $taxonomy;
+			add_filter( "kcv_postmeta_{$taxonomy}_kcml_kcml-translation", array(__CLASS__, 'validate_translation') );
 		}
 
 		return $groups;
 	}
 
 
-	public static function cb_translation_term( $args, $db_value ) {
+	public static function fields_term_render( $args, $db_value ) {
 		if ( !$db_value )
 			$db_value = array();
 
@@ -329,7 +332,7 @@ class kcMultilingual_backend {
 	}
 
 
-	public static function validate_termmeta( $value ) {
+	public static function validate_translation( $value ) {
 		return kc_array_remove_empty( (array) $value );
 	}
 
@@ -346,8 +349,11 @@ class kcMultilingual_backend {
 				if ( post_type_supports($pt, $feature) )
 					$fields[] = $feature;
 
-			if ( $fields )
-				$post_types[$pt] = $fields;
+			if ( !$fields )
+				continue;
+
+			$post_types[$pt] = $fields;
+			add_filter( "kcv_postmeta_{$pt}_kcml_kcml-translation", array(__CLASS__, 'validate_translation') );
 		}
 
 		if ( !$post_types )
