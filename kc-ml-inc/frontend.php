@@ -51,17 +51,17 @@ class kcMultilingual_frontend {
 	}
 
 
-	public static function get_translation( $lang, $type, $id, $field, $is_attachment = false ) {
-		$translation = wp_cache_get( $id, "kcml_{$type}_{$field}_{$lang}" );
+	public static function get_translation( $locale, $type, $id, $field, $is_attachment = false ) {
+		$translation = wp_cache_get( $id, "kcml_{$type}_{$field}_{$locale}" );
 		if ( $translation === false ) {
 			$meta_prefix = ( $type === 'post' && !$is_attachment ) ? '_' : '';
 			$meta = get_metadata( $type, $id, "{$meta_prefix}kcml-translation", true );
-			if ( isset($meta[$lang][$field]) && !empty($meta[$lang][$field]) )
-				$translation = $meta[$lang][$field];
+			if ( isset($meta[$locale][$field]) && !empty($meta[$locale][$field]) )
+				$translation = $meta[$locale][$field];
 			else
 				$translation = NULL;
 
-			wp_cache_set( $id, $translation, "kcml_{$type}_{$field}_{$lang}" );
+			wp_cache_set( $id, $translation, "kcml_{$type}_{$field}_{$locale}" );
 		}
 
 		return $translation;
