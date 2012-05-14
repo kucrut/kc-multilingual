@@ -53,17 +53,17 @@ class kcMultilingual_frontend {
 	}
 
 
-	public static function get_translation( $locale, $type, $id, $field, $is_attachment = false ) {
-		$translation = wp_cache_get( $id, "kcml_{$type}_{$field}_{$locale}" );
+	public static function get_translation( $lang, $type, $id, $field, $is_attachment = false ) {
+		$translation = wp_cache_get( $id, "kcml_{$type}_{$field}_{$lang}" );
 		if ( $translation === false ) {
 			$meta_prefix = ( $type === 'post' ) ? '_' : '';
 			$meta = get_metadata( $type, $id, "{$meta_prefix}kcml-translation", true );
-			if ( isset($meta[$locale][$field]) && !empty($meta[$locale][$field]) )
-				$translation = $meta[$locale][$field];
+			if ( isset($meta[$lang][$field]) && !empty($meta[$lang][$field]) )
+				$translation = $meta[$lang][$field];
 			else
 				$translation = NULL;
 
-			wp_cache_set( $id, $translation, "kcml_{$type}_{$field}_{$locale}" );
+			wp_cache_set( $id, $translation, "kcml_{$type}_{$field}_{$lang}" );
 		}
 
 		return $translation;
@@ -82,7 +82,7 @@ class kcMultilingual_frontend {
 
 
 	public static function filter_post_title( $title, $id ) {
-		if ( $translation = self::get_translation( kcMultilingual_backend::$locale, 'post', $id, 'title', get_post_type($id) === 'attachment' ) )
+		if ( $translation = self::get_translation( kcMultilingual_backend::$lang, 'post', $id, 'title', get_post_type($id) === 'attachment' ) )
 			$title = $translation;
 
 		return $title;
@@ -95,7 +95,7 @@ class kcMultilingual_frontend {
 			$id = $post->ID;
 		}
 
-		if ( $translation = self::get_translation( kcMultilingual_backend::$locale, 'post', $id, 'content', get_post_type($id) === 'attachment' ) )
+		if ( $translation = self::get_translation( kcMultilingual_backend::$lang, 'post', $id, 'content', get_post_type($id) === 'attachment' ) )
 			$content = $translation;
 
 		return $content;
@@ -108,7 +108,7 @@ class kcMultilingual_frontend {
 			$id = $post->ID;
 		}
 
-		if ( $translation = self::get_translation( kcMultilingual_backend::$locale, 'post', $id, 'excerpt', get_post_type($id) === 'attachment' ) )
+		if ( $translation = self::get_translation( kcMultilingual_backend::$lang, 'post', $id, 'excerpt', get_post_type($id) === 'attachment' ) )
 			$excerpt = $translation;
 
 		return $excerpt;
@@ -116,9 +116,9 @@ class kcMultilingual_frontend {
 
 
 	public static function filter_attachment_attributes( $attr, $attachment ) {
-		if ( $alt = self::get_translation( kcMultilingual_backend::$locale, 'post', $attachment->ID, 'image_alt', true ) )
+		if ( $alt = self::get_translation( kcMultilingual_backend::$lang, 'post', $attachment->ID, 'image_alt', true ) )
 			$attr['alt'] = $alt;
-		if ( $title = self::get_translation( kcMultilingual_backend::$locale, 'post', $attachment->ID, 'title', true ) )
+		if ( $title = self::get_translation( kcMultilingual_backend::$lang, 'post', $attachment->ID, 'title', true ) )
 			$attr['title'] = $title;
 
 		return $attr;
@@ -144,7 +144,7 @@ class kcMultilingual_frontend {
 
 
 	public static function filter_term_field( $string, $id, $field ) {
-		if ( $translation = self::get_translation( kcMultilingual_backend::$locale, 'term', $id, $field ) )
+		if ( $translation = self::get_translation( kcMultilingual_backend::$lang, 'term', $id, $field ) )
 			$string = $translation;
 
 		return $string;

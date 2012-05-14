@@ -74,6 +74,8 @@ class kcMultilingual_backend {
 			if ( !empty($matches) )
 				$lang = $matches[1];
 		}
+		if ( !isset($lang) )
+			$lang = self::$default;
 
 		if ( !isset(self::$locales[$lang]) )
 			return $locale;
@@ -389,7 +391,8 @@ class kcMultilingual_backend {
 		if ( !$db_value )
 			$db_value = array();
 
-		$id_base = "{$args['section']}-{$args['mode']}-{$args['object_id']}-{$args['field']['id']}";
+		$_id = isset($args['object_id']) ? $args['object_id'] : 0;
+		$id_base = "{$args['section']}-{$args['mode']}-{$_id}-{$args['field']['id']}";
 		$labels = array(
 			'title' => __('Name'),
 			'content' => __('Description')
@@ -404,36 +407,36 @@ class kcMultilingual_backend {
 		$list   = "<ul class='kcml-langs kcs-tabs'>\n";
 		$fields = '';
 
-		foreach ( self::$languages as $locale => $name ) {
-			if ( self::$default === $locale )
+		foreach ( self::$languages as $lang => $data ) {
+			if ( self::$default === $lang )
 				continue;
 
-			$value = isset($db_value[$locale]) ? $db_value[$locale] : array();
+			$value = isset($db_value[$lang]) ? $db_value[$lang] : array();
 			$value = wp_parse_args( $value, array('title' => '', 'content' => '', 'excerpt' => '', 'image_alt' => '') );
 
-			$list .= "<li><a href='#{$id_base}-{$locale}'>{$name}</a></li>\n";
+			$list .= "<li><a href='#{$id_base}-{$lang}'>{$data['name']}</a></li>\n";
 
-			$fields .= "<div id='{$id_base}-{$locale}'>\n";
-			$fields .= "<h4 class='screen-reader-text'>{$name}</h4>\n";
+			$fields .= "<div id='{$id_base}-{$lang}'>\n";
+			$fields .= "<h4 class='screen-reader-text'>{$data['name']}</h4>\n";
 			$fields .= "<div class='field'>\n";
-			$fields .= "<label for='{$id_base}-{$locale}-title'>{$labels['title']}</label>\n";
-			$fields .= "<input{$input_class} type='text' value='".esc_attr($value['title'])."' name='{$args['field']['name']}[{$locale}][title]' id='{$id_base}-{$locale}-title' />\n";
+			$fields .= "<label for='{$id_base}-{$lang}-title'>{$labels['title']}</label>\n";
+			$fields .= "<input{$input_class} type='text' value='".esc_attr($value['title'])."' name='{$args['field']['name']}[{$lang}][title]' id='{$id_base}-{$lang}-title' />\n";
 			$fields .= "</div>\n";
 			if ( $args['mode'] === 'attachment' ) {
 				if ( strpos(get_post_mime_type($args['object_id']), 'image') !== false ) {
 					$fields .= "<div class='field'>\n";
-					$fields .= "<label for='{$id_base}-{$locale}-image_alt'>{$labels['image_alt']}</label>\n";
-					$fields .= "<input type='text' value='".esc_attr($value['image_alt'])."' name='{$args['field']['name']}[{$locale}][image_alt]' id='{$id_base}-{$locale}-image_alt' />\n";
+					$fields .= "<label for='{$id_base}-{$lang}-image_alt'>{$labels['image_alt']}</label>\n";
+					$fields .= "<input type='text' value='".esc_attr($value['image_alt'])."' name='{$args['field']['name']}[{$lang}][image_alt]' id='{$id_base}-{$lang}-image_alt' />\n";
 					$fields .= "</div>\n";
 				}
 				$fields .= "<div class='field'>\n";
-				$fields .= "<label for='{$id_base}-{$locale}-excerpt'>{$labels['excerpt']}</label>\n";
-				$fields .= "<input type='text' value='".esc_attr($value['excerpt'])."' name='{$args['field']['name']}[{$locale}][excerpt]' id='{$id_base}-{$locale}-excerpt' />\n";
+				$fields .= "<label for='{$id_base}-{$lang}-excerpt'>{$labels['excerpt']}</label>\n";
+				$fields .= "<input type='text' value='".esc_attr($value['excerpt'])."' name='{$args['field']['name']}[{$lang}][excerpt]' id='{$id_base}-{$lang}-excerpt' />\n";
 				$fields .= "</div>\n";
 			}
 			$fields .= "<div class='field'>\n";
-			$fields .= "<label for='{$id_base}-{$locale}-content'>{$labels['content']}</label>\n";
-			$fields .= "<textarea{$input_class} name='{$args['field']['name']}[{$locale}][content]' id='{$id_base}-{$locale}-content' cols='50' rows='5'>".esc_textarea($value['content'])."</textarea>\n";
+			$fields .= "<label for='{$id_base}-{$lang}-content'>{$labels['content']}</label>\n";
+			$fields .= "<textarea{$input_class} name='{$args['field']['name']}[{$lang}][content]' id='{$id_base}-{$lang}-content' cols='50' rows='5'>".esc_textarea($value['content'])."</textarea>\n";
 			$fields .= "</div>\n";
 			$fields .= "</div>\n";
 		}
@@ -486,33 +489,33 @@ class kcMultilingual_backend {
 <div class="kcml-wrap">
 	<h3>KC Multilingual</h3>
 	<ul class='kcml-langs kcs-tabs'>
-		<?php foreach ( self::$languages as $locale => $name ) { if ( self::$default === $locale ) continue; ?>
-		<li><a href='#kcml-<?php echo $locale ?>'><?php echo $name ?></a></li>
+		<?php foreach ( self::$languages as $lang => $data ) { if ( self::$default === $lang ) continue; ?>
+		<li><a href='#kcml-<?php echo $lang ?>'><?php echo $data['name'] ?></a></li>
 		<?php } ?>
 	</ul>
 	<?php wp_nonce_field( '___kcml_nonce___', "{$screen->post_type}_kcml_nonce" ) ?>
 	<?php
-		foreach ( self::$languages as $locale => $name ) {
-			if ( self::$default === $locale )
+		foreach ( self::$languages as $lang => $data ) {
+			if ( self::$default === $lang )
 				continue;
 	?>
-	<div id="kcml-<?php echo $locale ?>">
-		<h4 class="screen-reader-text"><?php echo $name ?></h4>
+	<div id="kcml-<?php echo $lang ?>">
+		<h4 class="screen-reader-text"><?php echo $data['name'] ?></h4>
 		<?php foreach ( self::$post_types[$screen->post_type] as $field ) { ?>
 		<div class="field">
 		<?php switch ( $field ) { case 'title' : ?>
-			<label for="kcmlpost<?php echo $field . $locale ?>"><?php _e('Title') ?></label>
-			<input id="kcmlpost<?php echo $field . $locale ?>" name="kc-postmeta[kcml][kcml-translation][<?php echo $locale ?>][title]" type="text" class="kc-input widefat" value="<?php echo esc_attr(kcMultilingual_frontend::get_translation($locale, 'post', $post_id, 'title')) ?>" />
+			<label for="kcmlpost<?php echo $field . $lang ?>"><?php _e('Title') ?></label>
+			<input id="kcmlpost<?php echo $field . $lang ?>" name="kc-postmeta[kcml][kcml-translation][<?php echo $lang ?>][title]" type="text" class="kc-input widefat" value="<?php echo esc_attr(kcMultilingual_frontend::get_translation($lang, 'post', $post_id, 'title')) ?>" />
 			<?php break; case 'excerpt' : ?>
-			<label for="kcmlpost<?php echo $field . $locale ?>"><?php _e('Excerpt') ?></label>
-			<textarea id="kcmlpost<?php echo $field . $locale ?>" name="kc-postmeta[kcml][kcml-translation][<?php echo $locale ?>][excerpt]" class="kc-input widefat" cols="50" rows="5"><?php echo esc_textarea(kcMultilingual_frontend::get_translation($locale, 'post', $post_id, 'excerpt')) ?></textarea>
+			<label for="kcmlpost<?php echo $field . $lang ?>"><?php _e('Excerpt') ?></label>
+			<textarea id="kcmlpost<?php echo $field . $lang ?>" name="kc-postmeta[kcml][kcml-translation][<?php echo $lang ?>][excerpt]" class="kc-input widefat" cols="50" rows="5"><?php echo esc_textarea(kcMultilingual_frontend::get_translation($lang, 'post', $post_id, 'excerpt')) ?></textarea>
 			<?php break; case 'editor' : ?>
-			<label for="kcmlpost<?php echo $field . $locale ?>" class="screen-reader-text"><?php _e('Content') ?></label>
+			<label for="kcmlpost<?php echo $field . $lang ?>" class="screen-reader-text"><?php _e('Content') ?></label>
 			<?php
 				wp_editor(
-					kcMultilingual_frontend::get_translation($locale, 'post', $post_id, 'content'),
-					"kcmlposteditor{$locale}",
-					array( 'textarea_name' => "kc-postmeta[kcml][kcml-translation][{$locale}][content]" )
+					kcMultilingual_frontend::get_translation($lang, 'post', $post_id, 'content'),
+					'kcmlposteditor' . str_replace('-', '', $lang),
+					array( 'textarea_name' => "kc-postmeta[kcml][kcml-translation][{$lang}][content]" )
 				);
 			?>
 		<?php break; } ?>
