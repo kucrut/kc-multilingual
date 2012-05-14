@@ -30,7 +30,7 @@ class kcMultilingual_backend {
 		$languages = array();
 		$locales   = array();
 		foreach ( $settings['general']['languages']['current'] as $url => $data ) {
-			$data['name'] = kcMultilingual::get_language_fullname($url, $data['country']);
+			$data['name'] = kcMultilingual::get_language_fullname($data['language'], $data['country']);
 			$languages[$url] = $data;
 			$locales[$url]   = $data['locale'];
 		}
@@ -114,25 +114,15 @@ class kcMultilingual_backend {
 
 	public static function settings_update( $old, $new ) {
 		$locales = array();
-
-		# Set default
-		if ( empty($new['general']['languages']['current']) ) {
-			$new['general']['languages']['default'] = '';
-		}
-		else {
+		if ( !empty($new['general']['languages']['current']) ) {
 			foreach ( $new['general']['languages']['current'] as $url => $data )
 				$locales[$url] = $data['locale'];
 			ksort($locales);
-
-			if ( !isset($new['general']['languages']['default']) || !isset($new['general']['languages']['current'][$new['general']['languages']['default']]) ) {
-				$_current = array_keys( $new['general']['languages']['current'] );
-				$new['general']['languages']['default'] = $_current[0];
-			}
 		}
 		self::$locales = $locales;
-
 		self::$default = $new['general']['languages']['default'];
 		self::$locale  = self::$default ? $new['general']['languages']['current'][self::$default]['locale'] : WPLANG;
+
 		flush_rewrite_rules();
 	}
 
@@ -173,33 +163,36 @@ class kcMultilingual_backend {
 			return;
 
 		$redirect = false;
-		$referer = remove_query_arg( array('action', '_nonce', 'lang'), wp_get_referer() );
 		switch ( $_REQUEST['action'] ) {
 			case 'edit' :
 				if ( isset(self::$languages[$_REQUEST['lang']]) )
 					self::$doing_edit = self::$languages[$_REQUEST['lang']];
 			break;
 			case 'set_default' :
-				self::$settings['general']['languages']['default'] = $_REQUEST['lang'];
+				$settings = self::$settings;
+				$settings['general']['languages']['default'] = $_REQUEST['lang'];
+				$settings['general']['languages'] = self::validate_settings_general_languages( $settings['general']['languages'] );
+				self::$settings = $settings;
 				update_option('kc_ml_settings', self::$settings);
 				$redirect = true;
 			break;
 			case 'delete' :
-				unset(self::$settings['general']['languages']['current'][$_REQUEST['lang']]);
-				update_option('kc_ml_settings', self::$settings);
+				$settings = self::$settings;
+				unset($settings['general']['languages']['current'][$_REQUEST['lang']]);
+				$settings['general']['languages'] = self::validate_settings_general_languages( $settings['general']['languages'] );
+				self::$settings = $settings;
+				update_option('kc_ml_settings', $settings);
 				$redirect = true;
 			break;
 		}
 
-		if ( $redirect ) {
-			wp_redirect( $referer );
-			exit;
-		}
+		if ( $redirect )
+			self::settings_redirect();
 	}
 
 
 	public static function settings_table( $group ) {
-		if ( empty(self::$languages) )
+		if ( empty(self::$languages) || self::$doing_edit )
 			return;
 
 		require_once kcMultilingual::get_data('paths', 'inc') . '/table.php';
@@ -211,13 +204,17 @@ class kcMultilingual_backend {
 
 	public static function cb_settings_general_languages( $args, $db_value ) {
 		$default = isset($db_value['default']) ? $db_value['default'] : '';
-		$out = "<input type='hidden' name='{$args['field']['name']}[default]' value='{$default}' />";
+		$out  = "<input type='hidden' name='{$args['field']['name']}[default]' value='{$default}' />";
+		$current = isset($db_value['current']) ? $db_value['current'] : array();
+		$out .= "<input type='hidden' name='{$args['field']['name']}[current]' value='".serialize($current)."' />";
 
 		if ( self::$doing_edit ) {
+			$name_prefix = 'edit';
 			$value = self::$doing_edit;
-			$out .= "<input type='hidden' name='{$args['field']['name']}['edit']' value='".self::$doing_edit['url']."' />";
+			$out .= "<input type='hidden' name='{$args['field']['name']}[edit][_lang]' value='".self::$doing_edit['url']."' />";
 		}
 		else {
+			$name_prefix = 'add';
 			$value = array('language' => '', 'country' => '', 'date_format' => '', 'time_format' => '', 'url' => '');
 		}
 
@@ -225,67 +222,49 @@ class kcMultilingual_backend {
 			array(
 				'id'    => 'language',
 				'type'  => 'select',
-				'attr'  => array(
-					'id'    => 'kcml-add-language',
-					'name'  => "{$args['field']['name']}[add][language]"
-				),
 				'options' => kcMultilingual::get_language_names(),
-				'current' => $value['language'],
 				'label'   => __('Language', 'kc-ml'),
 				'desc'    => __('Mandatory', 'kc-ml')
 			),
 			array(
 				'id'    => 'country',
 				'type'  => 'select',
-				'attr'  => array(
-					'id'    => 'kcml-add-country',
-					'name'  => "{$args['field']['name']}[add][country]"
-				),
 				'options' => kcMultilingual::get_country_names(),
-				'current' => $value['country'],
 				'label'   => __('Country', 'kc-ml'),
 				'desc'    => __('Optional', 'kc-ml')
 			),
 			array(
-				'id'    => 'date-format',
+				'id'    => 'date_format',
 				'type'  => 'text',
-				'attr'  => array(
-					'id'    => 'kcml-add-date-format',
-					'name'  => "{$args['field']['name']}[add][date_format]"
-				),
-				'current' => $value['date_format'],
 				'label'   => __('Date format'),
 				'desc'    => __('Defaults to global setting', 'kc-ml')
 			),
 			array(
-				'id'    => 'time-format',
+				'id'    => 'time_format',
 				'type'  => 'text',
-				'attr'  => array(
-					'id'    => 'kcml-add-time-format',
-					'name'  => "{$args['field']['name']}[add][time_format]"
-				),
-				'current' => $value['time_format'],
 				'label'   => __('Time format'),
 				'desc'    => __('Defaults to global setting', 'kc-ml')
 			),
 			array(
 				'id'    => 'url',
 				'type'  => 'text',
-				'attr'  => array(
-					'id'    => 'kcml-add-url',
-					'name'  => "{$args['field']['name']}[add][url]"
-				),
-				'current' => $value['url'],
 				'label'   => __('Custom URL Suffix'),
 				'desc'    => __('Defaults to language code', 'kc-ml')
 			)
 		);
 
 		$out .= "<div class='field'>\n";
-		$out .= "<h4>".__('Add language', 'kcml')."</h4>\n";
+		$title = self::$doing_edit ? __('Edit language', 'kcml') : __('Add language', 'kcml');
+		$out .= "<h4>{$title}</h4>\n";
 		foreach ( $fields as $field ) {
+			$field['attr'] = array(
+				'id'   => "kcml-{$name_prefix}-{$field['id']}",
+				'name' => "{$args['field']['name']}[{$name_prefix}][{$field['id']}]"
+			);
+			$field['current'] = $value[$field['id']];
+
 			$out .= "<p>";
-			$out .= "<label for='kcml-add-{$field['id']}' class='fw'>{$field['label']}</label>";
+			$out .= "<label for='{$field['attr']['id']}' class='fw'>{$field['label']}</label>";
 			$out .= kcForm::field( $field );
 			if ( isset($field['desc']) )
 				$out .= "<span class='description'>{$field['desc']}</span>";
@@ -297,36 +276,75 @@ class kcMultilingual_backend {
 	}
 
 
-	public static function validate_settings_general_languages( $value ) {
-		$value['current'] = isset(self::$settings['general']['languages']['current']) ? self::$settings['general']['languages']['current'] : array();
-		$value['default'] = isset(self::$settings['general']['languages']['default']) ? self::$settings['general']['languages']['default'] : '';
+	private static function _add_language( $data ) {
+		$url = ( isset($data['url']) && !empty($data['url']) ) ? $data['url'] : $data['language'];
+		$url = sanitize_html_class( $url );
 
-		# Add new language / edit the URL suffix
-		if ( isset($value['add']['language']) && $value['add']['language'] ) {
-			$url = ( isset($value['add']['url']) && !empty($value['add']['url']) ) ? $value['add']['url'] : $value['add']['language'];
-			$url = sanitize_html_class( $url );
-
-			$new = array(
-				'language' => $value['add']['language'],
-				'url'      => $url
-			);
-			$locale = $value['add']['language'];
-			if ( isset($value['add']['country']) && $value['add']['country'] ) {
-				$new['country'] = $value['add']['country'];
-				$locale .= "_{$value['add']['country']}";
-			}
-			else {
-				$new['country'] = '';
-			}
-			$new['locale'] = $locale;
-			$new['date_format'] = (isset($value['add']['date_format']) && !empty($value['add']['date_format'])) ? $value['add']['date_format'] : get_option( 'date_format');
-			$new['time_format'] = (isset($value['add']['time_format']) && !empty($value['add']['time_format'])) ? $value['add']['time_format'] : get_option( 'time_format');
-
-			$value['current'][$url] = $new;
+		$_new = array(
+			'language' => $data['language'],
+			'url'      => $url
+		);
+		$locale = $data['language'];
+		if ( isset($data['country']) && $data['country'] ) {
+			$_new['country'] = $data['country'];
+			$locale .= "_{$data['country']}";
 		}
+		else {
+			$new['country'] = '';
+		}
+		$_new['locale'] = $locale;
+		$_new['date_format'] = (isset($data['date_format']) && !empty($data['date_format'])) ? $data['date_format'] : get_option( 'date_format');
+		$_new['time_format'] = (isset($data['time_format']) && !empty($data['time_format'])) ? $data['time_format'] : get_option( 'time_format');
+
+		return $_new;
+	}
+
+
+	public static function validate_settings_general_languages( $value ) {
+		if ( !is_array($value['current']) )
+			$value['current'] = unserialize( $value['current'] );
+
+		# Add
+		if ( isset($value['add']['language']) && $value['add']['language'] ) {
+			$_new = self::_add_language( $value['add'] );
+			$value['current'][$_new['url']] = $_new;
+		}
+		# Edit
+		elseif ( isset($value['edit']) && $value['edit'] ) {
+			$_new = self::_add_language( $value['edit'] );
+			$value['current'][$_new['url']] = $_new;
+
+			if ( $_new['url'] !== $value['edit']['_lang'] )
+				unset( $value['current'][$value['edit']['_lang']] );
+
+			add_action( 'update_option_kc_ml_settings', array(__CLASS__, 'settings_redirect'), 11 );
+		}
+
 		unset( $value['add'] );
+		unset( $value['edit'] );
+
+		$locales = array();
+		# Set default
+		if ( empty($value['current']) ) {
+			$value['default'] = '';
+		}
+		else {
+			if ( !$value['default'] || !isset($value['current'][$value['default']]) ) {
+				$_current = array_keys( $value['current'] );
+				$value['default'] = $_current[0];
+			}
+		}
 
 		return $value;
+	}
+
+
+	public static function settings_redirect() {
+		$referer = remove_query_arg( array('action', '_nonce', 'lang'), wp_get_referer() );
+		$referer = add_query_arg( array('settings-updated' => 'true'), $referer );
+
+		wp_redirect( $referer );
+		exit;
 	}
 
 
