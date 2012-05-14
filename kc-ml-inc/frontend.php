@@ -11,7 +11,7 @@ class kcMultilingual_frontend {
 		add_filter( 'query_vars', array(__CLASS__, 'query_vars'), 0 );
 
 		# Links / URLs
-		add_filter( 'home_url', array(__CLASS__, 'filter_home_url'), 0, 2 );
+		add_filter( 'home_url', array(__CLASS__, 'filter_home_url'), 0, 4 );
 
 		# Posts
 		# 0. Global
@@ -42,15 +42,20 @@ class kcMultilingual_frontend {
 	}
 
 
-	public static function filter_home_url( $url, $path ) {
-		if ( !kcMultilingual_backend::$prettyURL ) {
-			$url = add_query_arg( array('lang' => kcMultilingual_backend::$lang), $url );
+	public static function filter_home_url( $url, $path, $orig_scheme, $blog_id ) {
+		return self::filter_url( $url, $path, kcMultilingual_backend::$lang, kcMultilingual_backend::$prettyURL );
+	}
+
+
+	public static function filter_url( $url, $path, $lang, $pretty = false ) {
+		if ( !$pretty ) {
+			$url = add_query_arg( array('lang' => $lang), $url );
 		}
 		else {
 			if ( !$path || $path === '/' )
-				$url = trailingslashit( $url ) . trailingslashit( kcMultilingual_backend::$lang );
+				$url = trailingslashit( $url ) . trailingslashit( $lang );
 			else
-				$url = str_replace( $path, '/' . kcMultilingual_backend::$lang . $path, $url );
+				$url = str_replace( $path, '/' . $lang . $path, $url );
 		}
 
 		return $url;
