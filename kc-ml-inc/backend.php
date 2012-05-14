@@ -172,6 +172,9 @@ class kcMultilingual_backend {
 				$redirect = true;
 			break;
 			case 'delete' :
+				unset(self::$settings['general']['languages']['current'][$_REQUEST['lang']]);
+				update_option('kc_ml_settings', self::$settings);
+				$redirect = true;
 			break;
 		}
 
