@@ -29,6 +29,10 @@ class kcMultilingual_frontend {
 		add_filter( 'get_term', array(__CLASS__, 'filter_term'), 0 );
 		add_filter( 'get_terms', array(__CLASS__, 'filter_objects'), 0 );
 		add_filter( 'get_the_terms', array(__CLASS__, 'filter_objects'), 0 );
+
+		# Date & Time
+		add_filter( 'option_date_format', array(__CLASS__, 'filter_date_format') );
+		add_filter( 'option_time_format', array(__CLASS__, 'filter_time_format') );
 	}
 
 
@@ -156,6 +160,18 @@ class kcMultilingual_frontend {
 		$term->description = self::filter_term_field( $term->description, $term->term_id, 'content' );
 
 		return $term;
+	}
+
+
+	public static function filter_date_format( $value ) {
+		$value = kcMultilingual_backend::$languages[kcMultilingual_backend::$lang]['date_format'];
+		return $value;
+	}
+
+
+	public static function filter_time_format( $value ) {
+		$value = kcMultilingual_backend::$languages[kcMultilingual_backend::$lang]['time_format'];
+		return $value;
 	}
 }
 ?>
