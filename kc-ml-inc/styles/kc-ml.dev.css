@@ -34,3 +34,14 @@ ul.kcml-langs .tabs a {
 .edit-tags-php .form-field h4 {margin:0}
 
 #poststuff .kcml-wrap h3 {padding:7px 0 15px;}
+.kcml-languages {border-collapse:collapse}
+.kcml-languages th {
+	font-weight:bold;
+	background-image:-moz-linear-gradient(center top , #f9f9f9, #ececec);
+}
+.kcml-languages td,
+.kcml-languages th {
+	background:#fff;
+	border:1px solid #dfdfdf;
+}
+.kcml-languages td {padding:5px 10px;}

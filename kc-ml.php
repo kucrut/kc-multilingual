@@ -91,7 +91,7 @@ class kcMultilingual {
 	}
 
 
-	public static function get_language_names( $sort = true ) {
+	public static function get_language_names( $code = '', $sort = true ) {
 		$languages = array(
 			'aa' => __('Afar', 'kcml'),
 			'ab' => __('Abkhazian', 'kcml'),
@@ -340,6 +340,13 @@ class kcMultilingual {
 			'yao' => __('Yao', 'kcml'),
 		);
 
+		if ( $code ) {
+			if ( isset($languages[$code]) )
+				return $languages[$code];
+			else
+				return false;
+		}
+
 		if ( $sort )
 			asort( $languages );
 
@@ -347,7 +354,7 @@ class kcMultilingual {
 	}
 
 
-	public static function get_country_names( $sort = true ) {
+	public static function get_country_names( $code = '', $sort = true ) {
 		$countries = array(
 			'AD' => __('Andorra', 'kcml'),
 			'AE' => __('United Arab Emirates', 'kcml'),
@@ -595,10 +602,30 @@ class kcMultilingual {
 			'ZW' => __('Zimbabwe', 'kcml')
 		);
 
+		if ( $code ) {
+			if ( isset($countries[$code]) )
+				return $countries[$code];
+			else
+				return false;
+		}
+
 		if ( $sort )
 			asort( $countries );
 
 		return $countries;
+	}
+
+
+	public static function get_language_fullname( $language_code, $country_code = '', $sep = ' / ' ) {
+		$language_name = self::get_language_names( $language_code );
+		if ( !$country_code )
+			return $language_name;
+
+		$country_name = self::get_country_names( $country_code );
+		if ( $country_name )
+			$language_name .= $sep . $country_name;
+
+		return $language_name;
 	}
 }
 

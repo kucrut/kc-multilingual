@@ -3,7 +3,6 @@
 class kcMultilingual_backend {
 	public static $settings   = array();
 	public static $prettyURL  = false;
-	public static $is_active  = false;
 	public static $locales    = array();
 	public static $default    = '';
 	public static $locale     = '';
@@ -11,6 +10,7 @@ class kcMultilingual_backend {
 	public static $languages  = array();
 	public static $post_types = array();
 	public static $taxonomies = array();
+	private static $doing_edit = false;
 
 
 	public static function init() {
@@ -18,7 +18,8 @@ class kcMultilingual_backend {
 
 		add_filter( 'rewrite_rules_array', array(__CLASS__, 'add_rewrite_rules'), 999 );
 		add_filter( 'kc_plugin_settings', array(__CLASS__, 'settings') );
-		add_filter( 'kcv_setting_kc_ml_general_languages', array(__CLASS__, 'validate_settings') );
+		add_action( 'kc_ml_kc_settings_page_before', array(__CLASS__, 'settings_table') );
+		add_filter( 'kcv_setting_kc_ml_general_languages', array(__CLASS__, 'validate_settings_general_languages') );
 		add_action( 'update_option_kc_ml_settings', array(__CLASS__, 'flush_rewrite_rules'), 0, 2 );
 
 		$settings = get_option( 'kc_ml_settings', array() );
@@ -26,32 +27,26 @@ class kcMultilingual_backend {
 		if ( !isset($settings['general']['languages']['current']) || empty($settings['general']['languages']['current']) )
 			return;
 
-		self::$locales = $settings['general']['languages']['current'];
-		self::$default = $settings['general']['languages']['default'];
-		if ( !is_admin() )
-			self::_set_locale();
-
-		$names = array(
-			'languages' => kcMultilingual::get_language_names(),
-			'countries' => kcMultilingual::get_country_names()
-		);
 		$languages = array();
-		foreach ( array_keys(self::$locales) as $lang ) {
-			$codes = explode( '_', $lang );
-			$name = $names['languages'][$codes[0]];
-			if ( isset($codes[1]) )
-				$name .= " / {$names['countries'][$codes[1]]}";
-
-			$languages[$lang] = $name;
+		$locales   = array();
+		foreach ( $settings['general']['languages']['current'] as $url => $data ) {
+			$data['name'] = kcMultilingual::get_language_fullname($url, $data['country']);
+			$languages[$url] = $data;
+			$locales[$url]   = $data['locale'];
 		}
 		asort( $languages );
 		self::$languages = $languages;
+		ksort( $locales );
+		self::$locales = $locales;
+		self::$default = $settings['general']['languages']['default'];
+
+		if ( !is_admin() )
+			self::_set_locale();
 
 		if ( count(self::$locales) < 2 )
 			return;
 
 		if ( self::$locale !== self::$default ) {
-			self::$is_active = true;
 			require_once dirname( __FILE__ ) . '/frontend.php';
 			kcMultilingual_frontend::init();
 		}
@@ -72,19 +67,19 @@ class kcMultilingual_backend {
 		$locale = get_locale();
 
 		if ( isset($_REQUEST['lang']) && !empty($_REQUEST['lang']) ) {
-			$locale = $_REQUEST['lang'];
+			$lang = $_REQUEST['lang'];
 		}
 		elseif ( self::$prettyURL ) {
 			preg_match( '/^\/([a-zA-Z]{2,3})\//', $_SERVER['REQUEST_URI'], $matches);
 			if ( !empty($matches) )
-				$locale = $matches[1];
+				$lang = $matches[1];
 		}
 
-		if ( ($locale = array_search($locale, self::$locales)) === false )
-			$locale = self::$default;
+		if ( !isset(self::$locales[$lang]) )
+			return $locale;
 
-		self::$locale = $locale;
-		self::$lang = self::$locales[$locale];
+		self::$locale = $locale = self::$locales[$lang];
+		self::$lang   = $lang;
 
 		$locales = array(
 			$locale.'.utf8',
@@ -102,8 +97,8 @@ class kcMultilingual_backend {
 
 	public static function add_rewrite_rules( $rules ) {
 		$new = array();
-		foreach ( self::$locales as $locale => $lang ) {
-			if ( $locale === self::$default )
+		foreach ( self::$locales as $lang => $locale ) {
+			if ( $lang === self::$default )
 				continue;
 
 			$new[$lang.'/?$'] = "index.php?lang={$lang}"; // Homepage
@@ -118,8 +113,12 @@ class kcMultilingual_backend {
 
 
 	public static function flush_rewrite_rules( $old, $new ) {
-		self::$locales = $new['general']['languages']['current'];
-		self::$default = isset($new['general']['languages']['default']) ? $new['general']['languages']['default'] : WPLANG;
+		$locales = array();
+		foreach ( $new['general']['languages']['current'] as $url => $data )
+			$locales[$url]   = $data['locale'];
+		self::$locales = $locales;
+		self::$default = isset($new['general']['languages']['default']) ? $new['general']['languages']['default'] : '';
+		self::$locale  = isset($new['general']['languages']['current'][self::$default]) ? $new['general']['languages']['current'][self::$default]['locale'] : WPLANG;
 		flush_rewrite_rules();
 	}
 
@@ -128,18 +127,19 @@ class kcMultilingual_backend {
 		$groups[] = array(
 			'prefix'       => 'kc_ml',
 			'menu_title'   => 'KC Multilingual',
-			'page_title'   => __('KC Multilingual Settings', 'kc-essentials'),
+			'page_title'   => __('KC Multilingual Settings', 'kc-ml'),
+			'load_actions' => array(__CLASS__, 'settings_actions'),
 			'display'      => 'metabox',
 			'options'      => array(
 				array(
 					'id'     => 'general',
-					'title'  => __('General', 'kc_ml'),
+					'title'  => __('General', 'kc-ml'),
 					'fields' => array(
 						array(
 							'id'    => 'languages',
-							'title' => __('Languages', 'kc_ml'),
+							'title' => __('Languages', 'kc-ml'),
 							'type'  => 'special',
-							'cb'    => array(__CLASS__, 'cb_settings')
+							'cb'    => array(__CLASS__, 'cb_settings_general_languages')
 						)
 					)
 				)
@@ -150,102 +150,158 @@ class kcMultilingual_backend {
 	}
 
 
-	public static function cb_settings( $args, $db_value ) {
-		$out  = '';
-		$out .= "<div class='field'>\n";
-		$out .= "<h4>".__('Current languages', 'kcml')."</h4>\n";
-		$current = ( isset($db_value['current']) && !empty($db_value['current']) ) ? $db_value['current'] : array();
-		$out .= "<input type='hidden' name='{$args['field']['name']}[current]' value='".serialize($current)."'/>\n";
-		if ( !isset(self::$locales) || empty(self::$locales) ) {
-			$out .= "<p>".__('N/A')."</p>\n";
+	public static function settings_actions() {
+		if (
+			!isset($_REQUEST['action']) || empty($_REQUEST['action'])
+			|| !isset($_REQUEST['_nonce']) || !wp_verify_nonce($_REQUEST['_nonce'], '__kc_ml__')
+			|| !isset($_REQUEST['lang']) || !isset(kcMultilingual_backend::$locales[$_REQUEST['locale']])
+		)
+			return;
+
+		$redirect = false;
+		switch ( $_REQUEST['action'] ) {
+			case 'edit' :
+				if ( isset(self::$languages[$_REQUEST['lang']]) )
+					self::$doing_edit = self::$languages[$_REQUEST['lang']];
+			break;
+			case 'set_default' :
+			break;
+			case 'delete' :
+			break;
+		}
+
+		if ( $redirect ) {
+			wp_redirect( wp_get_referer() );
+			exit;
+		}
+	}
+
+
+	public static function settings_table( $group ) {
+		if ( empty(self::$languages) )
+			return;
+
+		require_once kcMultilingual::get_data('paths', 'inc') . '/table.php';
+		$table = new kcMultilingual_table();
+		$table->prepare_items();
+		$table->display();
+	}
+
+
+	public static function cb_settings_general_languages( $args, $db_value ) {
+		$default = isset($db_value['default']) ? $db_value['default'] : '';
+		$out = "<input type='hidden' name='{$args['field']['name']}[default]' value='{$default}' />";
+
+		if ( self::$doing_edit ) {
+			$value = self::$doing_edit;
+			$out .= "<input type='hidden' name='{$args['field']['name']}['edit']' value='".self::$doing_edit['url']."' />";
 		}
 		else {
-			$out .= "<ul>\n";
-			foreach ( self::$languages as $locale => $name ) {
-				$out .= "<li><label><input type='checkbox' name='{$args['field']['name']}[remove][]' value='{$locale}'";
-				if ( self::$default === $locale )
-					$out .= " disabled";
-				$out .= " /> {$name}: <code>{$locale}</code> | <code>".self::$locales[$locale]."</code></label></li>\n";
-			}
-			$out .= "</ul>\n";
-			$out .= "<p class='description'>".__('Check languages to remove. Current default language can&#8216;t be removed.', 'kcml')."</p>\n";
-			$out .= "</div>\n";
-
-			$out .= "<div class='field'>\n";
-			$out .= "<h4><label for='kcml-default'>".__('Default language', 'kcml')."</label></h4>\n";
-			$out .= "<p>\n";
-			$out .= kcForm::field(array(
-				'type'    => 'select',
-				'options' => self::$languages,
-				'none'    => false,
-				'current' => $db_value['default'],
-				'attr'    => array(
-					'id'    => 'kcml-default',
-					'name'  => "{$args['field']['name']}[default]"
-				)
-			));
-			$out .= "</p>\n";
-			$out .= "<p class='description'>".__('Careful! Changing this may bla bla bla&hellip;', 'kcml')."</p>\n";
+			$value = array('language' => '', 'country' => '', 'date_format' => '', 'time_format' => '', 'url' => '');
 		}
-		$out .= "</div>\n";
+
+		$fields = array(
+			array(
+				'id'    => 'language',
+				'type'  => 'select',
+				'attr'  => array(
+					'id'    => 'kcml-add-language',
+					'name'  => "{$args['field']['name']}[add][language]"
+				),
+				'options' => kcMultilingual::get_language_names(),
+				'current' => $value['language'],
+				'label'   => __('Language', 'kc-ml'),
+				'desc'    => __('Mandatory', 'kc-ml')
+			),
+			array(
+				'id'    => 'country',
+				'type'  => 'select',
+				'attr'  => array(
+					'id'    => 'kcml-add-country',
+					'name'  => "{$args['field']['name']}[add][country]"
+				),
+				'options' => kcMultilingual::get_country_names(),
+				'current' => $value['country'],
+				'label'   => __('Country', 'kc-ml'),
+				'desc'    => __('Optional', 'kc-ml')
+			),
+			array(
+				'id'    => 'date-format',
+				'type'  => 'text',
+				'attr'  => array(
+					'id'    => 'kcml-add-date-format',
+					'name'  => "{$args['field']['name']}[add][date_format]"
+				),
+				'current' => $value['date_format'],
+				'label'   => __('Date format'),
+				'desc'    => __('Defaults to global setting', 'kc-ml')
+			),
+			array(
+				'id'    => 'time-format',
+				'type'  => 'text',
+				'attr'  => array(
+					'id'    => 'kcml-add-time-format',
+					'name'  => "{$args['field']['name']}[add][time_format]"
+				),
+				'current' => $value['time_format'],
+				'label'   => __('Time format'),
+				'desc'    => __('Defaults to global setting', 'kc-ml')
+			),
+			array(
+				'id'    => 'url',
+				'type'  => 'text',
+				'attr'  => array(
+					'id'    => 'kcml-add-url',
+					'name'  => "{$args['field']['name']}[add][url]"
+				),
+				'current' => $value['url'],
+				'label'   => __('Custom URL Suffix'),
+				'desc'    => __('Defaults to language code', 'kc-ml')
+			)
+		);
 
 		$out .= "<div class='field'>\n";
 		$out .= "<h4>".__('Add language', 'kcml')."</h4>\n";
-		$out .= "<p>";
-		$out .= "<label for='kcml-add-language' class='fw'>".__('Language:', 'kcml')."</label>";
-		$out .= kcForm::field(array(
-			'type'    => 'select',
-			'options' => kcMultilingual::get_language_names(),
-			'attr'    => array(
-				'id'    => 'kcml-add-language',
-				'name'  => "{$args['field']['name']}[add][language]"
-			)
-		));
-		$out .= "</p>\n";
-		$out .= "<p>";
-		$out .= "<label for='kcml-add-country' class='fw'>".__('Country:', 'kcml')."</label>";
-		$out .= kcForm::field(array(
-			'type'    => 'select',
-			'options' => kcMultilingual::get_country_names(),
-			'attr'    => array(
-				'id'    => 'kcml-add-country',
-				'name'  => "{$args['field']['name']}[add][country]"
-			)
-		));
-		$out .= "<span class='description'>".__('Optional', 'kcml')."</span></p>\n";
-		$out .= "<p>";
-		$out .= "<label for='kcml-add-url' class='fw'>".__('Custom URL suffix:', 'kcml')."</label>";
-		$out .= "<input type='text' id='kcml-add-url' name='{$args['field']['name']}[add][url]' />";
-		$out .= "<span class='description'>".__('Defaults to language code')."</span>";
-		$out .= "</p>\n";
+		foreach ( $fields as $field ) {
+			$out .= "<p>";
+			$out .= "<label for='kcml-add-{$field['id']}' class='fw'>{$field['label']}</label>";
+			$out .= kcForm::field( $field );
+			if ( isset($field['desc']) )
+				$out .= "<span class='description'>{$field['desc']}</span>";
+			$out .= "</p>\n";
+		}
 		$out .= "</div>\n";
-
-		//$out .= '<pre>'.print_r( $db_value, true).'</pre>';
 
 		return $out;
 	}
 
 
-	public static function validate_settings( $value ) {
-		$current = isset($value['current']) ? $value['current'] : '';
-		$value['current'] = unserialize( $current );
-
-		# Remove
-		if ( isset($value['remove']) && !empty($value['remove']) ) {
-			foreach ( $value['remove'] as $lang )
-				unset( $value['current'][$lang] );
-		}
-		unset( $value['remove'] );
+	public static function validate_settings_general_languages( $value ) {
+		$value['current'] = isset(self::$settings['general']['languages']['current']) ? self::$settings['general']['languages']['current'] : array();
+		$value['default'] = isset(self::$settings['general']['languages']['default']) ? self::$settings['general']['languages']['default'] : '';
 
 		# Add new language / edit the URL suffix
 		if ( isset($value['add']['language']) && $value['add']['language'] ) {
-			$new_lang = $value['add']['language'];
-			if ( isset($value['add']['country']) && $value['add']['country'] )
-				$new_lang .= "_{$value['add']['country']}";
-
 			$url = ( isset($value['add']['url']) && !empty($value['add']['url']) ) ? $value['add']['url'] : $value['add']['language'];
 			$url = sanitize_html_class( $url );
-			$value['current'][$new_lang] = !empty($url) ? $url : $value['add']['language'] ;
+
+			$new = array(
+				'language' => $value['add']['language'],
+				'url'      => $url
+			);
+			$locale = $value['add']['language'];
+			if ( isset($value['add']['country']) && $value['add']['country'] ) {
+				$new['country'] = $value['add']['country'];
+				$locale .= "_{$value['add']['country']}";
+			}
+			else {
+				$new['country'] = '';
+			}
+			$new['locale'] = $locale;
+			$new['date_format'] = (isset($value['add']['date_format']) && !empty($value['add']['date_format'])) ? $value['add']['date_format'] : get_option( 'date_format');
+			$new['time_format'] = (isset($value['add']['time_format']) && !empty($value['add']['time_format'])) ? $value['add']['time_format'] : get_option( 'time_format');
+
+			$value['current'][$url] = $new;
 		}
 		unset( $value['add'] );
 
@@ -260,8 +316,6 @@ class kcMultilingual_backend {
 			}
 		}
 
-		flush_rewrite_rules();
-
 		return $value;
 	}
 
@@ -274,7 +328,7 @@ class kcMultilingual_backend {
 				'fields' => array(
 					array(
 						'id'    => 'kcml-translation',
-						'title' => __('Translations', 'kc_ml'),
+						'title' => __('Translations', 'kc-ml'),
 						'type'  => 'special',
 						'cb'    => array(__CLASS__, 'fields_term_attachment_render')
 					)
@@ -465,5 +519,6 @@ class kcMultilingual_backend {
 
 }
 kcMultilingual_backend::init();
+
 
 ?>
