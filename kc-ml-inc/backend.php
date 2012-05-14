@@ -115,7 +115,8 @@ class kcMultilingual_backend {
 	public static function flush_rewrite_rules( $old, $new ) {
 		$locales = array();
 		foreach ( $new['general']['languages']['current'] as $url => $data )
-			$locales[$url]   = $data['locale'];
+			$locales[$url] = $data['locale'];
+		ksort($locales);
 		self::$locales = $locales;
 		self::$default = isset($new['general']['languages']['default']) ? $new['general']['languages']['default'] : '';
 		self::$locale  = isset($new['general']['languages']['current'][self::$default]) ? $new['general']['languages']['current'][self::$default]['locale'] : WPLANG;
@@ -154,24 +155,28 @@ class kcMultilingual_backend {
 		if (
 			!isset($_REQUEST['action']) || empty($_REQUEST['action'])
 			|| !isset($_REQUEST['_nonce']) || !wp_verify_nonce($_REQUEST['_nonce'], '__kc_ml__')
-			|| !isset($_REQUEST['lang']) || !isset(kcMultilingual_backend::$locales[$_REQUEST['locale']])
+			|| !isset($_REQUEST['lang']) || !isset(kcMultilingual_backend::$locales[$_REQUEST['lang']])
 		)
 			return;
 
 		$redirect = false;
+		$referer = remove_query_arg( array('action', '_nonce', 'lang'), wp_get_referer() );
 		switch ( $_REQUEST['action'] ) {
 			case 'edit' :
 				if ( isset(self::$languages[$_REQUEST['lang']]) )
 					self::$doing_edit = self::$languages[$_REQUEST['lang']];
 			break;
 			case 'set_default' :
+				self::$settings['general']['languages']['default'] = $_REQUEST['lang'];
+				update_option('kc_ml_settings', self::$settings);
+				$redirect = true;
 			break;
 			case 'delete' :
 			break;
 		}
 
 		if ( $redirect ) {
-			wp_redirect( wp_get_referer() );
+			wp_redirect( $referer );
 			exit;
 		}
 	}

@@ -23,7 +23,7 @@ class kcMultilingual_table extends WP_List_Table {
 
 
   function column_name( $item ) {
-		$url = "?page={$_REQUEST['page']}&lang={$item['locale']}&_nonce=".wp_create_nonce('__kc_ml__');
+		$url = "?page={$_REQUEST['page']}&lang={$item['url']}&_nonce=".wp_create_nonce('__kc_ml__');
 		$actions = array( 'edit' => "<a href='{$url}&action=edit'>".__('Edit')."</a>" );
 		if ( kcMultilingual_backend::$default === $item['url'] ) {
 			$name = sprintf('%1$s (%2$s)', "<strong>{$item['name']}</strong>", __('default', 'kc-ml') );
