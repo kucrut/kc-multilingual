@@ -20,7 +20,7 @@ class kcMultilingual_backend {
 		add_filter( 'kc_plugin_settings', array(__CLASS__, 'settings') );
 		add_action( 'kc_ml_kc_settings_page_before', array(__CLASS__, 'settings_table') );
 		add_filter( 'kcv_setting_kc_ml_general_languages', array(__CLASS__, 'validate_settings_general_languages') );
-		add_action( 'update_option_kc_ml_settings', array(__CLASS__, 'flush_rewrite_rules'), 0, 2 );
+		add_action( 'update_option_kc_ml_settings', array(__CLASS__, 'settings_update'), 0, 2 );
 
 		$settings = get_option( 'kc_ml_settings', array() );
 		self::$settings = $settings;
@@ -112,14 +112,27 @@ class kcMultilingual_backend {
 	}
 
 
-	public static function flush_rewrite_rules( $old, $new ) {
+	public static function settings_update( $old, $new ) {
 		$locales = array();
-		foreach ( $new['general']['languages']['current'] as $url => $data )
-			$locales[$url] = $data['locale'];
-		ksort($locales);
+
+		# Set default
+		if ( empty($new['general']['languages']['current']) ) {
+			$new['general']['languages']['default'] = '';
+		}
+		else {
+			foreach ( $new['general']['languages']['current'] as $url => $data )
+				$locales[$url] = $data['locale'];
+			ksort($locales);
+
+			if ( !isset($new['general']['languages']['default']) || !isset($new['general']['languages']['current'][$new['general']['languages']['default']]) ) {
+				$_current = array_keys( $new['general']['languages']['current'] );
+				$new['general']['languages']['default'] = $_current[0];
+			}
+		}
 		self::$locales = $locales;
-		self::$default = isset($new['general']['languages']['default']) ? $new['general']['languages']['default'] : '';
-		self::$locale  = isset($new['general']['languages']['current'][self::$default]) ? $new['general']['languages']['current'][self::$default]['locale'] : WPLANG;
+
+		self::$default = $new['general']['languages']['default'];
+		self::$locale  = self::$default ? $new['general']['languages']['current'][self::$default]['locale'] : WPLANG;
 		flush_rewrite_rules();
 	}
 
@@ -312,17 +325,6 @@ class kcMultilingual_backend {
 			$value['current'][$url] = $new;
 		}
 		unset( $value['add'] );
-
-		# Set default
-		if ( empty($value['current']) ) {
-			unset( $value['default'] );
-		}
-		else {
-			if ( !isset($value['default']) || !isset($value['current'][$value['default']]) ) {
-				$_current = array_keys( $value['current'] );
-				$value['default'] = $_current[0];
-			}
-		}
 
 		return $value;
 	}
