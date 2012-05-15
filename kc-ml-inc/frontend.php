@@ -47,26 +47,19 @@ class kcMultilingual_frontend {
 
 
 	public static function filter_home_url( $url, $path, $orig_scheme, $blog_id ) {
-		return self::filter_url( $url, $path, kcMultilingual_backend::$lang, kcMultilingual_backend::$prettyURL );
+		return self::filter_url( $url, kcMultilingual_backend::$lang, kcMultilingual_backend::$prettyURL );
 	}
 
 
-	public static function filter_url( $url, $path, $lang, $pretty = false ) {
-		if ( !$pretty ) {
+	public static function filter_url( $url, $lang, $pretty = false ) {
+		if ( $pretty && is_string($lang) && !empty($lang) ) {
+			$url = preg_replace('/'.kcMultilingual_backend::$home_url.'/', kcMultilingual_backend::$home_url . "/{$lang}", $url, 1 );
+		}
+		else {
 			if ( !empty($lang) && is_string($lang) )
 				$url = add_query_arg( array('lang' => $lang), $url );
 			else
 				$url = remove_query_arg( 'lang', $url );
-		}
-		else {
-			$path = ltrim( $path, '/' );
-
-			if ( empty($path) || !is_string($path) || $path === '/' )
-				$url = untrailingslashit( $url ) . "/{$lang}";
-			else
-				$url = str_replace( $path, "{$lang}/{$path}", $url );
-
-			$url = trailingslashit( $url );
 		}
 
 		return $url;
@@ -74,7 +67,8 @@ class kcMultilingual_frontend {
 
 
 	public static function get_current_url() {
-		remove_filter( 'home_url', array(__CLASS__, 'filter_home_url'), 0, 4 );
+		if ( self::$is_active )
+			remove_filter( 'home_url', array(__CLASS__, 'filter_home_url'), 0, 4 );
 
 		global $wp;
 		if ( kcMultilingual_backend::$prettyURL )
@@ -83,7 +77,8 @@ class kcMultilingual_frontend {
 			$current_url = add_query_arg( $wp->query_string, '', home_url() );
 		}
 
-		add_filter( 'home_url', array(__CLASS__, 'filter_home_url'), 0, 4 );
+		if ( self::$is_active )
+			add_filter( 'home_url', array(__CLASS__, 'filter_home_url'), 0, 4 );
 
 		return $current_url;
 	}

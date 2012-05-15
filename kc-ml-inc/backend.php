@@ -1,6 +1,7 @@
 <?php
 
 class kcMultilingual_backend {
+	public static $home_url    = '';
 	public static $settings    = array();
 	public static $prettyURL   = false;
 	public static $locales     = array();
@@ -14,6 +15,7 @@ class kcMultilingual_backend {
 
 
 	public static function init() {
+		self::$home_url = preg_replace('/^(\w+\:\/\/)/i', '', get_option('home'), 1 );
 		self::$prettyURL = (bool) get_option('permalink_structure');
 
 		add_filter( 'rewrite_rules_array', array(__CLASS__, 'add_rewrite_rules'), 999 );
