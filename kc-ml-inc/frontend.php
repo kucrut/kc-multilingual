@@ -209,7 +209,7 @@ class kcMultilingual_frontend {
 /**
  * Get/display list of languages
  */
-function kc_ml_list_languages( $exclude_current = true, $full_name = true, $sep = '/', $echo = true ) {
+function kc_ml_list_languages( $exclude_current = true, $text = 'full_name', $sep = ' / ', $echo = true ) {
 	$languages = kcMultilingual_backend::$languages;
 	if ( empty($languages) )
 		return false;
@@ -217,18 +217,20 @@ function kc_ml_list_languages( $exclude_current = true, $full_name = true, $sep 
 	if ( $exclude_current )
 		unset( $languages[kcMultilingual_backend::$lang] );
 
-	$url = kcMultilingual_frontend::get_current_url();
+	$_url = trailingslashit( kcMultilingual_frontend::get_current_url() );
 	$out  = "<ul class='kc-ml-languages'>\n";
 	foreach ( $languages as $lang => $data ) {
-		$suffix = ( $lang === kcMultilingual_backend::$default ) ? '' : $lang;
+		$url = ( $lang === kcMultilingual_backend::$default ) ? $_url : kcMultilingual_frontend::filter_url( $_url, $lang, kcMultilingual_backend::$prettyURL );
 		$out .= "<li";
-		if ( $lang === kcMultilingual_backend::$lang )
+		if ( kcMultilingual_backend::$lang === $lang )
 			$out .= " class='current-language'";
-		$out .= "><a href='".kcMultilingual_frontend::filter_url( $url, '', $suffix)."'>";
-		if ( $full_name )
-			$out .= kcMultilingual::get_language_fullname( $lang, $data['country'] );
-		else
+		$out .= "><a href='{$url}' title='".kcMultilingual::get_language_fullname( $lang )."'>";
+		if ( 'language_code' == $text )
+			$out .= $data['language'];
+		elseif ( 'language_name' == $text )
 			$out .= kcMultilingual::get_language_fullname( $lang );
+		else
+			$out .= kcMultilingual::get_language_fullname( $lang, $data['country'], $sep );
 		$out .= "</a></li>\n";
 	}
 	$out .= "</ul>\n";
