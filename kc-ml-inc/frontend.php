@@ -52,7 +52,10 @@ class kcMultilingual_frontend {
 
 
 	public static function filter_url( $url, $path, $lang, $pretty = false ) {
-		if ( $pretty ) {
+		if ( !$pretty ) {
+			$url = add_query_arg( array('lang' => $lang), $url );
+		}
+		else {
 			$path = ltrim( $path, '/' );
 
 			if ( empty($path) || !is_string($path) || $path === '/' )
