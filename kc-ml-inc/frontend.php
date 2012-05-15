@@ -227,7 +227,7 @@ function kc_ml_list_languages( $exclude_current = true, $full_name = true, $sep 
 	foreach ( $languages as $lang => $data ) {
 		$suffix = ( $lang === kcMultilingual_backend::$default ) ? '' : $lang;
 		$out .= "<li";
-		if ( $lang === kcMultilingual_backend::$default )
+		if ( $lang === kcMultilingual_backend::$lang )
 			$out .= " class='current-language'";
 		$out .= "><a href='".kcMultilingual_frontend::filter_url( $url, '', $suffix)."'>";
 		if ( $full_name )
