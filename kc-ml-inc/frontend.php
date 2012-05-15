@@ -174,6 +174,7 @@ class kcMultilingual_frontend {
 
 		global $wp_query;
 		$wp_query->queried_object = $wp_query->posts[0];
+		$wp_query->queried_object_id = $wp_query->posts[0]->ID;
 	}
 
 
