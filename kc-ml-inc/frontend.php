@@ -204,4 +204,41 @@ class kcMultilingual_frontend {
 		return $value;
 	}
 }
+
+
+/* Helper functions */
+
+/**
+ * Get/display list of languages
+ */
+function kc_ml_list_languages( $exclude_current = true, $full_name = true, $sep = '/', $echo = true ) {
+	$languages = kcMultilingual_backend::$languages;
+	if ( empty($languages) )
+		return false;
+
+	if ( $exclude_current )
+		unset( $languages[kcMultilingual_backend::$lang] );
+
+	$url = kcMultilingual_frontend::get_current_url();
+	$out  = "<ul class='kc-ml-languages'>\n";
+	foreach ( $languages as $lang => $data ) {
+		$suffix = ( $lang === kcMultilingual_backend::$default ) ? '' : $lang;
+		$out .= "<li";
+		if ( $lang === kcMultilingual_backend::$default )
+			$out .= " class='current-language'";
+		$out .= "><a href='".kcMultilingual_frontend::filter_url( $url, '', $suffix)."'>";
+		if ( $full_name )
+			$out .= kcMultilingual::get_language_fullname( $lang, $data['country'] );
+		else
+			$out .= kcMultilingual::get_language_fullname( $lang );
+		$out .= "</a></li>\n";
+	}
+	$out .= "</ul>\n";
+
+	if ( $echo )
+		echo $out;
+	else
+		return $out;
+}
+
 ?>
