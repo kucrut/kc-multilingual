@@ -74,14 +74,16 @@ class kcMultilingual_frontend {
 
 
 	public static function get_current_url() {
+		remove_filter( 'home_url', array(__CLASS__, 'filter_home_url'), 0, 4 );
+
 		global $wp;
 		if ( kcMultilingual_backend::$prettyURL )
 			$current_url = home_url( $wp->request );
 		else {
-			remove_filter( 'home_url', array(__CLASS__, 'filter_home_url'), 0, 4 );
 			$current_url = add_query_arg( $wp->query_string, '', home_url() );
-			add_filter( 'home_url', array(__CLASS__, 'filter_home_url'), 0, 4 );
 		}
+
+		add_filter( 'home_url', array(__CLASS__, 'filter_home_url'), 0, 4 );
 
 		return $current_url;
 	}
