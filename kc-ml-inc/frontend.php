@@ -1,13 +1,11 @@
 <?php
 
 class kcMultilingual_frontend {
-	private static $lang;
+	public static $is_active = false;
 
 
 	public static function init() {
-		if ( is_admin() )
-			return;
-
+		self::$is_active = true;
 		add_filter( 'query_vars', array(__CLASS__, 'query_vars'), 0 );
 
 		# Links / URLs
@@ -52,13 +50,28 @@ class kcMultilingual_frontend {
 			$url = add_query_arg( array('lang' => $lang), $url );
 		}
 		else {
-			if ( !$path || $path === '/' )
-				$url = trailingslashit( $url ) . trailingslashit( $lang );
+			$path = ltrim( $path, '/' );
+
+			if ( empty($path) || !is_string($path) || $path === '/' )
+				$url = untrailingslashit( $url ) . "/{$lang}";
 			else
-				$url = str_replace( $path, '/' . $lang . $path, $url );
+				$url = str_replace( $path, "{$lang}/{$path}", $url );
+
+			$url = trailingslashit( $url );
 		}
 
 		return $url;
+	}
+
+
+	public static function get_current_url() {
+		global $wp;
+		if ( kcMultilingual_backend::$prettyURL )
+			$current_url = home_url( $wp->request );
+		else
+			$current_url = add_query_arg( $wp->query_string, '', home_url() );
+
+		return $current_url;
 	}
 
 

@@ -1,15 +1,15 @@
 <?php
 
 class kcMultilingual_backend {
-	public static $settings   = array();
-	public static $prettyURL  = false;
-	public static $locales    = array();
-	public static $default    = '';
-	public static $locale     = '';
-	public static $lang       = '';
-	public static $languages  = array();
-	public static $post_types = array();
-	public static $taxonomies = array();
+	public static $settings    = array();
+	public static $prettyURL   = false;
+	public static $locales     = array();
+	public static $default     = '';
+	public static $locale      = '';
+	public static $lang        = '';
+	public static $languages   = array();
+	public static $post_types  = array();
+	public static $taxonomies  = array();
 	private static $doing_edit = false;
 
 
@@ -46,10 +46,9 @@ class kcMultilingual_backend {
 		if ( count(self::$locales) < 2 )
 			return;
 
-		if ( self::$locale !== self::$default ) {
-			require_once dirname( __FILE__ ) . '/frontend.php';
+		require_once dirname( __FILE__ ) . '/frontend.php';
+		if ( self::$lang !== self::$default && !is_admin() )
 			kcMultilingual_frontend::init();
-		}
 
 		add_filter( 'kc_term_settings', array(__CLASS__, 'fields_term_attachment_prepare'), 1 );
 		add_filter( 'kc_post_settings', array(__CLASS__, 'fields_term_attachment_prepare'), 1 );
