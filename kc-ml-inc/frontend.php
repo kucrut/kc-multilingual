@@ -4,33 +4,39 @@ class kcMultilingual_frontend {
 	public static $is_active = false;
 
 
-	public static function init() {
-		self::$is_active = true;
-		add_filter( 'query_vars', array(__CLASS__, 'query_vars'), 0 );
+	public static function init( $destroy = false ) {
+		self::$is_active = !$destroy;
+		$func = $destroy ? 'remove_filter' : 'add_filter';
+
+		call_user_func( $func, 'query_vars', array(__CLASS__, 'query_vars'), 0 );
 
 		# Links / URLs
-		add_filter( 'home_url', array(__CLASS__, 'filter_home_url'), 0, 4 );
+		call_user_func( $func, 'home_url', array(__CLASS__, 'filter_home_url'), 0, 4 );
 
 		# Posts
 		# 0. Global
-		add_filter( 'posts_results', array(__CLASS__, 'filter_objects'), 0 );
-		add_filter( 'the_posts', array(__CLASS__, 'filter_objects'), 0 );
-		add_filter( 'get_pages', array(__CLASS__, 'filter_objects'), 0 );
-		add_action( 'wp', array(__CLASS__, '_filter_single_page') );
+		call_user_func( $func, 'posts_results', array(__CLASS__, 'filter_objects'), 0 );
+		call_user_func( $func, 'the_posts', array(__CLASS__, 'filter_objects'), 0 );
+		call_user_func( $func, 'get_pages', array(__CLASS__, 'filter_objects'), 0 );
+		if ( $destroy )
+			remove_action( 'wp', array(__CLASS__, '_filter_single_page') );
+		else
+			add_action( 'wp', array(__CLASS__, '_filter_single_page') );
+
 		# 1. Individual
-		add_filter( 'the_title', array(__CLASS__, 'filter_post_title'), 0, 2 );
-		add_filter( 'the_excerpt', array(__CLASS__, 'filter_post_excerpt'), 0 );
-		add_filter( 'the_content', array(__CLASS__, 'filter_post_content'), 0 );
-		add_filter( 'wp_get_attachment_image_attributes', array(__CLASS__, 'filter_attachment_attributes'), 0, 2 );
+		call_user_func( $func, 'the_title', array(__CLASS__, 'filter_post_title'), 0, 2 );
+		call_user_func( $func, 'the_excerpt', array(__CLASS__, 'filter_post_excerpt'), 0 );
+		call_user_func( $func, 'the_content', array(__CLASS__, 'filter_post_content'), 0 );
+		call_user_func( $func, 'wp_get_attachment_image_attributes', array(__CLASS__, 'filter_attachment_attributes'), 0, 2 );
 
 		# Terms
-		add_filter( 'get_term', array(__CLASS__, 'filter_term'), 0 );
-		add_filter( 'get_terms', array(__CLASS__, 'filter_objects'), 0 );
-		add_filter( 'get_the_terms', array(__CLASS__, 'filter_objects'), 0 );
+		call_user_func( $func, 'get_term', array(__CLASS__, 'filter_term'), 0 );
+		call_user_func( $func, 'get_terms', array(__CLASS__, 'filter_objects'), 0 );
+		call_user_func( $func, 'get_the_terms', array(__CLASS__, 'filter_objects'), 0 );
 
 		# Date & Time
-		add_filter( 'option_date_format', array(__CLASS__, 'filter_date_format') );
-		add_filter( 'option_time_format', array(__CLASS__, 'filter_time_format') );
+		call_user_func( $func, 'option_date_format', array(__CLASS__, 'filter_date_format') );
+		call_user_func( $func, 'option_time_format', array(__CLASS__, 'filter_time_format') );
 	}
 
 
