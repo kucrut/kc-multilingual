@@ -311,11 +311,11 @@ class kcMultilingual_backend {
 			$fields .= "<div id='{$id_base}'>\n";
 			$fields .= "<h4 class='screen-reader-text'>{$data['name']}</h4>\n";
 			$fields .= "<div class='field'>\n";
-			$fields .= "<label for='{$id_base}-name'>".__('Site Title')."</label>\n";
+			$fields .= "<label for='{$id_base}-blogname'>".__('Site Title')."</label>\n";
 			$fields .= "<input class='kcs-input' type='text' value='".esc_attr($value['blogname'])."' name='{$args['field']['name']}[{$lang}][blogname]' id='{$id_base}-blogname' />\n";
 			$fields .= "</div>\n";
 			$fields .= "<div class='field'>\n";
-			$fields .= "<label for='{$id_base}-description'>".__('Tagline')."</label>\n";
+			$fields .= "<label for='{$id_base}-blogdescription'>".__('Tagline')."</label>\n";
 			$fields .= "<input class='kcs-input' type='text' value='".esc_attr($value['blogdescription'])."' name='{$args['field']['name']}[{$lang}][blogdescription]' id='{$id_base}-blogdescription' />\n";
 			$fields .= "</div>\n";
 			$fields .= "</div>\n";
