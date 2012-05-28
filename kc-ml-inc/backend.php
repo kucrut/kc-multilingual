@@ -149,6 +149,18 @@ class kcMultilingual_backend {
 							'cb'    => array(__CLASS__, 'cb_settings_general_languages')
 						)
 					)
+				),
+				array(
+					'id'     => 'translations',
+					'title'  => __('Global Translations', 'kc-ml'),
+					'fields' => array(
+						array(
+							'id'    => 'global',
+							'title' => __('Global translations', 'kc-ml'),
+							'type'  => 'special',
+							'cb'    => array(__CLASS__, 'cb_settings_general_translations_global')
+						)
+					)
 				)
 			)
 		);
@@ -276,6 +288,42 @@ class kcMultilingual_backend {
 		$out .= "</div>\n";
 
 		return $out;
+	}
+
+
+	public static function cb_settings_general_translations_global( $args, $db_value ) {
+		if ( !$db_value )
+			$db_value = array();
+
+		$list   = "<ul class='kcml-langs kcs-tabs'>\n";
+		$fields = '';
+
+		foreach ( self::$languages as $lang => $data ) {
+			if ( self::$default === $lang )
+				continue;
+
+			$id_base = "{$args['section']}-{$args['field']['id']}-{$lang}";
+			$value = isset($db_value[$lang]) ? $db_value[$lang] : array();
+			$value = wp_parse_args( $value, array('blogname' => '', 'blogdescription' => '') );
+
+			$list .= "<li><a href='#{$id_base}'>{$data['name']}</a></li>\n";
+
+			$fields .= "<div id='{$id_base}'>\n";
+			$fields .= "<h4 class='screen-reader-text'>{$data['name']}</h4>\n";
+			$fields .= "<div class='field'>\n";
+			$fields .= "<label for='{$id_base}-name'>".__('Site Title')."</label>\n";
+			$fields .= "<input class='kcs-input' type='text' value='".esc_attr($value['blogname'])."' name='{$args['field']['name']}[{$lang}][blogname]' id='{$id_base}-blogname' />\n";
+			$fields .= "</div>\n";
+			$fields .= "<div class='field'>\n";
+			$fields .= "<label for='{$id_base}-description'>".__('Tagline')."</label>\n";
+			$fields .= "<input class='kcs-input' type='text' value='".esc_attr($value['blogdescription'])."' name='{$args['field']['name']}[{$lang}][blogdescription]' id='{$id_base}-blogdescription' />\n";
+			$fields .= "</div>\n";
+			$fields .= "</div>\n";
+		}
+
+		$list   .= "</ul>\n";
+
+		return "<div class='kcml-wrap'>\n{$list}{$fields}</div>";
 	}
 
 
@@ -547,10 +595,6 @@ class kcMultilingual_backend {
 	public static function validate_translation( $value ) {
 		return kc_array_remove_empty( (array) $value );
 	}
-
-
 }
 kcMultilingual_backend::init();
-
-
 ?>

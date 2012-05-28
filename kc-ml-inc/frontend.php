@@ -37,6 +37,10 @@ class kcMultilingual_frontend {
 		# Date & Time
 		call_user_func( $func, 'option_date_format', array(__CLASS__, 'filter_date_format') );
 		call_user_func( $func, 'option_time_format', array(__CLASS__, 'filter_time_format') );
+
+		# Site name / desc
+		call_user_func( $func, 'pre_option_blogname', array(__CLASS__, 'filter_blogname') );
+		call_user_func( $func, 'pre_option_blogdescription', array(__CLASS__, 'filter_blogdescription') );
 	}
 
 
@@ -200,6 +204,24 @@ class kcMultilingual_frontend {
 	public static function filter_time_format( $value ) {
 		$value = kcMultilingual_backend::$languages[kcMultilingual_backend::$lang]['time_format'];
 		return $value;
+	}
+
+
+	public static function get_global_translation( $value, $field ) {
+		if ( $_v = kc_array_multi_get_value( kcMultilingual_backend::$settings, array('translations', 'global', kcMultilingual_backend::$lang, $field) ) )
+			$value = $_v;
+
+		return $value;
+	}
+
+
+	public static function filter_blogname( $value ) {
+		return self::get_global_translation( $value, 'blogname' );
+	}
+
+
+	public static function filter_blogdescription( $value ) {
+		return self::get_global_translation( $value, 'blogdescription' );
 	}
 }
 

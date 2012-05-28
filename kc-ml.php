@@ -22,7 +22,6 @@ class kcMultilingual {
 
 
 	public static function init() {
-		//add_rewrite_tag( '%lang%', '.*' );
 		$paths = kcSettings::_paths( __FILE__ );
 		if ( !is_array($paths) )
 			return false;
