@@ -56,6 +56,8 @@ class kcMultilingual_backend {
 		add_filter( 'kc_post_settings', array(__CLASS__, 'fields_term_attachment_prepare'), 1 );
 		add_filter( 'kcv_termmeta_attachment_kcml_kcml-translation', array(__CLASS__, 'validate_translation') );
 		add_action( 'init', array(__CLASS__, 'fields_post_prepare'), 999 );
+		add_action( 'wp_ajax_kc_ml_get_menu_translations', array(__CLASS__, 'get_menu_translations') );
+		add_action( 'wp_update_nav_menu', array(__CLASS__, 'save_menu_translations') );
 	}
 
 
@@ -594,6 +596,39 @@ class kcMultilingual_backend {
 
 	public static function validate_translation( $value ) {
 		return kc_array_remove_empty( (array) $value );
+	}
+
+
+	public static function get_menu_translations() {
+		$response = array();
+		foreach( explode(',', $_REQUEST['ids']) as $id ) {
+			$menu_data = array( 'id' => $id, 'translation' => array() );
+			foreach ( self::$languages as $lang => $data ) {
+				if ( self::$default === $lang )
+					continue;
+
+				$menu_data['translation'][$lang] = array(
+					'language' => $data['name'],
+					'title'    => esc_attr( (string) kcMultilingual_frontend::get_translation( $lang, 'post', $id, 'title' ) ),
+					'excerpt'  => esc_attr( (string) kcMultilingual_frontend::get_translation( $lang, 'post', $id, 'excerpt' ) ),
+					'content'  => esc_textarea( (string) kcMultilingual_frontend::get_translation( $lang, 'post', $id, 'content' ) )
+				);
+			}
+
+			$response[] = $menu_data;
+		}
+
+		echo json_encode($response);
+		die();
+	}
+
+
+	public static function save_menu_translations( $menu_id ) {
+		if ( !isset($_POST['kc-postmeta']['kcml']['kcml-translation']) || empty($_POST['kc-postmeta']['kcml']['kcml-translation']) )
+			return;
+
+		foreach( $_POST['kc-postmeta']['kcml']['kcml-translation'] as $post_id => $data )
+			update_metadata( 'post', $post_id, '_kcml-translation', kc_array_remove_empty( (array) $data ) );
 	}
 }
 kcMultilingual_backend::init();

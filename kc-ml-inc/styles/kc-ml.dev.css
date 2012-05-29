@@ -45,3 +45,9 @@ ul.kcml-langs .tabs a {
 	border:1px solid #dfdfdf;
 }
 .kcml-languages td {padding:5px 10px;}
+
+#menu-to-edit .kcml-wrap {padding-top:.5em;}
+#menu-to-edit .kcml-wrap h3 {
+	font-size:1em;
+	margin:0 0 .5em;
+}
