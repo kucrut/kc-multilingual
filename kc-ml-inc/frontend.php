@@ -241,7 +241,7 @@ class kcMultilingual_frontend {
 
 		foreach ( kcMultilingual_backend::$widget_fields[$widget->option_name] as $field ) {
 			if ( isset($instance['kcml'][kcMultilingual_backend::$lang][$field['id']]) && !empty($instance['kcml'][kcMultilingual_backend::$lang][$field['id']]) )
-				$instance[$field['id']] = $instance['kcml'][kcMultilingual_backend::$lang][$field['id']];
+				$instance[$field['id']] = apply_filters( 'kcml_widget_translation', $instance['kcml'][kcMultilingual_backend::$lang][$field['id']], $field['id'], $instance, $widget, $args );
 		}
 
 		return $instance;
