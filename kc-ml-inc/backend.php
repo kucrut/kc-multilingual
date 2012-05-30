@@ -61,7 +61,7 @@ class kcMultilingual_backend {
 		add_action( 'wp_update_nav_menu', array(__CLASS__, 'save_menu_translations') );
 
 		# Widgets
-		self::fields_widget_prepare();
+		add_action( 'widgets_init', array(__CLASS__, 'fields_widget_prepare'), 100 );
 		add_action( 'in_widget_form', array(__CLASS__, 'fields_widget_render'), 10, 3 );
 		add_filter( 'widget_update_callback', array(__CLASS__, 'fields_widget_save'), 10, 4 );
 	}
@@ -606,22 +606,35 @@ class kcMultilingual_backend {
 
 
 	public static function get_menu_translations() {
-		$response = array();
-		foreach( explode(',', $_REQUEST['ids']) as $id ) {
-			$menu_data = array( 'id' => $id, 'translation' => array() );
+		$response = array(
+			'languages'  => array(),
+			'menu_names' => array(),
+			'menu_items' => array()
+		);
+
+		foreach ( self::$languages as $lang => $data ) {
+			if ( self::$default === $lang )
+				continue;
+
+			$response['languages'][$lang] = $data['name'];
+			$response['menu_names'][$lang] = esc_attr( (string) kcMultilingual_frontend::get_translation( $lang, 'term', $_REQUEST['menuID'], 'title' ) );
+		}
+
+		foreach( explode(',', $_REQUEST['items']) as $id ) {
+			$item_data = array( 'id' => $id, 'translation' => array() );
+
 			foreach ( self::$languages as $lang => $data ) {
 				if ( self::$default === $lang )
 					continue;
 
-				$menu_data['translation'][$lang] = array(
-					'language' => $data['name'],
-					'title'    => esc_attr( (string) kcMultilingual_frontend::get_translation( $lang, 'post', $id, 'title' ) ),
-					'excerpt'  => esc_attr( (string) kcMultilingual_frontend::get_translation( $lang, 'post', $id, 'excerpt' ) ),
-					'content'  => esc_textarea( (string) kcMultilingual_frontend::get_translation( $lang, 'post', $id, 'content' ) )
+				$item_data['translation'][$lang] = array(
+					'title'   => esc_attr( (string) kcMultilingual_frontend::get_translation( $lang, 'post', $id, 'title' ) ),
+					'excerpt' => esc_attr( (string) kcMultilingual_frontend::get_translation( $lang, 'post', $id, 'excerpt' ) ),
+					'content' => esc_textarea( (string) kcMultilingual_frontend::get_translation( $lang, 'post', $id, 'content' ) )
 				);
 			}
 
-			$response[] = $menu_data;
+			$response['menu_items'][] = $item_data;
 		}
 
 		echo json_encode($response);

@@ -25,42 +25,43 @@ jQuery(document).ready(function($) {
 	if ( !$menuItems.length )
 		return;
 
-	var menuIDs = [];
+	var mItems = [];
 	$menuItems.each(function() {
-		menuIDs.push( $('input.menu-item-data-db-id', this).val() );
+		mItems.push( $('input.menu-item-data-db-id', this).val() );
 	});
 
 	$.getJSON(
 		ajaxurl,
-		{ action: 'kc_ml_get_menu_translations', ids: menuIDs.join(',') },
+		{ action: 'kc_ml_get_menu_translations', menuID: $('#menu').val(), items: mItems.join(',') },
 		function( response ) {
 			if ( response ) {
-				$.each(response, function(idx, data) {
-					var tab = '<ul class="kcml-langs kcs-tabs">',
-					    panes = '';
 
-					$.each(data.translation, function(lang, translation) {
-						tab += '<li><a href="#kcml-'+data.id +'-'+lang+'">'+translation.language+'</a></li>';
+				// Menu items
+				$.each(response.menu_items, function(itemIdx, itemData) {
+					var itemTab = '<ul class="kcml-langs kcs-tabs">',
+					    itemPanes = '';
 
-						panes += '<div id="kcml-'+data.id +'-'+lang+'">';
-						panes += '<h4 class="screen-reader-text">'+translation.language+'</h4>';
-						panes += '<p class="description description-thin">';
-						panes += '<label for="kcml-menu-item-title-'+data.id+'-'+lang+'">'+kcml_texts.title+'<br />';
-						panes += '<input type="text" value="'+translation.title+'" name="kc-postmeta[kcml][kcml-translation]['+data.id+']['+lang+'][title]" class="widefat edit-menu-item-title" id="kcml-menu-item-title-'+data.id+'-'+lang+'" />';
-						panes += '</label></p>';
-						panes += '<p class="description description-thin">';
-						panes += '<label for="kcml-menu-item-excerpt-'+data.id+'-'+lang+'">'+kcml_texts.excerpt+'<br />';
-						panes += '<input type="text" value="'+translation.excerpt+'" name="kc-postmeta[kcml][kcml-translation]['+data.id+']['+lang+'][excerpt]" class="widefat edit-menu-item-attr-title" id="kcml-menu-item-excerpt-'+data.id+'-'+lang+'" />';
-						panes += '</label></p>';
-						panes += '<p class="field-description description description-wide">';
-						panes += '<label for="kcml-menu-item-content-'+data.id+'-'+lang+'">'+kcml_texts.content+'<br />';
-						panes += '<textarea cols="20" rows="3" name="kc-postmeta[kcml][kcml-translation]['+data.id+']['+lang+'][content]" class="widefat edit-menu-item-description" id="kcml-menu-item-content-'+data.id+'-'+lang+'">'+translation.content+'</textarea>';
-						panes += '</label></p>';
-						panes += '</div>';
+					$.each(itemData.translation, function(lang, translation) {
+						itemTab += '<li><a href="#kcml-'+itemData.id +'-'+lang+'">'+response.languages[lang]+'</a></li>';
+						itemPanes += '<div id="kcml-'+itemData.id +'-'+lang+'">';
+						itemPanes += '<h4 class="screen-reader-text">'+translation.language+'</h4>';
+						itemPanes += '<p class="description description-thin">';
+						itemPanes += '<label for="kcml-menu-item-title-'+itemData.id+'-'+lang+'">'+kcml_texts.title+'<br />';
+						itemPanes += '<input type="text" value="'+translation.title+'" name="kc-postmeta[kcml][kcml-translation]['+itemData.id+']['+lang+'][title]" class="widefat edit-menu-item-title" id="kcml-menu-item-title-'+itemData.id+'-'+lang+'" />';
+						itemPanes += '</label></p>';
+						itemPanes += '<p class="description description-thin">';
+						itemPanes += '<label for="kcml-menu-item-excerpt-'+itemData.id+'-'+lang+'">'+kcml_texts.excerpt+'<br />';
+						itemPanes += '<input type="text" value="'+translation.excerpt+'" name="kc-postmeta[kcml][kcml-translation]['+itemData.id+']['+lang+'][excerpt]" class="widefat edit-menu-item-attr-title" id="kcml-menu-item-excerpt-'+itemData.id+'-'+lang+'" />';
+						itemPanes += '</label></p>';
+						itemPanes += '<p class="field-description description description-wide">';
+						itemPanes += '<label for="kcml-menu-item-content-'+itemData.id+'-'+lang+'">'+kcml_texts.content+'<br />';
+						itemPanes += '<textarea cols="20" rows="3" name="kc-postmeta[kcml][kcml-translation]['+itemData.id+']['+lang+'][content]" class="widefat edit-menu-item-description" id="kcml-menu-item-content-'+itemData.id+'-'+lang+'">'+translation.content+'</textarea>';
+						itemPanes += '</label></p>';
+						itemPanes += '</div>';
 					});
-					tab += '</ul>';
+					itemTab += '</ul>';
 
-					$('div.menu-item-actions', $menuItems.eq(idx)).before( '<div class="kcml-wrap clear"><h3>'+kcml_texts.head+'</h3>'+tab+panes+'</div>');
+					$('div.menu-item-actions', $menuItems.eq(itemIdx)).before( '<div class="kcml-wrap clear"><h3>'+kcml_texts.head+'</h3>'+itemTab+itemPanes+'</div>');
 				});
 
 				$('.kcs-tabs').kcTabs();
