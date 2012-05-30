@@ -211,8 +211,11 @@ class kcMultilingual_frontend {
 
 
 	public static function get_global_translation( $value, $field ) {
-		if ( $_v = kc_array_multi_get_value( kcMultilingual_backend::$settings, array('translations', 'global', kcMultilingual_backend::$lang, $field) ) )
-			$value = $_v;
+		if (
+			isset(kcMultilingual_backend::$settings['translations']['global'][kcMultilingual_backend::$lang][$field])
+			&& !empty(kcMultilingual_backend::$settings['translations']['global'][kcMultilingual_backend::$lang][$field])
+		)
+			$value = kcMultilingual_backend::$settings['translations']['global'][kcMultilingual_backend::$lang][$field];
 
 		return $value;
 	}
