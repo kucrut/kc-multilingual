@@ -41,6 +41,9 @@ class kcMultilingual_frontend {
 		# Site name / desc
 		call_user_func( $func, 'pre_option_blogname', array(__CLASS__, 'filter_blogname') );
 		call_user_func( $func, 'pre_option_blogdescription', array(__CLASS__, 'filter_blogdescription') );
+
+		# Widgets
+		call_user_func( $func, 'widget_display_callback', array(__CLASS__, 'filter_widget'), 0, 3 );
 	}
 
 
@@ -222,6 +225,23 @@ class kcMultilingual_frontend {
 
 	public static function filter_blogdescription( $value ) {
 		return self::get_global_translation( $value, 'blogdescription' );
+	}
+
+
+	public static function filter_widget( $instance, $widget, $args ) {
+		if ( !isset(kcMultilingual_backend::$widget_fields[$widget->option_name])
+			|| empty(kcMultilingual_backend::$widget_fields[$widget->option_name])
+			|| !isset($instance['kcml'][kcMultilingual_backend::$lang])
+			|| empty($instance['kcml'][kcMultilingual_backend::$lang])
+		)
+			return $instance;
+
+		foreach ( kcMultilingual_backend::$widget_fields[$widget->option_name] as $field ) {
+			if ( isset($instance['kcml'][kcMultilingual_backend::$lang][$field['id']]) && !empty($instance['kcml'][kcMultilingual_backend::$lang][$field['id']]) )
+				$instance[$field['id']] = $instance['kcml'][kcMultilingual_backend::$lang][$field['id']];
+		}
+
+		return $instance;
 	}
 }
 

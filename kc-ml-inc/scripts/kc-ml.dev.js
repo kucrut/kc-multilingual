@@ -13,6 +13,14 @@ jQuery(document).ready(function($) {
 		$form.find('div.kcml-wrap').siblings('label').remove();
 	});
 
+
+	// Widgets page
+	$('.widgets-sortables').ajaxSuccess(function() {
+		$('.kcs-tabs').kcTabs();
+	});
+
+
+	// Nav menus page
 	var $menuItems = $('#menu-to-edit').children('li.menu-item');
 	if ( !$menuItems.length )
 		return;

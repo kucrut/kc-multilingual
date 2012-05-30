@@ -12,6 +12,7 @@ class kcMultilingual_backend {
 	public static $post_types  = array();
 	public static $taxonomies  = array();
 	private static $doing_edit = false;
+	public static $widget_fields = array();
 
 
 	public static function init() {
@@ -58,6 +59,11 @@ class kcMultilingual_backend {
 		add_action( 'init', array(__CLASS__, 'fields_post_prepare'), 999 );
 		add_action( 'wp_ajax_kc_ml_get_menu_translations', array(__CLASS__, 'get_menu_translations') );
 		add_action( 'wp_update_nav_menu', array(__CLASS__, 'save_menu_translations') );
+
+		# Widgets
+		self::fields_widget_prepare();
+		add_action( 'in_widget_form', array(__CLASS__, 'fields_widget_render'), 10, 3 );
+		add_filter( 'widget_update_callback', array(__CLASS__, 'fields_widget_save'), 10, 4 );
 	}
 
 
@@ -629,6 +635,98 @@ class kcMultilingual_backend {
 
 		foreach( $_POST['kc-postmeta']['kcml']['kcml-translation'] as $post_id => $data )
 			update_metadata( 'post', $post_id, '_kcml-translation', kc_array_remove_empty( (array) $data ) );
+	}
+
+
+	public static function fields_widget_prepare() {
+		$widgets = array();
+		foreach(
+			array(
+				'widget_archives', 'widget_calendar', 'widget_nav_menu',
+				'widget_links', 'widget_pages', 'widget_meta', 'widget_pages',
+				'widget_recent-comments', 'widget_recent-posts', 'widget_rss',
+				'widget_search', 'widget_tag_cloud', 'widget_text'
+			)
+			as $widget
+		) {
+			$widgets[$widget] = array(
+				array(
+					'id'    => 'title',
+					'type'  => 'text',
+					'label' => __('Title')
+				)
+			);
+		}
+
+		$widgets['widget_text'][] = array(
+			'id'   => 'text',
+			'type' => 'textarea',
+			'attr' => array('cols' => 20, 'rows' => 16)
+		);
+
+		self::$widget_fields = (array) apply_filters( 'kcml_widget_fields', $widgets );
+	}
+
+
+	public static function fields_widget_render( &$widget, &$return, $instance ) {
+		$return = null;
+		if ( !isset(self::$widget_fields[$widget->option_name]) || empty(self::$widget_fields[$widget->option_name]) )
+			return;
+
+		$translation = isset( $instance['kcml'] ) ? $instance['kcml'] : array();
+
+		$list   = "<ul class='kcml-langs kcs-tabs'>\n";
+		$fields = '';
+
+		foreach ( self::$languages as $lang => $data ) {
+			if ( self::$default === $lang )
+				continue;
+
+			$value = isset($translation[$lang]) ? $translation[$lang] : array();
+
+			$id_base = "kcml-{$widget->id}";
+			$list .= "<li><a href='#{$id_base}-{$lang}'>{$data['name']}</a></li>\n";
+
+			$fields .= "<div id='{$id_base}-{$lang}'>\n";
+			$fields .= "<h4 class='screen-reader-text'>{$data['name']}</h4>\n";
+			foreach ( self::$widget_fields[$widget->option_name] as $_field ) {
+				$fields .= "<div class='field'>\n";
+				if ( isset($_field['label']) && $_field['label'] )
+					$fields .= "<label for='{$id_base}-{$lang}-{$_field['id']}'>{$_field['label']}</label>\n";
+				$_args = array(
+					'type'    => $_field['type'],
+					'current' => isset($value[$_field['id']]) ? $value[$_field['id']] : '',
+					'attr'    => array(
+						'name'  => $widget->get_field_name('kcml')."[{$lang}][{$_field['id']}]",
+						'id'    => "{$id_base}-{$lang}-{$_field['id']}",
+						'class' => 'widefat'
+					)
+				);
+				if ( isset($_field['attr']) && is_array($_field['attr']) && !empty($_field['attr']) ) {
+					unset($_field['attr']['id']);
+					unset($_field['attr']['name']);
+					$_args['attr'] = array_merge($_field['attr'], $_args['attr'] );
+				}
+				$fields .= kcForm::field( $_args );
+				$fields .= "</div>\n";
+			}
+			$fields .= "</div>\n";
+		}
+		$list .= "</ul>\n";
+
+		echo "<h5 class='kcw-head'>".__('Translations', 'kc-ml')."</h5>\n<div class='kcw-control-block kcml-wrap'>\n{$list}{$fields}</div>\n";
+	}
+
+
+	public static function fields_widget_save( $instance, $new_instance, $old_instance, $widget ) {
+		$translation = isset( $new_instance['kcml'] ) ? $new_instance['kcml'] : array();
+		$translation = kc_array_remove_empty( $translation );
+		if ( empty($translation) )
+			unset( $instance['kcml'] );
+		else
+			$instance['kcml'] = $translation;
+
+		return $instance;
 	}
 }
 kcMultilingual_backend::init();
