@@ -415,7 +415,7 @@ class kcMultilingual_backend {
 				'fields' => array(
 					array(
 						'id'    => 'kcml-translation',
-						'title' => __('Translations', 'kc-ml'),
+						'title' => 'KC Multilingual',
 						'type'  => 'special',
 						'cb'    => array(__CLASS__, 'fields_term_attachment_render')
 					)
@@ -714,7 +714,7 @@ class kcMultilingual_backend {
 		}
 		$list .= "</ul>\n";
 
-		echo "<h5 class='kcw-head'>".__('Translations', 'kc-ml')."</h5>\n<div class='kcw-control-block kcml-wrap'>\n{$list}{$fields}</div>\n";
+		echo "<h5 class='kcw-head'>KC Multilingual</h5>\n<div class='kcw-control-block kcml-wrap'>\n{$list}{$fields}</div>\n";
 	}
 
 
