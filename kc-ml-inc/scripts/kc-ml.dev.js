@@ -66,6 +66,8 @@ jQuery(document).ready(function($) {
 
 				$('.kcs-tabs').kcTabs();
 			}
+
+			window.wpNavMenu.menuList.hideAdvancedMenuItemFields();
 		}
 	);
 
