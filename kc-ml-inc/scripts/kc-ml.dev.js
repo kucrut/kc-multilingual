@@ -61,7 +61,7 @@ jQuery(document).ready(function($) {
 					});
 					itemTab += '</ul>';
 
-					$('div.menu-item-actions', $menuItems.eq(itemIdx)).before( '<div class="kcml-wrap clear"><h3>'+kcml_texts.head+'</h3>'+itemTab+itemPanes+'</div>');
+					$('div.menu-item-actions', $menuItems.eq(itemIdx)).before( '<div class="kcml-wrap clear"><h3>KC Multilingual</h3>'+itemTab+itemPanes+'</div>');
 				});
 
 				$('.kcs-tabs').kcTabs();
