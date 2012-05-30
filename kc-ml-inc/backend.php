@@ -643,11 +643,14 @@ class kcMultilingual_backend {
 
 
 	public static function save_menu_translations( $menu_id ) {
-		if ( !isset($_POST['kc-postmeta']['kcml']['kcml-translation']) || empty($_POST['kc-postmeta']['kcml']['kcml-translation']) )
-			return;
+		foreach ( array('term', 'post') as $type ) {
+			$meta_key = $type === 'post' ? '_kcml-translation' : 'kcml-translation';
 
-		foreach( $_POST['kc-postmeta']['kcml']['kcml-translation'] as $post_id => $data )
-			update_metadata( 'post', $post_id, '_kcml-translation', kc_array_remove_empty( (array) $data ) );
+			if ( isset($_POST["kc-{$type}meta"]['kcml']['kcml-translation']) && !empty($_POST["kc-{$type}meta"]['kcml']['kcml-translation']) ) {
+				foreach( $_POST["kc-{$type}meta"]['kcml']['kcml-translation'] as $id => $data )
+					update_metadata( $type, $id, $meta_key, kc_array_remove_empty( (array) $data ) );
+			}
+		}
 	}
 
 

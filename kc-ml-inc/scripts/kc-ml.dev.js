@@ -25,16 +25,33 @@ jQuery(document).ready(function($) {
 	if ( !$menuItems.length )
 		return;
 
-	var mItems = [];
+	var menuID = $('#menu').val(),
+	    mItems = [];
+
 	$menuItems.each(function() {
 		mItems.push( $('input.menu-item-data-db-id', this).val() );
 	});
 
 	$.getJSON(
 		ajaxurl,
-		{ action: 'kc_ml_get_menu_translations', menuID: $('#menu').val(), items: mItems.join(',') },
+		{ action: 'kc_ml_get_menu_translations', menuID: menuID, items: mItems.join(',') },
 		function( response ) {
 			if ( response ) {
+				// Menu names
+				var menuTab = '<ul class="kcml-langs kcs-tabs">',
+				    menuPanes = '';
+
+				$.each(response.menu_names, function(lang, menuName) {
+					menuTab += '<li><a href="#kcml-menuname-'+lang+'">'+response.languages[lang]+'</a></li>';
+					menuPanes += '<div id="kcml-menuname-'+lang+'">';
+					menuPanes += '<h4 class="screen-reader-text">'+response.languages[lang]+'</h4>';
+					menuPanes += '<div class="field">';
+					menuPanes += '<label>'+kcml_texts.menuNameLabel+' <input type="text" value="'+menuName+'" name="kc-termmeta[kcml][kcml-translation]['+menuID+']['+lang+'][title]" /></label>';
+					menuPanes += '</div>';
+					menuPanes += '</div>';
+				});
+				menuTab += '</ul>';
+				$('#post-body-content').prepend('<div class="kcml-wrap kcml-menu-names"><h3>KC Multilingual</h3>'+menuTab+menuPanes+'</div>');
 
 				// Menu items
 				$.each(response.menu_items, function(itemIdx, itemData) {
@@ -44,7 +61,7 @@ jQuery(document).ready(function($) {
 					$.each(itemData.translation, function(lang, translation) {
 						itemTab += '<li><a href="#kcml-'+itemData.id +'-'+lang+'">'+response.languages[lang]+'</a></li>';
 						itemPanes += '<div id="kcml-'+itemData.id +'-'+lang+'">';
-						itemPanes += '<h4 class="screen-reader-text">'+translation.language+'</h4>';
+						itemPanes += '<h4 class="screen-reader-text">'+response.languages[lang]+'</h4>';
 						itemPanes += '<p class="description description-thin">';
 						itemPanes += '<label for="kcml-menu-item-title-'+itemData.id+'-'+lang+'">'+kcml_texts.title+'<br />';
 						itemPanes += '<input type="text" value="'+translation.title+'" name="kc-postmeta[kcml][kcml-translation]['+itemData.id+']['+lang+'][title]" class="widefat edit-menu-item-title" id="kcml-menu-item-title-'+itemData.id+'-'+lang+'" />';
@@ -61,7 +78,7 @@ jQuery(document).ready(function($) {
 					});
 					itemTab += '</ul>';
 
-					$('div.menu-item-actions', $menuItems.eq(itemIdx)).before( '<div class="kcml-wrap clear"><h3>KC Multilingual</h3>'+itemTab+itemPanes+'</div>');
+					$('div.menu-item-actions', $menuItems.eq(itemIdx)).before( '<div class="kcml-wrap clear"><h3>KC Multilingual</h3>'+itemTab+itemPanes+'</div>' );
 				});
 
 				$('.kcs-tabs').kcTabs();

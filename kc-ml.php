@@ -59,10 +59,10 @@ class kcMultilingual {
 
 		if ( $screen->base === 'nav-menus' )
 			wp_localize_script( 'kc_ml', 'kcml_texts', array(
-				'head'    => __('Translation', 'kc-ml'),
-				'title'   => __('Navigation Label'),
-				'excerpt' => __('Title Attribute'),
-				'content' => __('Description')
+				'menuNameLabel' => __('Menu Name'),
+				'title'         => __('Navigation Label'),
+				'excerpt'       => __('Title Attribute'),
+				'content'       => __('Description')
 			) );
 	}
 
