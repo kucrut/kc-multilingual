@@ -65,3 +65,7 @@ ul.kcml-langs .tabs a {
 	font-size:1em;
 	margin:0 0 .5em;
 }
+.kcml-menu-names input {
+	width:270px;
+	margin-left:10px;
+}

@@ -46,7 +46,7 @@ jQuery(document).ready(function($) {
 					menuPanes += '<div id="kcml-menuname-'+lang+'">';
 					menuPanes += '<h4 class="screen-reader-text">'+response.languages[lang]+'</h4>';
 					menuPanes += '<div class="field">';
-					menuPanes += '<label>'+kcml_texts.menuNameLabel+' <input type="text" value="'+menuName+'" name="kc-termmeta[kcml][kcml-translation]['+menuID+']['+lang+'][title]" /></label>';
+					menuPanes += '<label>'+kcml_texts.menuNameLabel+'<input type="text" value="'+menuName+'" name="kc-termmeta[kcml][kcml-translation]['+menuID+']['+lang+'][title]" /></label>';
 					menuPanes += '</div>';
 					menuPanes += '</div>';
 				});
