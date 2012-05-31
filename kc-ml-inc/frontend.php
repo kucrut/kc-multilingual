@@ -130,6 +130,9 @@ class kcMultilingual_frontend {
 	public static function filter_post_content( $content, $id = 0 ) {
 		if ( !$id ) {
 			global $post;
+			if ( $post->kcml_filtered )
+				return $content;
+
 			$id = $post->ID;
 		}
 
@@ -167,6 +170,7 @@ class kcMultilingual_frontend {
 		$post->post_title   = self::filter_post_title( $post->post_title, $post->ID );
 		$post->post_excerpt = self::filter_post_excerpt( $post->post_excerpt, $post->ID );
 		$post->post_content = self::filter_post_content( $post->post_content, $post->ID );
+		$post->kcml_filtered = true;
 
 		return $post;
 	}
@@ -193,6 +197,7 @@ class kcMultilingual_frontend {
 	public static function filter_term( $term ) {
 		$term->name = self::filter_term_field( $term->name, $term->term_id, 'title' );
 		$term->description = self::filter_term_field( $term->description, $term->term_id, 'content' );
+		$term->kcml_filtered = true;
 
 		return $term;
 	}
