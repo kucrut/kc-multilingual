@@ -55,7 +55,7 @@ class kcMultilingual_backend {
 
 		add_filter( 'kc_term_settings', array(__CLASS__, 'fields_term_attachment_prepare'), 1 );
 		add_filter( 'kc_post_settings', array(__CLASS__, 'fields_term_attachment_prepare'), 1 );
-		add_filter( 'kcv_termmeta_attachment_kcml_kcml-translation', array(__CLASS__, 'validate_translation') );
+		add_filter( 'kcv_postmeta_attachment_kcml_kcml-translation', array(__CLASS__, 'validate_translation') );
 		add_action( 'init', array(__CLASS__, 'fields_post_prepare'), 999 );
 		add_action( 'wp_ajax_kc_ml_get_menu_translations', array(__CLASS__, 'get_menu_translations') );
 		add_action( 'wp_update_nav_menu', array(__CLASS__, 'save_menu_translations') );
@@ -601,7 +601,16 @@ class kcMultilingual_backend {
 
 
 	public static function validate_translation( $value ) {
-		return kc_array_remove_empty( (array) $value );
+		$value = kc_array_remove_empty( (array) $value );
+		if ( !empty($value) ) {
+			foreach ( $value as $lang => $data ) {
+				foreach ( array('content', 'excerpt') as $field )
+					if ( isset($data[$field]) )
+						$value[$lang][$field] = wp_kses_post( $value[$lang][$field] );
+			}
+		}
+
+		return $value;
 	}
 
 
