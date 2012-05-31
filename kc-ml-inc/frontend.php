@@ -44,6 +44,10 @@ class kcMultilingual_frontend {
 
 		# Widgets
 		call_user_func( $func, 'widget_display_callback', array(__CLASS__, 'filter_widget'), 0, 3 );
+
+		# Meta
+		foreach ( array('post', 'term', 'user', 'comment') as $meta_type )
+			call_user_func( $func, "get_{$meta_type}_metadata", array(__CLASS__, "filter_{$meta_type}_meta"), 0, 4 );
 	}
 
 
@@ -250,6 +254,48 @@ class kcMultilingual_frontend {
 		}
 
 		return $instance;
+	}
+
+
+	public static function filter_post_meta( $value, $object_id, $meta_key, $single ) {
+		if ( $meta_key === '_kcml-translation' )
+			return $value;
+
+		return self::filter_meta( 'post', $value, $object_id, $meta_key, $single );
+	}
+
+
+	public static function filter_term_meta( $value, $object_id, $meta_key, $single ) {
+		if ( $meta_key === 'kcml-translation' )
+			return $value;
+
+		return self::filter_meta( 'term', $value, $object_id, $meta_key, $single );
+	}
+
+
+	public static function filter_user_meta( $value, $object_id, $meta_key, $single ) {
+		if ( $meta_key === 'kcml-translation' )
+			return $value;
+
+		return self::filter_meta( 'user', $value, $object_id, $meta_key, $single );
+	}
+
+
+	public static function filter_comment_meta( $value, $object_id, $meta_key, $single ) {
+		if ( $meta_key === 'kcml-translation' )
+			return $value;
+
+		return self::filter_meta( 'comment', $value, $object_id, $meta_key, $single );
+	}
+
+
+	private static function filter_meta( $meta_type, $value, $object_id, $meta_key, $single ) {
+		if ( $_value = kcMultilingual_frontend::get_translation( kcMultilingual_backend::$lang, $meta_type, $object_id, 'meta' ) ) {
+			if ( isset($_value[$meta_key]) && !empty($_value[$meta_key]) )
+				$value = $_value[$meta_key];
+		}
+
+		return $value;
 	}
 }
 

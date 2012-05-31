@@ -13,6 +13,7 @@ class kcMultilingual_backend {
 	public static $taxonomies  = array();
 	private static $doing_edit = false;
 	public static $widget_fields = array();
+	public static $meta_fields = array();
 
 
 	public static function init() {
@@ -53,8 +54,9 @@ class kcMultilingual_backend {
 		if ( self::$lang !== self::$default && !is_admin() )
 			kcMultilingual_frontend::init();
 
-		add_filter( 'kc_term_settings', array(__CLASS__, 'fields_term_attachment_prepare'), 1 );
-		add_filter( 'kc_post_settings', array(__CLASS__, 'fields_term_attachment_prepare'), 1 );
+		add_action( 'init', array(__CLASS__, 'prepare_meta_fields'), 999 );
+		add_filter( 'kc_term_settings', array(__CLASS__, 'fields_term_attachment_prepare'), 99 );
+		add_filter( 'kc_post_settings', array(__CLASS__, 'fields_term_attachment_prepare'), 99 );
 		add_filter( 'kcv_postmeta_attachment_kcml_kcml-translation', array(__CLASS__, 'validate_translation') );
 		add_action( 'init', array(__CLASS__, 'fields_post_prepare'), 999 );
 		add_action( 'wp_ajax_kc_ml_get_menu_translations', array(__CLASS__, 'get_menu_translations') );
@@ -407,6 +409,40 @@ class kcMultilingual_backend {
 	}
 
 
+	public static function prepare_meta_fields() {
+		$_meta = kcSettings::get_data('settings');
+		unset( $_meta['plugin'] );
+		if ( empty($_meta) )
+			return;
+
+		$meta = $_meta;
+		$allowed_field_types = array('text', 'textarea', 'url', 'tel', 'month', 'week', 'time', 'datetime-local', 'datetime', 'color', 'number');
+		foreach ( $_meta as $type => $object_types ) {
+			foreach ( $object_types as $object_type => $sections ) {
+				foreach ( $sections as $section_id => $section ) {
+					unset($meta[$type][$object_type]['kcml']);
+
+					foreach ( $section['fields'] as $field_id => $field ) {
+						if ( !in_array($field['type'], $allowed_field_types) || (isset($field['kcml']) && !$field['kcml']) )
+							unset( $meta[$type][$object_type][$section_id]['fields'][$field_id] );
+					}
+
+					if ( empty($meta[$type][$object_type][$section_id]['fields']) )
+						unset( $meta[$type][$object_type][$section_id] );
+				}
+
+				if ( empty($meta[$type][$object_type]) )
+					unset( $meta[$type][$object_type] );
+			}
+
+			if ( empty($meta[$type]) )
+				unset( $meta[$type] );
+		}
+
+		self::$meta_fields = $meta;
+	}
+
+
 	public static function fields_term_attachment_prepare( $groups ) {
 		$section = array(
 			array(
@@ -541,6 +577,7 @@ class kcMultilingual_backend {
 
 		global $post;
 		$post_id = $post->ID;
+		$meta_fields = kc_array_multi_get_value(self::$meta_fields, array('post', $screen->post_type));
 
 		?>
 <div class="kcml-wrap">
@@ -577,6 +614,41 @@ class kcMultilingual_backend {
 			?>
 		<?php break; } ?>
 		</div>
+		<?php } ?>
+		<?php
+			if ( $meta_fields ) {
+				$meta_values = kcMultilingual_frontend::get_translation( $lang, 'post', $post_id, 'meta' );
+		?>
+		<h4><?php _e('Custom fields') ?></h4>
+		<?php foreach ( $meta_fields as $section ) { ?>
+		<h5><?php echo $section['title'] ?></h5>
+		<?php foreach ( $section['fields'] as $field ) { ?>
+		<div class="field meta-field">
+			<label for="kcmlpost-meta-<?php echo "{$section['id']}-{$field['id']}-{$lang}" ?>"><?php echo $field['title'] ?></label>
+			<?php
+				$field_value = isset( $meta_values["_{$field['id']}"] ) ? $meta_values["_{$field['id']}"] : '';
+				if ( $field['type'] == 'textarea' )
+					$field_value = esc_textarea( $field_value );
+				else
+					$field_value = esc_attr( $field_value );
+
+				$field_args = array(
+					'type' => $field['type'],
+					'attr' => array(
+						'id'    => "kcmlpost-meta-{$section['id']}-{$field['id']}-{$lang}",
+						'name'  => "kc-postmeta[kcml][kcml-translation][{$lang}][meta][_{$field['id']}]",
+						'class' => "kcs-{$field['type']} kcs-input"
+					),
+					'current' => $field_value
+				);
+				if ( isset($field['attr']) )
+					$field_args['attr'] = array_merge( $field['attr'], $_args['attr'] );
+
+				echo kcForm::field( $field_args );
+			?>
+		</div>
+		<?php } ?>
+		<?php } ?>
 		<?php } ?>
 	</div>
 	<?php } ?>
