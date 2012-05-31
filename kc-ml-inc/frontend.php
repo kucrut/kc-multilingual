@@ -130,7 +130,7 @@ class kcMultilingual_frontend {
 	public static function filter_post_content( $content, $id = 0 ) {
 		if ( !$id ) {
 			global $post;
-			if ( $post->kcml_filtered )
+			if ( isset($post->kcml_filtered) && $post->kcml_filtered )
 				return $content;
 
 			$id = $post->ID;
