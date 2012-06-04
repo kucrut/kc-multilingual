@@ -616,9 +616,19 @@ class kcMultilingual_backend {
 		</div>
 		<?php } ?>
 		<?php
-			if ( $meta_fields ) {
-				$meta_values = kcMultilingual_frontend::get_translation( $lang, 'post', $post_id, 'meta' );
+			if ( $meta_fields )
+				self::fields_metadata_render( $meta_fields, kcMultilingual_frontend::get_translation( $lang, 'post', $post_id, 'meta' ), $lang );
 		?>
+	</div>
+	<?php } ?>
+</div>
+
+	<?php }
+
+
+	private static function fields_metadata_render( $meta_fields, $meta_values, $lang, $display = true ) {
+		if ( !$display ) ob_start(); ?>
+
 		<div class="kcml-post-meta">
 			<h4><?php _e('Custom fields') ?></h4>
 			<?php foreach ( $meta_fields as $section ) { ?>
@@ -654,13 +664,10 @@ class kcMultilingual_backend {
 			<?php } ?>
 			<?php } ?>
 		</div>
-		<?php } ?>
-	</div>
-	<?php } ?>
-</div>
 
-	<?php }
-
+		<?php if ( !$display )
+			return ob_get_clean();
+	}
 
 	public static function fields_post_save( $post_id, $post ) {
 		if ( !isset(self::$post_types[$post->post_type])
