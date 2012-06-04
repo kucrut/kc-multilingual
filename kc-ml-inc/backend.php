@@ -638,11 +638,6 @@ class kcMultilingual_backend {
 				<label for="kcmlpost-meta-<?php echo "{$section['id']}-{$field['id']}-{$lang}" ?>"><?php echo $field['title'] ?></label>
 				<?php
 					$field_value = isset( $meta_values["_{$field['id']}"] ) ? $meta_values["_{$field['id']}"] : '';
-					if ( $field['type'] == 'textarea' )
-						$field_value = esc_textarea( $field_value );
-					else
-						$field_value = esc_attr( $field_value );
-
 					$field_args = array(
 						'type' => $field['type'],
 						'attr' => array(
