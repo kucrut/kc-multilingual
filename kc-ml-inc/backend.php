@@ -619,36 +619,41 @@ class kcMultilingual_backend {
 			if ( $meta_fields ) {
 				$meta_values = kcMultilingual_frontend::get_translation( $lang, 'post', $post_id, 'meta' );
 		?>
-		<h4><?php _e('Custom fields') ?></h4>
-		<?php foreach ( $meta_fields as $section ) { ?>
-		<h5><?php echo $section['title'] ?></h5>
-		<?php foreach ( $section['fields'] as $field ) { ?>
-		<div class="field meta-field">
-			<label for="kcmlpost-meta-<?php echo "{$section['id']}-{$field['id']}-{$lang}" ?>"><?php echo $field['title'] ?></label>
-			<?php
-				$field_value = isset( $meta_values["_{$field['id']}"] ) ? $meta_values["_{$field['id']}"] : '';
-				if ( $field['type'] == 'textarea' )
-					$field_value = esc_textarea( $field_value );
-				else
-					$field_value = esc_attr( $field_value );
+		<div class="kcml-post-meta">
+			<h4><?php _e('Custom fields') ?></h4>
+			<?php foreach ( $meta_fields as $section ) { ?>
+			<h5><?php echo $section['title'] ?></h5>
+			<?php foreach ( $section['fields'] as $field ) { ?>
+			<div class="field meta-field">
+				<label for="kcmlpost-meta-<?php echo "{$section['id']}-{$field['id']}-{$lang}" ?>"><?php echo $field['title'] ?></label>
+				<?php
+					$field_value = isset( $meta_values["_{$field['id']}"] ) ? $meta_values["_{$field['id']}"] : '';
+					if ( $field['type'] == 'textarea' )
+						$field_value = esc_textarea( $field_value );
+					else
+						$field_value = esc_attr( $field_value );
 
-				$field_args = array(
-					'type' => $field['type'],
-					'attr' => array(
-						'id'    => "kcmlpost-meta-{$section['id']}-{$field['id']}-{$lang}",
-						'name'  => "kc-postmeta[kcml][kcml-translation][{$lang}][meta][_{$field['id']}]",
-						'class' => "kcs-{$field['type']} kcs-input"
-					),
-					'current' => $field_value
-				);
-				if ( isset($field['attr']) )
-					$field_args['attr'] = array_merge( $field['attr'], $_args['attr'] );
+					$field_args = array(
+						'type' => $field['type'],
+						'attr' => array(
+							'id'    => "kcmlpost-meta-{$section['id']}-{$field['id']}-{$lang}",
+							'name'  => "kc-postmeta[kcml][kcml-translation][{$lang}][meta][_{$field['id']}]",
+							'class' => "kcs-{$field['type']} kcs-input"
+						),
+						'current' => $field_value
+					);
+					if ( isset($field['attr']) )
+						$field_args['attr'] = array_merge( $field['attr'], $_args['attr'] );
 
-				echo kcForm::field( $field_args );
-			?>
+					echo kcForm::field( $field_args );
+					if ( isset($field['desc']) && !empty($field['desc']) ) { ?>
+				<p class="description"><?php echo esc_html( $field['desc'] ) ?></p>
+					<?php }
+				?>
+			</div>
+			<?php } ?>
+			<?php } ?>
 		</div>
-		<?php } ?>
-		<?php } ?>
 		<?php } ?>
 	</div>
 	<?php } ?>
