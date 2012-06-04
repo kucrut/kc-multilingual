@@ -486,16 +486,23 @@ class kcMultilingual_backend {
 
 		$_id = isset($args['object_id']) ? $args['object_id'] : 0;
 		$id_base = "{$args['section']}-{$args['mode']}-{$_id}-{$args['field']['id']}";
-		$labels = array(
-			'title' => __('Name'),
-			'content' => __('Description')
-		);
-		$input_class = " class='widefat kcs-input'";
+
 		if ( $args['mode'] === 'attachment' ) {
-			$labels['title']     = __('Title');
-			$labels['image_alt'] = __('Alternate Text');
-			$labels['excerpt']   = __('Caption');
+			$labels = array(
+				'title'     => __('Title'),
+				'image_alt' => __('Alternate Text'),
+				'excerpt'   => __('Caption')
+			);
 			$input_class = '';
+			$object_type = 'post';
+		}
+		else {
+			$labels = array(
+				'title' => __('Name'),
+				'content' => __('Description')
+			);
+			$input_class = " class='widefat kcs-input'";
+			$object_type = 'term';
 		}
 		$list   = "<ul class='kcml-langs kcs-tabs'>\n";
 		$fields = '';
