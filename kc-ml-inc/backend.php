@@ -484,6 +484,7 @@ class kcMultilingual_backend {
 		if ( !$db_value )
 			$db_value = array();
 
+		$screen = get_current_screen();
 		$_id = isset($args['object_id']) ? $args['object_id'] : 0;
 		$id_base = "{$args['section']}-{$args['mode']}-{$_id}-{$args['field']['id']}";
 
@@ -491,10 +492,13 @@ class kcMultilingual_backend {
 			$labels = array(
 				'title'     => __('Title'),
 				'image_alt' => __('Alternate Text'),
-				'excerpt'   => __('Caption')
+				'excerpt'   => __('Caption'),
+				'content'   => __('Description')
 			);
 			$input_class = '';
 			$object_type = 'post';
+			$object_name = 'attachment';
+			$hidden_meta = true;
 		}
 		else {
 			$labels = array(
@@ -503,6 +507,8 @@ class kcMultilingual_backend {
 			);
 			$input_class = " class='widefat kcs-input'";
 			$object_type = 'term';
+			$object_name = $screen->taxonomy;
+			$hidden_meta = false;
 		}
 		$list   = "<ul class='kcml-langs kcs-tabs'>\n";
 		$fields = '';
@@ -538,6 +544,10 @@ class kcMultilingual_backend {
 			$fields .= "<label for='{$id_base}-{$lang}-content'>{$labels['content']}</label>\n";
 			$fields .= "<textarea{$input_class} name='{$args['field']['name']}[{$lang}][content]' id='{$id_base}-{$lang}-content' cols='50' rows='5'>".esc_textarea($value['content'])."</textarea>\n";
 			$fields .= "</div>\n";
+			if ( $meta_fields = kc_array_multi_get_value(self::$meta_fields, array($object_type, $object_name)) ) {
+				$meta_values = $_id ? kcMultilingual_frontend::get_translation( $lang, $object_type, $_id, 'meta' ) : array();
+				$fields .= self::fields_metadata_render( $meta_fields, $meta_values, $lang, $args['field']['name'], $hidden_meta, false );
+			}
 			$fields .= "</div>\n";
 		}
 
@@ -622,7 +632,7 @@ class kcMultilingual_backend {
 		<?php } ?>
 		<?php
 			if ( $meta_fields = kc_array_multi_get_value(self::$meta_fields, array('post', $screen->post_type)) )
-				self::fields_metadata_render( $meta_fields, kcMultilingual_frontend::get_translation( $lang, 'post', $post_id, 'meta' ), $lang );
+				self::fields_metadata_render( $meta_fields, kcMultilingual_frontend::get_translation( $lang, 'post', $post_id, 'meta' ), $lang, "kc-postmeta[kcml][kcml-translation]", true );
 		?>
 	</div>
 	<?php } ?>
@@ -631,7 +641,7 @@ class kcMultilingual_backend {
 	<?php }
 
 
-	private static function fields_metadata_render( $meta_fields, $meta_values, $lang, $display = true ) {
+	private static function fields_metadata_render( $meta_fields, $meta_values, $lang, $name_prefix, $hidden = true, $display = true ) {
 		if ( !$display ) ob_start(); ?>
 
 		<div class="kcml-post-meta">
@@ -642,12 +652,13 @@ class kcMultilingual_backend {
 			<div class="field meta-field">
 				<label for="kcmlpost-meta-<?php echo "{$section['id']}-{$field['id']}-{$lang}" ?>"><?php echo $field['title'] ?></label>
 				<?php
-					$field_value = isset( $meta_values["_{$field['id']}"] ) ? $meta_values["_{$field['id']}"] : '';
+					$field_id = $hidden ? "_{$field['id']}" : $field['id'];
+					$field_value = isset( $meta_values[$field_id] ) ? $meta_values[$field_id] : '';
 					$field_args = array(
 						'type' => $field['type'],
 						'attr' => array(
 							'id'    => "kcmlpost-meta-{$section['id']}-{$field['id']}-{$lang}",
-							'name'  => "kc-postmeta[kcml][kcml-translation][{$lang}][meta][_{$field['id']}]",
+							'name'  => "{$name_prefix}[{$lang}][meta][{$field_id}]",
 							'class' => "kcs-{$field['type']} kcs-input"
 						),
 						'current' => $field_value
