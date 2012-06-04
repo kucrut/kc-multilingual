@@ -81,7 +81,11 @@ class kcMultilingual_backend {
 			$lang = $_REQUEST['lang'];
 		}
 		elseif ( self::$prettyURL ) {
-			preg_match( '/^\/([a-zA-Z]{2,3})\//', $_SERVER['REQUEST_URI'], $matches);
+			$r_uri = $_SERVER['REQUEST_URI'];
+			if ( $subdir = end( array_intersect(explode('/', home_url()), explode('/', $_SERVER['REQUEST_URI'])) ) )
+				$r_uri = preg_replace('/\/'.$subdir.'/', '', $r_uri );
+
+			preg_match( '/^\/([a-zA-Z]{2,3})\//', $r_uri, $matches);
 			if ( !empty($matches) )
 				$lang = $matches[1];
 		}

@@ -64,7 +64,7 @@ class kcMultilingual_frontend {
 
 	public static function filter_url( $url, $lang, $pretty = false ) {
 		if ( $pretty && is_string($lang) && !empty($lang) ) {
-			$url = preg_replace('/'.kcMultilingual_backend::$home_url.'/', kcMultilingual_backend::$home_url . "/{$lang}", $url, 1 );
+			$url = preg_replace('/'.str_replace('/', '\/', kcMultilingual_backend::$home_url ).'/', kcMultilingual_backend::$home_url . "/{$lang}", $url, 1 );
 		}
 		else {
 			if ( !empty($lang) && is_string($lang) )
