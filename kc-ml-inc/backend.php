@@ -577,8 +577,6 @@ class kcMultilingual_backend {
 
 		global $post;
 		$post_id = $post->ID;
-		$meta_fields = kc_array_multi_get_value(self::$meta_fields, array('post', $screen->post_type));
-
 		?>
 <div class="kcml-wrap">
 	<h3>KC Multilingual</h3>
@@ -616,7 +614,7 @@ class kcMultilingual_backend {
 		</div>
 		<?php } ?>
 		<?php
-			if ( $meta_fields )
+			if ( $meta_fields = kc_array_multi_get_value(self::$meta_fields, array('post', $screen->post_type)) )
 				self::fields_metadata_render( $meta_fields, kcMultilingual_frontend::get_translation( $lang, 'post', $post_id, 'meta' ), $lang );
 		?>
 	</div>
@@ -663,6 +661,7 @@ class kcMultilingual_backend {
 		<?php if ( !$display )
 			return ob_get_clean();
 	}
+
 
 	public static function fields_post_save( $post_id, $post ) {
 		if ( !isset(self::$post_types[$post->post_type])
