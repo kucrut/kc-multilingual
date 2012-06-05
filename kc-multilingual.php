@@ -28,11 +28,15 @@ class kcMultilingual {
 
 		$data = array(
 			'paths'    => $paths,
-			'settings' => kcMultilingual_backend::$settings
+			'settings' => kc_get_option( 'kc_ml' )
 		);
 		self::$data = $data;
 
+		require_once "{$paths['inc']}/backend.php";
+		kcMultilingual_backend::init();
+
 		add_action( 'admin_enqueue_scripts', array(__CLASS__, 'admin_sns'), 99 );
+		register_deactivation_hook( $paths['p_file'], array(__CLASS__, '_deactivate') );
 	}
 
 
@@ -75,11 +79,11 @@ class kcMultilingual {
 		if ( !class_exists('kcSettings') )
 			wp_die( 'Please install and activate <a href="http://wordpress.org/extend/plugins/kc-settings/">KC Settings</a> before activating this plugin.<br /> <a href="'.wp_get_referer().'">&laquo; Go back</a> to plugins page.' );
 
-		$kcs = get_option('kc_settings');
-		$kcs['kids']['kc_ml'] = array(
+		$kcs = kcSettings::get_data('status');
+		$kcs['kids']['kc_multilingual'] = array(
 			'name' => 'KC Multilingual',
 			'type' => 'plugin',
-			'file' => kc_plugin_file( __FILE__ )
+			'file' => kc_plugin_file(__FILE__)
 		);
 		update_option( 'kc_settings', $kcs );
 
@@ -89,8 +93,8 @@ class kcMultilingual {
 
 	# Unregister from KC Settings
 	public static function _deactivate() {
-		$kcs = get_option('kc_settings');
-		unset( $kcs['kids']['kc_ml'] );
+		$kcs = kcSettings::get_data('status');
+		unset( $kcs['kids']['kc_multilingual'] );
 		update_option( 'kc_settings', $kcs );
 
 		remove_filter( 'rewrite_rules_array', array('kcMultilingual_backend', 'add_rewrite_rules') );
@@ -636,8 +640,7 @@ class kcMultilingual {
 	}
 }
 
-require_once dirname( __FILE__ ) . '/kc-ml-inc/backend.php';
-add_action( 'init', array('kcMultilingual', 'init'), 100 );
+add_action( 'plugins_loaded', array('kcMultilingual', 'init') );
 
 
 # A hack for symlinks
@@ -655,8 +658,6 @@ if ( !function_exists('kc_plugin_file') ) {
 	}
 }
 
-$plugin_file = kc_plugin_file( __FILE__ );
-register_activation_hook( $plugin_file, array('kcMultilingual', '_activate') );
-register_deactivation_hook( $plugin_file, array('kcMultilingual', '_deactivate') );
+register_activation_hook( kc_plugin_file(__FILE__), array('kcMultilingual', '_activate') );
 
 ?>

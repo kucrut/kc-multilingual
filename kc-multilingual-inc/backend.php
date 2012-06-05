@@ -26,8 +26,7 @@ class kcMultilingual_backend {
 		add_filter( 'kcv_setting_kc_ml_general_languages', array(__CLASS__, 'validate_settings_general_languages') );
 		add_action( 'update_option_kc_ml_settings', array(__CLASS__, 'settings_update'), 0, 2 );
 
-		$settings = get_option( 'kc_ml_settings', array() );
-		self::$settings = $settings;
+		self::$settings = $settings = kcMultilingual::get_data( 'settings' );
 		if ( !isset($settings['general']['languages']['current']) || empty($settings['general']['languages']['current']) )
 			return;
 
@@ -854,5 +853,5 @@ class kcMultilingual_backend {
 		return $instance;
 	}
 }
-kcMultilingual_backend::init();
+
 ?>
