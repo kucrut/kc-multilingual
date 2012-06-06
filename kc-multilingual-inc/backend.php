@@ -419,7 +419,7 @@ class kcMultilingual_backend {
 			return;
 
 		$meta = $_meta;
-		$allowed_field_types = array('text', 'textarea', 'url', 'tel', 'month', 'week', 'time', 'datetime-local', 'datetime', 'color', 'number');
+		$allowed_field_types = array('text', 'textarea', 'url', 'tel', 'month', 'week', 'time', 'datetime-local', 'datetime', 'color', 'number', 'multiinput');
 		foreach ( $_meta as $type => $object_types ) {
 			foreach ( $object_types as $object_type => $sections ) {
 				foreach ( $sections as $section_id => $section ) {
@@ -656,20 +656,29 @@ class kcMultilingual_backend {
 				<label for="kcmlpost-meta-<?php echo "{$section['id']}-{$field['id']}-{$lang}" ?>"><?php echo $field['title'] ?></label>
 				<?php
 					$field_id = $hidden ? "_{$field['id']}" : $field['id'];
+					$field_html_id = "kcmlpost-meta-{$section['id']}-{$field['id']}-{$lang}";
+					$field_html_name = "{$name_prefix}[{$lang}][meta][{$field_id}]";
 					$field_value = isset( $meta_values[$field_id] ) ? $meta_values[$field_id] : '';
-					$field_args = array(
-						'type' => $field['type'],
-						'attr' => array(
-							'id'    => "kcmlpost-meta-{$section['id']}-{$field['id']}-{$lang}",
-							'name'  => "{$name_prefix}[{$lang}][meta][{$field_id}]",
-							'class' => "kcs-{$field['type']} kcs-input"
-						),
-						'current' => $field_value
-					);
-					if ( isset($field['attr']) )
-						$field_args['attr'] = array_merge( $field['attr'], $_args['attr'] );
 
-					echo kcForm::field( $field_args );
+					if ( $field['type'] === 'multiinput' ) {
+						$field['_id'] = $field_html_id;
+						echo _kc_field_multiinput( $field_html_name, $field_value, $field );
+					}
+					else {
+						$field_args = array(
+							'type' => $field['type'],
+							'attr' => array(
+								'id'    => $field_html_id,
+								'name'  => $field_html_name,
+								'class' => "kcs-{$field['type']} kcs-input"
+							),
+							'current' => $field_value
+						);
+						if ( isset($field['attr']) )
+							$field_args['attr'] = array_merge( $field['attr'], $_args['attr'] );
+
+						echo kcForm::field( $field_args );
+					}
 					if ( isset($field['desc']) && !empty($field['desc']) ) { ?>
 				<p class="description"><?php echo esc_html( $field['desc'] ) ?></p>
 					<?php }
