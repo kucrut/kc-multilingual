@@ -653,7 +653,11 @@ class kcMultilingual_backend {
 			<h5><?php echo $section['title'] ?></h5>
 			<?php foreach ( $section['fields'] as $field ) { ?>
 			<div class="field meta-field">
+				<?php if ( $field['type'] === 'multiinput' ) { ?>
+				<label><?php echo $field['title'] ?></label>
+				<?php } else { ?>
 				<label for="kcmlpost-meta-<?php echo "{$section['id']}-{$field['id']}-{$lang}" ?>"><?php echo $field['title'] ?></label>
+				<?php } ?>
 				<?php
 					$field_id = $hidden ? "_{$field['id']}" : $field['id'];
 					$field_html_id = "kcmlpost-meta-{$section['id']}-{$field['id']}-{$lang}";
