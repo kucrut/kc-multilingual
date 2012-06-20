@@ -32,6 +32,11 @@ class kcMultilingual {
 		);
 		self::$data = $data;
 
+		# i18n
+		$mo_file = $paths['inc'].'/languages/kc-ml-'.get_locale().'.mo';
+		if ( is_readable($mo_file) )
+			load_textdomain( 'kc-ml', $mo_file );
+
 		require_once "{$paths['inc']}/backend.php";
 		kcMultilingual_backend::init();
 

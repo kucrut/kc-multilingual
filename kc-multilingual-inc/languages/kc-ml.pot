@@ -1,0 +1,2130 @@
+# Copyright (C) 2012 KC Multilingual
+# This file is distributed under the same license as the KC Multilingual package.
+msgid ""
+msgstr ""
+"Project-Id-Version: KC Multilingual 0.1\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/kc-multilingual\n"
+"POT-Creation-Date: 2012-06-20 13:35:05+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2012-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: kc-multilingual-inc/backend.php:150
+msgid "KC Multilingual Settings"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:156
+msgid "General"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:160
+msgid "Languages"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:168
+msgid "Global Translations"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:172
+msgid "Global translations"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:254
+msgid "Language"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:255
+msgid "Mandatory"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:261
+msgid "Country"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:262
+msgid "Optional"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:267 kc-multilingual-inc/table.php:10
+msgid "Date format"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:268 kc-multilingual-inc/backend.php:274
+msgid "Defaults to global setting"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:273 kc-multilingual-inc/table.php:11
+msgid "Time format"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:279
+msgid "Custom URL Suffix"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:280
+msgid "Defaults to language code"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:285
+msgid "Edit language"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:285
+msgid "Add language"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:327
+msgid "Site Title"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:331
+msgid "Tagline"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:496 kc-multilingual-inc/backend.php:619
+#: kc-multilingual-inc/backend.php:793
+msgid "Title"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:497
+msgid "Alternate Text"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:498
+msgid "Caption"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:499 kc-multilingual-inc/backend.php:509
+#: kc-multilingual.php:74
+msgid "Description"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:508
+msgid "Name"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:622
+msgid "Excerpt"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:625
+msgid "Content"
+msgstr ""
+
+#: kc-multilingual-inc/backend.php:651
+msgid "Custom fields"
+msgstr ""
+
+#: kc-multilingual-inc/table.php:7
+msgid "Language / Country"
+msgstr ""
+
+#: kc-multilingual-inc/table.php:8
+msgid "Locale"
+msgstr ""
+
+#: kc-multilingual-inc/table.php:9
+msgid "URL suffix"
+msgstr ""
+
+#: kc-multilingual-inc/table.php:27
+msgid "Edit"
+msgstr ""
+
+#: kc-multilingual-inc/table.php:29
+msgid "default"
+msgstr ""
+
+#: kc-multilingual-inc/table.php:33
+msgid "Delete"
+msgstr ""
+
+#: kc-multilingual-inc/table.php:34
+msgid "Set default"
+msgstr ""
+
+#: kc-multilingual-inc/table.php:47
+msgid "No language found."
+msgstr ""
+
+#: kc-multilingual.php:71
+msgid "Menu Name"
+msgstr ""
+
+#: kc-multilingual.php:72
+msgid "Navigation Label"
+msgstr ""
+
+#: kc-multilingual.php:73
+msgid "Title Attribute"
+msgstr ""
+
+#: kc-multilingual.php:112
+msgid "Afar"
+msgstr ""
+
+#: kc-multilingual.php:113
+msgid "Abkhazian"
+msgstr ""
+
+#: kc-multilingual.php:114
+msgid "Avestan"
+msgstr ""
+
+#: kc-multilingual.php:115
+msgid "Afrikaans"
+msgstr ""
+
+#: kc-multilingual.php:116
+msgid "Akan"
+msgstr ""
+
+#: kc-multilingual.php:117
+msgid "Amharic"
+msgstr ""
+
+#: kc-multilingual.php:118
+msgid "Aragonese"
+msgstr ""
+
+#: kc-multilingual.php:119
+msgid "Arabic"
+msgstr ""
+
+#: kc-multilingual.php:120
+msgid "Assamese"
+msgstr ""
+
+#: kc-multilingual.php:121
+msgid "Avaric"
+msgstr ""
+
+#: kc-multilingual.php:122
+msgid "Aymara"
+msgstr ""
+
+#: kc-multilingual.php:123
+msgid "Azerbaijani"
+msgstr ""
+
+#: kc-multilingual.php:124
+msgid "Bashkir"
+msgstr ""
+
+#: kc-multilingual.php:125
+msgid "Belarusian"
+msgstr ""
+
+#: kc-multilingual.php:126
+msgid "Bulgarian"
+msgstr ""
+
+#: kc-multilingual.php:127
+msgid "Bihari"
+msgstr ""
+
+#: kc-multilingual.php:128
+msgid "Bislama"
+msgstr ""
+
+#: kc-multilingual.php:129
+msgid "Bambara"
+msgstr ""
+
+#: kc-multilingual.php:130
+msgid "Bengali; Bangla"
+msgstr ""
+
+#: kc-multilingual.php:131
+msgid "Tibetan"
+msgstr ""
+
+#: kc-multilingual.php:132
+msgid "Breton"
+msgstr ""
+
+#: kc-multilingual.php:133
+msgid "Bosnian"
+msgstr ""
+
+#: kc-multilingual.php:134
+msgid "Catalan"
+msgstr ""
+
+#: kc-multilingual.php:135
+msgid "Chechen"
+msgstr ""
+
+#: kc-multilingual.php:136
+msgid "Chamorro"
+msgstr ""
+
+#: kc-multilingual.php:137
+msgid "Corsican"
+msgstr ""
+
+#: kc-multilingual.php:138
+msgid "Cree"
+msgstr ""
+
+#: kc-multilingual.php:139
+msgid "Czech"
+msgstr ""
+
+#: kc-multilingual.php:140
+msgid "Church Slavic"
+msgstr ""
+
+#: kc-multilingual.php:141
+msgid "Chuvash"
+msgstr ""
+
+#: kc-multilingual.php:142
+msgid "Welsh"
+msgstr ""
+
+#: kc-multilingual.php:143
+msgid "Danish"
+msgstr ""
+
+#: kc-multilingual.php:144
+msgid "German"
+msgstr ""
+
+#: kc-multilingual.php:145
+msgid "Divehi; Maldivian"
+msgstr ""
+
+#: kc-multilingual.php:146
+msgid "Dzongkha; Bhutani"
+msgstr ""
+
+#: kc-multilingual.php:147
+msgid "Éwé"
+msgstr ""
+
+#: kc-multilingual.php:148
+msgid "Greek"
+msgstr ""
+
+#: kc-multilingual.php:149
+msgid "English"
+msgstr ""
+
+#: kc-multilingual.php:150
+msgid "Esperanto"
+msgstr ""
+
+#: kc-multilingual.php:151
+msgid "Spanish"
+msgstr ""
+
+#: kc-multilingual.php:152
+msgid "Estonian"
+msgstr ""
+
+#: kc-multilingual.php:153
+msgid "Basque"
+msgstr ""
+
+#: kc-multilingual.php:154
+msgid "Persian"
+msgstr ""
+
+#: kc-multilingual.php:155
+msgid "Fulah"
+msgstr ""
+
+#: kc-multilingual.php:156
+msgid "Finnish"
+msgstr ""
+
+#: kc-multilingual.php:157
+msgid "Fijian; Fiji"
+msgstr ""
+
+#: kc-multilingual.php:158
+msgid "Faroese"
+msgstr ""
+
+#: kc-multilingual.php:159
+msgid "French"
+msgstr ""
+
+#: kc-multilingual.php:160
+msgid "Western Frisian"
+msgstr ""
+
+#: kc-multilingual.php:161
+msgid "Irish"
+msgstr ""
+
+#: kc-multilingual.php:162
+msgid "Scottish Gaelic"
+msgstr ""
+
+#: kc-multilingual.php:163
+msgid "Galician"
+msgstr ""
+
+#: kc-multilingual.php:164
+msgid "Guarani"
+msgstr ""
+
+#: kc-multilingual.php:165
+msgid "Gujarati"
+msgstr ""
+
+#: kc-multilingual.php:166
+msgid "Manx"
+msgstr ""
+
+#: kc-multilingual.php:167
+msgid "Hausa"
+msgstr ""
+
+#: kc-multilingual.php:168
+msgid "Hebrew"
+msgstr ""
+
+#: kc-multilingual.php:169
+msgid "Hindi"
+msgstr ""
+
+#: kc-multilingual.php:170
+msgid "Hiri Motu"
+msgstr ""
+
+#: kc-multilingual.php:171
+msgid "Croatian"
+msgstr ""
+
+#: kc-multilingual.php:172
+msgid "Haitian; Haitian Creole"
+msgstr ""
+
+#: kc-multilingual.php:173
+msgid "Hungarian"
+msgstr ""
+
+#: kc-multilingual.php:174
+msgid "Armenian"
+msgstr ""
+
+#: kc-multilingual.php:175
+msgid "Herero"
+msgstr ""
+
+#: kc-multilingual.php:176
+msgid "Interlingua"
+msgstr ""
+
+#: kc-multilingual.php:177
+msgid "Indonesian"
+msgstr ""
+
+#: kc-multilingual.php:178
+msgid "Interlingue; Occidental"
+msgstr ""
+
+#: kc-multilingual.php:179
+msgid "Igbo"
+msgstr ""
+
+#: kc-multilingual.php:180
+msgid "Sichuan Yi; Nuosu"
+msgstr ""
+
+#: kc-multilingual.php:181
+msgid "Inupiak; Inupiaq"
+msgstr ""
+
+#: kc-multilingual.php:182
+msgid "Ido"
+msgstr ""
+
+#: kc-multilingual.php:183
+msgid "Icelandic"
+msgstr ""
+
+#: kc-multilingual.php:184
+msgid "Italian"
+msgstr ""
+
+#: kc-multilingual.php:185
+msgid "Inuktitut"
+msgstr ""
+
+#: kc-multilingual.php:186
+msgid "Japanese"
+msgstr ""
+
+#: kc-multilingual.php:187
+msgid "Javanese"
+msgstr ""
+
+#: kc-multilingual.php:188
+msgid "Georgian"
+msgstr ""
+
+#: kc-multilingual.php:189
+msgid "Kongo"
+msgstr ""
+
+#: kc-multilingual.php:190
+msgid "Kikuyu; Gikuyu"
+msgstr ""
+
+#: kc-multilingual.php:191
+msgid "Kuanyama; Kwanyama"
+msgstr ""
+
+#: kc-multilingual.php:192
+msgid "Kazakh"
+msgstr ""
+
+#: kc-multilingual.php:193
+msgid "Kalaallisut; Greenlandic"
+msgstr ""
+
+#: kc-multilingual.php:194
+msgid "Central Khmer; Cambodian"
+msgstr ""
+
+#: kc-multilingual.php:195
+msgid "Kannada"
+msgstr ""
+
+#: kc-multilingual.php:196
+msgid "Korean"
+msgstr ""
+
+#: kc-multilingual.php:197
+msgid "Kanuri"
+msgstr ""
+
+#: kc-multilingual.php:198
+msgid "Kashmiri"
+msgstr ""
+
+#: kc-multilingual.php:199
+msgid "Kurdish"
+msgstr ""
+
+#: kc-multilingual.php:200
+msgid "Komi"
+msgstr ""
+
+#: kc-multilingual.php:201
+msgid "Cornish"
+msgstr ""
+
+#: kc-multilingual.php:202
+msgid "Kirghiz"
+msgstr ""
+
+#: kc-multilingual.php:203
+msgid "Latin"
+msgstr ""
+
+#: kc-multilingual.php:204
+msgid "Letzeburgesch; Luxembourgish"
+msgstr ""
+
+#: kc-multilingual.php:205
+msgid "Ganda"
+msgstr ""
+
+#: kc-multilingual.php:206
+msgid "Limburgish; Limburger; Limburgan"
+msgstr ""
+
+#: kc-multilingual.php:207
+msgid "Lingala"
+msgstr ""
+
+#: kc-multilingual.php:208
+msgid "Lao; Laotian"
+msgstr ""
+
+#: kc-multilingual.php:209
+msgid "Lithuanian"
+msgstr ""
+
+#: kc-multilingual.php:210
+msgid "Luba-Katanga"
+msgstr ""
+
+#: kc-multilingual.php:211
+msgid "Latvian; Lettish"
+msgstr ""
+
+#: kc-multilingual.php:212
+msgid "Malagasy"
+msgstr ""
+
+#: kc-multilingual.php:213
+msgid "Marshallese"
+msgstr ""
+
+#: kc-multilingual.php:214
+msgid "Maori"
+msgstr ""
+
+#: kc-multilingual.php:215
+msgid "Macedonian"
+msgstr ""
+
+#: kc-multilingual.php:216
+msgid "Malayalam"
+msgstr ""
+
+#: kc-multilingual.php:217
+msgid "Mongolian"
+msgstr ""
+
+#: kc-multilingual.php:218
+msgid "Moldavian"
+msgstr ""
+
+#: kc-multilingual.php:219
+msgid "Marathi"
+msgstr ""
+
+#: kc-multilingual.php:220
+msgid "Malay"
+msgstr ""
+
+#: kc-multilingual.php:221
+msgid "Maltese"
+msgstr ""
+
+#: kc-multilingual.php:222
+msgid "Burmese"
+msgstr ""
+
+#: kc-multilingual.php:223 kc-multilingual.php:540
+msgid "Nauru"
+msgstr ""
+
+#: kc-multilingual.php:224
+msgid "Norwegian Bokmål"
+msgstr ""
+
+#: kc-multilingual.php:225
+msgid "Ndebele, North"
+msgstr ""
+
+#: kc-multilingual.php:226
+msgid "Nepali"
+msgstr ""
+
+#: kc-multilingual.php:227
+msgid "Ndonga"
+msgstr ""
+
+#: kc-multilingual.php:228
+msgid "Dutch"
+msgstr ""
+
+#: kc-multilingual.php:229
+msgid "Norwegian Nynorsk"
+msgstr ""
+
+#: kc-multilingual.php:230
+msgid "Norwegian"
+msgstr ""
+
+#: kc-multilingual.php:231
+msgid "Ndebele, South"
+msgstr ""
+
+#: kc-multilingual.php:232
+msgid "Navajo; Navaho"
+msgstr ""
+
+#: kc-multilingual.php:233
+msgid "Chichewa; Nyanja"
+msgstr ""
+
+#: kc-multilingual.php:234
+msgid "Occitan; Provençal"
+msgstr ""
+
+#: kc-multilingual.php:235
+msgid "Ojibwa"
+msgstr ""
+
+#: kc-multilingual.php:236
+msgid "(Afan) Oromo"
+msgstr ""
+
+#: kc-multilingual.php:237
+msgid "Oriya"
+msgstr ""
+
+#: kc-multilingual.php:238
+msgid "Ossetian; Ossetic"
+msgstr ""
+
+#: kc-multilingual.php:239
+msgid "Panjabi; Punjabi"
+msgstr ""
+
+#: kc-multilingual.php:240
+msgid "Pali"
+msgstr ""
+
+#: kc-multilingual.php:241
+msgid "Polish"
+msgstr ""
+
+#: kc-multilingual.php:242
+msgid "Pashto; Pushto"
+msgstr ""
+
+#: kc-multilingual.php:243
+msgid "Portuguese"
+msgstr ""
+
+#: kc-multilingual.php:244
+msgid "Quechua"
+msgstr ""
+
+#: kc-multilingual.php:245
+msgid "Romansh"
+msgstr ""
+
+#: kc-multilingual.php:246
+msgid "Rundi; Kirundi"
+msgstr ""
+
+#: kc-multilingual.php:247
+msgid "Romanian"
+msgstr ""
+
+#: kc-multilingual.php:248
+msgid "Russian"
+msgstr ""
+
+#: kc-multilingual.php:249
+msgid "Kinyarwanda"
+msgstr ""
+
+#: kc-multilingual.php:250
+msgid "Sanskrit"
+msgstr ""
+
+#: kc-multilingual.php:251
+msgid "Sardinian"
+msgstr ""
+
+#: kc-multilingual.php:252
+msgid "Sindhi"
+msgstr ""
+
+#: kc-multilingual.php:253
+msgid "Northern Sami"
+msgstr ""
+
+#: kc-multilingual.php:254
+msgid "Sango; Sangro"
+msgstr ""
+
+#: kc-multilingual.php:255
+msgid "Sinhala; Sinhalese"
+msgstr ""
+
+#: kc-multilingual.php:256
+msgid "Slovak"
+msgstr ""
+
+#: kc-multilingual.php:257
+msgid "Slovenian"
+msgstr ""
+
+#: kc-multilingual.php:258
+msgid "Samoan"
+msgstr ""
+
+#: kc-multilingual.php:259
+msgid "Shona"
+msgstr ""
+
+#: kc-multilingual.php:260
+msgid "Somali"
+msgstr ""
+
+#: kc-multilingual.php:261
+msgid "Albanian"
+msgstr ""
+
+#: kc-multilingual.php:262
+msgid "Serbian"
+msgstr ""
+
+#: kc-multilingual.php:263
+msgid "Swati; Siswati"
+msgstr ""
+
+#: kc-multilingual.php:264
+msgid "Sesotho; Sotho, Southern"
+msgstr ""
+
+#: kc-multilingual.php:265
+msgid "Sundanese"
+msgstr ""
+
+#: kc-multilingual.php:266
+msgid "Swedish"
+msgstr ""
+
+#: kc-multilingual.php:267
+msgid "Swahili"
+msgstr ""
+
+#: kc-multilingual.php:268
+msgid "Tamil"
+msgstr ""
+
+#: kc-multilingual.php:269
+msgid "Telugu"
+msgstr ""
+
+#: kc-multilingual.php:270
+msgid "Tajik"
+msgstr ""
+
+#: kc-multilingual.php:271
+msgid "Thai"
+msgstr ""
+
+#: kc-multilingual.php:272
+msgid "Tigrinya"
+msgstr ""
+
+#: kc-multilingual.php:273
+msgid "Turkmen"
+msgstr ""
+
+#: kc-multilingual.php:274
+msgid "Tagalog"
+msgstr ""
+
+#: kc-multilingual.php:275
+msgid "Tswana; Setswana"
+msgstr ""
+
+#: kc-multilingual.php:276 kc-multilingual.php:593
+msgid "Tonga"
+msgstr ""
+
+#: kc-multilingual.php:277
+msgid "Turkish"
+msgstr ""
+
+#: kc-multilingual.php:278
+msgid "Tsonga"
+msgstr ""
+
+#: kc-multilingual.php:279
+msgid "Tatar"
+msgstr ""
+
+#: kc-multilingual.php:280
+msgid "Twi"
+msgstr ""
+
+#: kc-multilingual.php:281
+msgid "Tahitian"
+msgstr ""
+
+#: kc-multilingual.php:282
+msgid "Uighur"
+msgstr ""
+
+#: kc-multilingual.php:283
+msgid "Ukrainian"
+msgstr ""
+
+#: kc-multilingual.php:284
+msgid "Urdu"
+msgstr ""
+
+#: kc-multilingual.php:285
+msgid "Uzbek"
+msgstr ""
+
+#: kc-multilingual.php:286
+msgid "Venda"
+msgstr ""
+
+#: kc-multilingual.php:287
+msgid "Vietnamese"
+msgstr ""
+
+#: kc-multilingual.php:288
+msgid "Volapük; Volapuk"
+msgstr ""
+
+#: kc-multilingual.php:289
+msgid "Walloon"
+msgstr ""
+
+#: kc-multilingual.php:290
+msgid "Wolof"
+msgstr ""
+
+#: kc-multilingual.php:291
+msgid "Xhosa"
+msgstr ""
+
+#: kc-multilingual.php:292
+msgid "Yiddish"
+msgstr ""
+
+#: kc-multilingual.php:293
+msgid "Yoruba"
+msgstr ""
+
+#: kc-multilingual.php:294
+msgid "Zhuang"
+msgstr ""
+
+#: kc-multilingual.php:295
+msgid "Chinese"
+msgstr ""
+
+#: kc-multilingual.php:296
+msgid "Zulu"
+msgstr ""
+
+#: kc-multilingual.php:297
+msgid "Achinese"
+msgstr ""
+
+#: kc-multilingual.php:298
+msgid "Awadhi"
+msgstr ""
+
+#: kc-multilingual.php:299
+msgid "Baluchi"
+msgstr ""
+
+#: kc-multilingual.php:300
+msgid "Balinese"
+msgstr ""
+
+#: kc-multilingual.php:301
+msgid "Beja; Bedawiyet"
+msgstr ""
+
+#: kc-multilingual.php:302
+msgid "Bemba"
+msgstr ""
+
+#: kc-multilingual.php:303
+msgid "Bhojpuri"
+msgstr ""
+
+#: kc-multilingual.php:304
+msgid "Bikol"
+msgstr ""
+
+#: kc-multilingual.php:305
+msgid "Bini; Edo"
+msgstr ""
+
+#: kc-multilingual.php:306
+msgid "Buginese"
+msgstr ""
+
+#: kc-multilingual.php:307
+msgid "Cebuano"
+msgstr ""
+
+#: kc-multilingual.php:308
+msgid "Dinka"
+msgstr ""
+
+#: kc-multilingual.php:309
+msgid "Dogri"
+msgstr ""
+
+#: kc-multilingual.php:310
+msgid "Filipino; Pilipino"
+msgstr ""
+
+#: kc-multilingual.php:311
+msgid "Fon"
+msgstr ""
+
+#: kc-multilingual.php:312
+msgid "Gondi"
+msgstr ""
+
+#: kc-multilingual.php:313
+msgid "Swiss German; Alemannic; Alsatian"
+msgstr ""
+
+#: kc-multilingual.php:314
+msgid "Hiligaynon"
+msgstr ""
+
+#: kc-multilingual.php:315
+msgid "Hmong"
+msgstr ""
+
+#: kc-multilingual.php:316
+msgid "Iloko"
+msgstr ""
+
+#: kc-multilingual.php:317
+msgid "Kabyle"
+msgstr ""
+
+#: kc-multilingual.php:318
+msgid "Kamba"
+msgstr ""
+
+#: kc-multilingual.php:319
+msgid "Kabardian"
+msgstr ""
+
+#: kc-multilingual.php:320
+msgid "Kimbundu"
+msgstr ""
+
+#: kc-multilingual.php:321
+msgid "Konkani"
+msgstr ""
+
+#: kc-multilingual.php:322
+msgid "Kurukh"
+msgstr ""
+
+#: kc-multilingual.php:323
+msgid "Luba-Lulua"
+msgstr ""
+
+#: kc-multilingual.php:324
+msgid "Luo (Kenya and Tanzania)"
+msgstr ""
+
+#: kc-multilingual.php:325
+msgid "Madurese"
+msgstr ""
+
+#: kc-multilingual.php:326
+msgid "Magahi"
+msgstr ""
+
+#: kc-multilingual.php:327
+msgid "Maithili"
+msgstr ""
+
+#: kc-multilingual.php:328
+msgid "Makasar"
+msgstr ""
+
+#: kc-multilingual.php:329
+msgid "Mandingo"
+msgstr ""
+
+#: kc-multilingual.php:330
+msgid "Mende"
+msgstr ""
+
+#: kc-multilingual.php:331
+msgid "Minangkabau"
+msgstr ""
+
+#: kc-multilingual.php:332
+msgid "Manipuri"
+msgstr ""
+
+#: kc-multilingual.php:333
+msgid "Mossi"
+msgstr ""
+
+#: kc-multilingual.php:334
+msgid "Marwari"
+msgstr ""
+
+#: kc-multilingual.php:335
+msgid "Neapolitan"
+msgstr ""
+
+#: kc-multilingual.php:336
+msgid "Pedi; Sepedi; Northern Sotho"
+msgstr ""
+
+#: kc-multilingual.php:337
+msgid "Nyamwezi"
+msgstr ""
+
+#: kc-multilingual.php:338
+msgid "Nyankole"
+msgstr ""
+
+#: kc-multilingual.php:339
+msgid "Pangasinan"
+msgstr ""
+
+#: kc-multilingual.php:340
+msgid "Pampanga; Kapampangan"
+msgstr ""
+
+#: kc-multilingual.php:341
+msgid "Rajasthani"
+msgstr ""
+
+#: kc-multilingual.php:342
+msgid "Sasak"
+msgstr ""
+
+#: kc-multilingual.php:343
+msgid "Santali"
+msgstr ""
+
+#: kc-multilingual.php:344
+msgid "Sicilian"
+msgstr ""
+
+#: kc-multilingual.php:345
+msgid "Shan"
+msgstr ""
+
+#: kc-multilingual.php:346
+msgid "Sidamo"
+msgstr ""
+
+#: kc-multilingual.php:347
+msgid "Serer"
+msgstr ""
+
+#: kc-multilingual.php:348
+msgid "Sukuma"
+msgstr ""
+
+#: kc-multilingual.php:349
+msgid "Susu"
+msgstr ""
+
+#: kc-multilingual.php:350
+msgid "Timne"
+msgstr ""
+
+#: kc-multilingual.php:351
+msgid "Tiv"
+msgstr ""
+
+#: kc-multilingual.php:352
+msgid "Tumbuka"
+msgstr ""
+
+#: kc-multilingual.php:353
+msgid "Umbundu"
+msgstr ""
+
+#: kc-multilingual.php:354
+msgid "Walamo"
+msgstr ""
+
+#: kc-multilingual.php:355
+msgid "Waray"
+msgstr ""
+
+#: kc-multilingual.php:356
+msgid "Yao"
+msgstr ""
+
+#: kc-multilingual.php:375
+msgid "Andorra"
+msgstr ""
+
+#: kc-multilingual.php:376
+msgid "United Arab Emirates"
+msgstr ""
+
+#: kc-multilingual.php:377
+msgid "Afghanistan"
+msgstr ""
+
+#: kc-multilingual.php:378
+msgid "Antigua and Barbuda"
+msgstr ""
+
+#: kc-multilingual.php:379
+msgid "Anguilla"
+msgstr ""
+
+#: kc-multilingual.php:380
+msgid "Albania"
+msgstr ""
+
+#: kc-multilingual.php:381
+msgid "Armenia"
+msgstr ""
+
+#: kc-multilingual.php:382
+msgid "Netherlands Antilles"
+msgstr ""
+
+#: kc-multilingual.php:383
+msgid "Angola"
+msgstr ""
+
+#: kc-multilingual.php:384
+msgid "Antarctica"
+msgstr ""
+
+#: kc-multilingual.php:385
+msgid "Argentina"
+msgstr ""
+
+#: kc-multilingual.php:386
+msgid "Samoa (American)"
+msgstr ""
+
+#: kc-multilingual.php:387
+msgid "Austria"
+msgstr ""
+
+#: kc-multilingual.php:388
+msgid "Australia"
+msgstr ""
+
+#: kc-multilingual.php:389
+msgid "Aruba"
+msgstr ""
+
+#: kc-multilingual.php:390
+msgid "Aaland Islands"
+msgstr ""
+
+#: kc-multilingual.php:391
+msgid "Azerbaijan"
+msgstr ""
+
+#: kc-multilingual.php:392
+msgid "Bosnia and Herzegovina"
+msgstr ""
+
+#: kc-multilingual.php:393
+msgid "Barbados"
+msgstr ""
+
+#: kc-multilingual.php:394
+msgid "Bangladesh"
+msgstr ""
+
+#: kc-multilingual.php:395
+msgid "Belgium"
+msgstr ""
+
+#: kc-multilingual.php:396
+msgid "Burkina Faso"
+msgstr ""
+
+#: kc-multilingual.php:397
+msgid "Bulgaria"
+msgstr ""
+
+#: kc-multilingual.php:398
+msgid "Bahrain"
+msgstr ""
+
+#: kc-multilingual.php:399
+msgid "Burundi"
+msgstr ""
+
+#: kc-multilingual.php:400
+msgid "Benin"
+msgstr ""
+
+#: kc-multilingual.php:401
+msgid "Bermuda"
+msgstr ""
+
+#: kc-multilingual.php:402
+msgid "Brunei"
+msgstr ""
+
+#: kc-multilingual.php:403
+msgid "Bolivia"
+msgstr ""
+
+#: kc-multilingual.php:404
+msgid "Brazil"
+msgstr ""
+
+#: kc-multilingual.php:405
+msgid "Bahamas"
+msgstr ""
+
+#: kc-multilingual.php:406
+msgid "Bhutan"
+msgstr ""
+
+#: kc-multilingual.php:407
+msgid "Bouvet Island"
+msgstr ""
+
+#: kc-multilingual.php:408
+msgid "Botswana"
+msgstr ""
+
+#: kc-multilingual.php:409
+msgid "Belarus"
+msgstr ""
+
+#: kc-multilingual.php:410
+msgid "Belize"
+msgstr ""
+
+#: kc-multilingual.php:411
+msgid "Canada"
+msgstr ""
+
+#: kc-multilingual.php:412
+msgid "Cocos (Keeling) Islands"
+msgstr ""
+
+#: kc-multilingual.php:413
+msgid "Congo (Dem, Rep.)"
+msgstr ""
+
+#: kc-multilingual.php:414
+msgid "Central African Republic"
+msgstr ""
+
+#: kc-multilingual.php:415
+msgid "Congo (Rep.)"
+msgstr ""
+
+#: kc-multilingual.php:416
+msgid "Switzerland"
+msgstr ""
+
+#: kc-multilingual.php:417
+msgid "Côte d'Ivoire"
+msgstr ""
+
+#: kc-multilingual.php:418
+msgid "Cook Islands"
+msgstr ""
+
+#: kc-multilingual.php:419
+msgid "Chile"
+msgstr ""
+
+#: kc-multilingual.php:420
+msgid "Cameroon"
+msgstr ""
+
+#: kc-multilingual.php:421
+msgid "China"
+msgstr ""
+
+#: kc-multilingual.php:422
+msgid "Colombia"
+msgstr ""
+
+#: kc-multilingual.php:423
+msgid "Costa Rica"
+msgstr ""
+
+#: kc-multilingual.php:424
+msgid "Cuba"
+msgstr ""
+
+#: kc-multilingual.php:425
+msgid "Cape Verde"
+msgstr ""
+
+#: kc-multilingual.php:426
+msgid "Christmas Island"
+msgstr ""
+
+#: kc-multilingual.php:427
+msgid "Cyprus"
+msgstr ""
+
+#: kc-multilingual.php:428
+msgid "Czech Republic"
+msgstr ""
+
+#: kc-multilingual.php:429
+msgid "Germany"
+msgstr ""
+
+#: kc-multilingual.php:430
+msgid "Djibouti"
+msgstr ""
+
+#: kc-multilingual.php:431
+msgid "Denmark"
+msgstr ""
+
+#: kc-multilingual.php:432
+msgid "Dominica"
+msgstr ""
+
+#: kc-multilingual.php:433
+msgid "Dominican Republic"
+msgstr ""
+
+#: kc-multilingual.php:434
+msgid "Algeria"
+msgstr ""
+
+#: kc-multilingual.php:435
+msgid "Ecuador"
+msgstr ""
+
+#: kc-multilingual.php:436
+msgid "Estonia"
+msgstr ""
+
+#: kc-multilingual.php:437
+msgid "Egypt"
+msgstr ""
+
+#: kc-multilingual.php:438
+msgid "Western Sahara"
+msgstr ""
+
+#: kc-multilingual.php:439
+msgid "Eritrea"
+msgstr ""
+
+#: kc-multilingual.php:440
+msgid "Spain"
+msgstr ""
+
+#: kc-multilingual.php:441
+msgid "Ethiopia"
+msgstr ""
+
+#: kc-multilingual.php:442
+msgid "Finland"
+msgstr ""
+
+#: kc-multilingual.php:443
+msgid "Fiji"
+msgstr ""
+
+#: kc-multilingual.php:444
+msgid "Falkland Islands"
+msgstr ""
+
+#: kc-multilingual.php:445
+msgid "Micronesia"
+msgstr ""
+
+#: kc-multilingual.php:446
+msgid "Faeroe Islands"
+msgstr ""
+
+#: kc-multilingual.php:447
+msgid "France"
+msgstr ""
+
+#: kc-multilingual.php:448
+msgid "Gabon"
+msgstr ""
+
+#: kc-multilingual.php:449
+msgid "Britain (United Kingdom)"
+msgstr ""
+
+#: kc-multilingual.php:450
+msgid "Grenada"
+msgstr ""
+
+#: kc-multilingual.php:451
+msgid "Georgia"
+msgstr ""
+
+#: kc-multilingual.php:452
+msgid "French Guiana"
+msgstr ""
+
+#: kc-multilingual.php:453
+msgid "Guernsey"
+msgstr ""
+
+#: kc-multilingual.php:454
+msgid "Ghana"
+msgstr ""
+
+#: kc-multilingual.php:455
+msgid "Gibraltar"
+msgstr ""
+
+#: kc-multilingual.php:456
+msgid "Greenland"
+msgstr ""
+
+#: kc-multilingual.php:457
+msgid "Gambia"
+msgstr ""
+
+#: kc-multilingual.php:458
+msgid "Guinea"
+msgstr ""
+
+#: kc-multilingual.php:459
+msgid "Guadeloupe"
+msgstr ""
+
+#: kc-multilingual.php:460
+msgid "Equatorial Guinea"
+msgstr ""
+
+#: kc-multilingual.php:461
+msgid "Greece"
+msgstr ""
+
+#: kc-multilingual.php:462
+msgid "South Georgia and the South Sandwich Islands"
+msgstr ""
+
+#: kc-multilingual.php:463
+msgid "Guatemala"
+msgstr ""
+
+#: kc-multilingual.php:464
+msgid "Guam"
+msgstr ""
+
+#: kc-multilingual.php:465
+msgid "Guinea-Bissau"
+msgstr ""
+
+#: kc-multilingual.php:466
+msgid "Guyana"
+msgstr ""
+
+#: kc-multilingual.php:467
+msgid "Hong Kong"
+msgstr ""
+
+#: kc-multilingual.php:468
+msgid "Heard Island and McDonald Islands"
+msgstr ""
+
+#: kc-multilingual.php:469
+msgid "Honduras"
+msgstr ""
+
+#: kc-multilingual.php:470
+msgid "Croatia"
+msgstr ""
+
+#: kc-multilingual.php:471
+msgid "Haiti"
+msgstr ""
+
+#: kc-multilingual.php:472
+msgid "Hungary"
+msgstr ""
+
+#: kc-multilingual.php:473
+msgid "Indonesia"
+msgstr ""
+
+#: kc-multilingual.php:474
+msgid "Ireland"
+msgstr ""
+
+#: kc-multilingual.php:475
+msgid "Israel"
+msgstr ""
+
+#: kc-multilingual.php:476
+msgid "Isle of Man"
+msgstr ""
+
+#: kc-multilingual.php:477
+msgid "India"
+msgstr ""
+
+#: kc-multilingual.php:478
+msgid "British Indian Ocean Territory"
+msgstr ""
+
+#: kc-multilingual.php:479
+msgid "Iraq"
+msgstr ""
+
+#: kc-multilingual.php:480
+msgid "Iran"
+msgstr ""
+
+#: kc-multilingual.php:481
+msgid "Iceland"
+msgstr ""
+
+#: kc-multilingual.php:482
+msgid "Italy"
+msgstr ""
+
+#: kc-multilingual.php:483
+msgid "Jersey"
+msgstr ""
+
+#: kc-multilingual.php:484
+msgid "Jamaica"
+msgstr ""
+
+#: kc-multilingual.php:485
+msgid "Jordan"
+msgstr ""
+
+#: kc-multilingual.php:486
+msgid "Japan"
+msgstr ""
+
+#: kc-multilingual.php:487
+msgid "Kenya"
+msgstr ""
+
+#: kc-multilingual.php:488
+msgid "Kyrgyzstan"
+msgstr ""
+
+#: kc-multilingual.php:489
+msgid "Cambodia"
+msgstr ""
+
+#: kc-multilingual.php:490
+msgid "Kiribati"
+msgstr ""
+
+#: kc-multilingual.php:491
+msgid "Comoros"
+msgstr ""
+
+#: kc-multilingual.php:492
+msgid "St Kitts and Nevis"
+msgstr ""
+
+#: kc-multilingual.php:493
+msgid "Korea (North)"
+msgstr ""
+
+#: kc-multilingual.php:494
+msgid "Korea (South)"
+msgstr ""
+
+#: kc-multilingual.php:495
+msgid "Kuwait"
+msgstr ""
+
+#: kc-multilingual.php:496
+msgid "Cayman Islands"
+msgstr ""
+
+#: kc-multilingual.php:497
+msgid "Kazakhstan"
+msgstr ""
+
+#: kc-multilingual.php:498
+msgid "Laos"
+msgstr ""
+
+#: kc-multilingual.php:499
+msgid "Lebanon"
+msgstr ""
+
+#: kc-multilingual.php:500
+msgid "St Lucia"
+msgstr ""
+
+#: kc-multilingual.php:501
+msgid "Liechtenstein"
+msgstr ""
+
+#: kc-multilingual.php:502
+msgid "Sri Lanka"
+msgstr ""
+
+#: kc-multilingual.php:503
+msgid "Liberia"
+msgstr ""
+
+#: kc-multilingual.php:504
+msgid "Lesotho"
+msgstr ""
+
+#: kc-multilingual.php:505
+msgid "Lithuania"
+msgstr ""
+
+#: kc-multilingual.php:506
+msgid "Luxembourg"
+msgstr ""
+
+#: kc-multilingual.php:507
+msgid "Latvia"
+msgstr ""
+
+#: kc-multilingual.php:508
+msgid "Libya"
+msgstr ""
+
+#: kc-multilingual.php:509
+msgid "Morocco"
+msgstr ""
+
+#: kc-multilingual.php:510
+msgid "Monaco"
+msgstr ""
+
+#: kc-multilingual.php:511
+msgid "Moldova"
+msgstr ""
+
+#: kc-multilingual.php:512
+msgid "Montenegro"
+msgstr ""
+
+#: kc-multilingual.php:513
+msgid "Madagascar"
+msgstr ""
+
+#: kc-multilingual.php:514
+msgid "Marshall Islands"
+msgstr ""
+
+#: kc-multilingual.php:515
+msgid "Macedonia"
+msgstr ""
+
+#: kc-multilingual.php:516
+msgid "Mali"
+msgstr ""
+
+#: kc-multilingual.php:517
+msgid "Myanmar (Burma)"
+msgstr ""
+
+#: kc-multilingual.php:518
+msgid "Mongolia"
+msgstr ""
+
+#: kc-multilingual.php:519
+msgid "Macao"
+msgstr ""
+
+#: kc-multilingual.php:520
+msgid "Northern Mariana Islands"
+msgstr ""
+
+#: kc-multilingual.php:521
+msgid "Martinique"
+msgstr ""
+
+#: kc-multilingual.php:522
+msgid "Mauritania"
+msgstr ""
+
+#: kc-multilingual.php:523
+msgid "Montserrat"
+msgstr ""
+
+#: kc-multilingual.php:524
+msgid "Malta"
+msgstr ""
+
+#: kc-multilingual.php:525
+msgid "Mauritius"
+msgstr ""
+
+#: kc-multilingual.php:526
+msgid "Maldives"
+msgstr ""
+
+#: kc-multilingual.php:527
+msgid "Malawi"
+msgstr ""
+
+#: kc-multilingual.php:528
+msgid "Mexico"
+msgstr ""
+
+#: kc-multilingual.php:529
+msgid "Malaysia"
+msgstr ""
+
+#: kc-multilingual.php:530
+msgid "Mozambique"
+msgstr ""
+
+#: kc-multilingual.php:531
+msgid "Namibia"
+msgstr ""
+
+#: kc-multilingual.php:532
+msgid "New Caledonia"
+msgstr ""
+
+#: kc-multilingual.php:533
+msgid "Niger"
+msgstr ""
+
+#: kc-multilingual.php:534
+msgid "Norfolk Island"
+msgstr ""
+
+#: kc-multilingual.php:535
+msgid "Nigeria"
+msgstr ""
+
+#: kc-multilingual.php:536
+msgid "Nicaragua"
+msgstr ""
+
+#: kc-multilingual.php:537
+msgid "Netherlands"
+msgstr ""
+
+#: kc-multilingual.php:538
+msgid "Norway"
+msgstr ""
+
+#: kc-multilingual.php:539
+msgid "Nepal"
+msgstr ""
+
+#: kc-multilingual.php:541
+msgid "Niue"
+msgstr ""
+
+#: kc-multilingual.php:542
+msgid "New Zealand"
+msgstr ""
+
+#: kc-multilingual.php:543
+msgid "Oman"
+msgstr ""
+
+#: kc-multilingual.php:544
+msgid "Panama"
+msgstr ""
+
+#: kc-multilingual.php:545
+msgid "Peru"
+msgstr ""
+
+#: kc-multilingual.php:546
+msgid "French Polynesia"
+msgstr ""
+
+#: kc-multilingual.php:547
+msgid "Papua New Guinea"
+msgstr ""
+
+#: kc-multilingual.php:548
+msgid "Philippines"
+msgstr ""
+
+#: kc-multilingual.php:549
+msgid "Pakistan"
+msgstr ""
+
+#: kc-multilingual.php:550
+msgid "Poland"
+msgstr ""
+
+#: kc-multilingual.php:551
+msgid "St Pierre and Miquelon"
+msgstr ""
+
+#: kc-multilingual.php:552
+msgid "Pitcairn"
+msgstr ""
+
+#: kc-multilingual.php:553
+msgid "Puerto Rico"
+msgstr ""
+
+#: kc-multilingual.php:554
+msgid "Palestine"
+msgstr ""
+
+#: kc-multilingual.php:555
+msgid "Portugal"
+msgstr ""
+
+#: kc-multilingual.php:556
+msgid "Palau"
+msgstr ""
+
+#: kc-multilingual.php:557
+msgid "Paraguay"
+msgstr ""
+
+#: kc-multilingual.php:558
+msgid "Qatar"
+msgstr ""
+
+#: kc-multilingual.php:559
+msgid "Reunion"
+msgstr ""
+
+#: kc-multilingual.php:560
+msgid "Romania"
+msgstr ""
+
+#: kc-multilingual.php:561
+msgid "Serbia"
+msgstr ""
+
+#: kc-multilingual.php:562
+msgid "Russia"
+msgstr ""
+
+#: kc-multilingual.php:563
+msgid "Rwanda"
+msgstr ""
+
+#: kc-multilingual.php:564
+msgid "Saudi Arabia"
+msgstr ""
+
+#: kc-multilingual.php:565
+msgid "Solomon Islands"
+msgstr ""
+
+#: kc-multilingual.php:566
+msgid "Seychelles"
+msgstr ""
+
+#: kc-multilingual.php:567
+msgid "Sudan"
+msgstr ""
+
+#: kc-multilingual.php:568
+msgid "Sweden"
+msgstr ""
+
+#: kc-multilingual.php:569
+msgid "Singapore"
+msgstr ""
+
+#: kc-multilingual.php:570
+msgid "St Helena"
+msgstr ""
+
+#: kc-multilingual.php:571
+msgid "Slovenia"
+msgstr ""
+
+#: kc-multilingual.php:572
+msgid "Svalbard and Jan Mayen"
+msgstr ""
+
+#: kc-multilingual.php:573
+msgid "Slovakia"
+msgstr ""
+
+#: kc-multilingual.php:574
+msgid "Sierra Leone"
+msgstr ""
+
+#: kc-multilingual.php:575
+msgid "San Marino"
+msgstr ""
+
+#: kc-multilingual.php:576
+msgid "Senegal"
+msgstr ""
+
+#: kc-multilingual.php:577
+msgid "Somalia"
+msgstr ""
+
+#: kc-multilingual.php:578
+msgid "Suriname"
+msgstr ""
+
+#: kc-multilingual.php:579
+msgid "Sao Tome and Principe"
+msgstr ""
+
+#: kc-multilingual.php:580
+msgid "El Salvador"
+msgstr ""
+
+#: kc-multilingual.php:581
+msgid "Syria"
+msgstr ""
+
+#: kc-multilingual.php:582
+msgid "Swaziland"
+msgstr ""
+
+#: kc-multilingual.php:583
+msgid "Turks and Caicos Islands"
+msgstr ""
+
+#: kc-multilingual.php:584
+msgid "Chad"
+msgstr ""
+
+#: kc-multilingual.php:585
+msgid "French Southern and Antarctic Lands"
+msgstr ""
+
+#: kc-multilingual.php:586
+msgid "Togo"
+msgstr ""
+
+#: kc-multilingual.php:587
+msgid "Thailand"
+msgstr ""
+
+#: kc-multilingual.php:588
+msgid "Tajikistan"
+msgstr ""
+
+#: kc-multilingual.php:589
+msgid "Tokelau"
+msgstr ""
+
+#: kc-multilingual.php:590
+msgid "Timor-Leste"
+msgstr ""
+
+#: kc-multilingual.php:591
+msgid "Turkmenistan"
+msgstr ""
+
+#: kc-multilingual.php:592
+msgid "Tunisia"
+msgstr ""
+
+#: kc-multilingual.php:594
+msgid "Turkey"
+msgstr ""
+
+#: kc-multilingual.php:595
+msgid "Trinidad and Tobago"
+msgstr ""
+
+#: kc-multilingual.php:596
+msgid "Tuvalu"
+msgstr ""
+
+#: kc-multilingual.php:597
+msgid "Taiwan"
+msgstr ""
+
+#: kc-multilingual.php:598
+msgid "Tanzania"
+msgstr ""
+
+#: kc-multilingual.php:599
+msgid "Ukraine"
+msgstr ""
+
+#: kc-multilingual.php:600
+msgid "Uganda"
+msgstr ""
+
+#: kc-multilingual.php:601
+msgid "US minor outlying islands"
+msgstr ""
+
+#: kc-multilingual.php:602
+msgid "United States"
+msgstr ""
+
+#: kc-multilingual.php:603
+msgid "Uruguay"
+msgstr ""
+
+#: kc-multilingual.php:604
+msgid "Uzbekistan"
+msgstr ""
+
+#: kc-multilingual.php:605
+msgid "Vatican City"
+msgstr ""
+
+#: kc-multilingual.php:606
+msgid "St Vincent and the Grenadines"
+msgstr ""
+
+#: kc-multilingual.php:607
+msgid "Venezuela"
+msgstr ""
+
+#: kc-multilingual.php:608
+msgid "Virgin Islands (UK)"
+msgstr ""
+
+#: kc-multilingual.php:609
+msgid "Virgin Islands (US)"
+msgstr ""
+
+#: kc-multilingual.php:610
+msgid "Vietnam"
+msgstr ""
+
+#: kc-multilingual.php:611
+msgid "Vanuatu"
+msgstr ""
+
+#: kc-multilingual.php:612
+msgid "Wallis and Futuna"
+msgstr ""
+
+#: kc-multilingual.php:613
+msgid "Samoa (Western)"
+msgstr ""
+
+#: kc-multilingual.php:614
+msgid "Yemen"
+msgstr ""
+
+#: kc-multilingual.php:615
+msgid "Mayotte"
+msgstr ""
+
+#: kc-multilingual.php:616
+msgid "South Africa"
+msgstr ""
+
+#: kc-multilingual.php:617
+msgid "Zambia"
+msgstr ""
+
+#: kc-multilingual.php:618
+msgid "Zimbabwe"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "KC Multilingual"
+msgstr ""
+
+#. #-#-#-#-#  kc-ml.pot (KC Multilingual 0.1)  #-#-#-#-#
+#. Plugin URI of the plugin/theme
+#. #-#-#-#-#  kc-ml.pot (KC Multilingual 0.1)  #-#-#-#-#
+#. Author URI of the plugin/theme
+msgid "http://kucrut.org/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Make WordPress speak your language!"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Dzikri Aziz"
+msgstr ""
