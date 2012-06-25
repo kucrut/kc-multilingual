@@ -310,8 +310,8 @@ class kcMultilingual_backend {
 		$out .= '
 <script>
 jQuery(document).ready(function($) {
-	var $lang_sel  = $("#kcml-edit-language"),
-	    $lang_name = $("#kcml-edit-custom_name");
+	var $lang_sel  = $("#kcml-edit-language, #kcml-add-language"),
+	    $lang_name = $("#kcml-edit-custom_name, #kcml-add-custom_name");
 
 	$lang_sel.on("change", function() {
 		$lang_name.val( $lang_sel.children(\'[value="\'+$lang_sel.val()+\'"]\').text() );
