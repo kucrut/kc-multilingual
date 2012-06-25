@@ -40,7 +40,7 @@ class kcMultilingual_backend {
 			$languages[$url] = $data;
 			$locales[$url]   = $data['locale'];
 		}
-		asort( $languages );
+		ksort( $languages );
 		self::$languages = $languages;
 		ksort( $locales );
 		self::$locales = $locales;
@@ -265,6 +265,11 @@ class kcMultilingual_backend {
 				'desc'    => __('Optional', 'kc-ml')
 			),
 			array(
+				'id'    => 'custom_name',
+				'type'  => 'text',
+				'label'   => __('Custom name', 'kc-ml')
+			),
+			array(
 				'id'    => 'date_format',
 				'type'  => 'text',
 				'label'   => __('Date format'),
@@ -302,6 +307,18 @@ class kcMultilingual_backend {
 			$out .= "</p>\n";
 		}
 		$out .= "</div>\n";
+		$out .= '
+<script>
+jQuery(document).ready(function($) {
+	var $lang_sel  = $("#kcml-edit-language"),
+	    $lang_name = $("#kcml-edit-custom_name");
+
+	$lang_sel.on("change", function() {
+		$lang_name.val( $lang_sel.children(\'[value="\'+$lang_sel.val()+\'"]\').text() );
+	});
+});
+</script>
+';
 
 		return $out;
 	}
@@ -360,6 +377,7 @@ class kcMultilingual_backend {
 			$new['country'] = '';
 		}
 		$_new['locale'] = $locale;
+		$_new['custom_name'] = isset($data['custom_name']) ? $data['custom_name'] : '';
 		$_new['date_format'] = (isset($data['date_format']) && !empty($data['date_format'])) ? $data['date_format'] : get_option( 'date_format');
 		$_new['time_format'] = (isset($data['time_format']) && !empty($data['time_format'])) ? $data['time_format'] : get_option( 'time_format');
 
@@ -375,6 +393,7 @@ class kcMultilingual_backend {
 		if ( isset($value['add']['language']) && $value['add']['language'] ) {
 			$_new = self::_add_language( $value['add'] );
 			$value['current'][$_new['url']] = $_new;
+			unset( $value['add'] );
 		}
 		# Edit
 		elseif ( isset($value['edit']) && $value['edit'] ) {
@@ -385,10 +404,8 @@ class kcMultilingual_backend {
 				unset( $value['current'][$value['edit']['_lang']] );
 
 			add_action( 'update_option_kc_ml_settings', array(__CLASS__, 'settings_redirect'), 11 );
+			unset( $value['edit'] );
 		}
-
-		unset( $value['add'] );
-		unset( $value['edit'] );
 
 		$locales = array();
 		# Set default

@@ -4,7 +4,8 @@ require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 class kcMultilingual_table extends WP_List_Table {
 	function get_columns() {
 		$columns = array(
-			'name'        => __('Language / Country', 'kc-ml'),
+			'lc'          => __('Language / Country', 'kc-ml'),
+			'name'        => __('Name'),
 			'locale'      => __('Locale', 'kc-ml'),
 			'url'         => __('URL suffix', 'kc-ml'),
 			'date_format' => __('Date format'),
@@ -22,7 +23,7 @@ class kcMultilingual_table extends WP_List_Table {
   }
 
 
-  function column_name( $item ) {
+  function column_lc( $item ) {
 		$url = "?page={$_REQUEST['page']}&lang={$item['url']}&_nonce=".wp_create_nonce('__kc_ml__');
 		$actions = array( 'edit' => "<a href='{$url}&action=edit'>".__('Edit')."</a>" );
 		if ( kcMultilingual_backend::$default === $item['url'] ) {
@@ -38,8 +39,13 @@ class kcMultilingual_table extends WP_List_Table {
   }
 
 
+  function column_name( $item, $column_name ) {
+		return isset( $item['custom_name'] ) ? $item['custom_name'] : '';
+	}
+
+
   function column_default( $item, $column_name ) {
-		return $item[$column_name];
+		return isset( $item[$column_name] ) ? $item[$column_name] : '';
   }
 
 
