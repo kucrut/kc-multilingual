@@ -307,7 +307,7 @@ class kcMultilingual_frontend {
  *
  * @param bool $exclude_current Whether to exclude current language
  * @param string $text Language name format: custom_name, full_name, language_name, language_code
- * @param string $sep Separator used when $text is set to full_name
+ * @param string $sep Separator between language and country name
  *
  * @return bool|array
  */
@@ -326,7 +326,7 @@ function kc_ml_get_languages( $exclude_current = true, $text = 'custom_name', $s
 			'locale'    => $data['locale'],
 			'url'       => ( $lang === kcMultilingual_backend::$default ) ? $_url : kcMultilingual_frontend::filter_url( $_url, $lang, kcMultilingual_backend::$prettyURL ),
 			'current'   => kcMultilingual_backend::$lang === $lang,
-			'full_name' => kcMultilingual::get_language_fullname( $lang )
+			'full_name' => isset($data['country']) ? kcMultilingual::get_language_fullname( $lang, $data['country'], $sep ) : kcMultilingual::get_language_fullname( $lang )
 		);
 
 		if ( 'custom_name' === $text && isset($data['custom_name']) ) {
@@ -335,8 +335,8 @@ function kc_ml_get_languages( $exclude_current = true, $text = 'custom_name', $s
 		else {
 			if ( 'language_code' == $text )
 				$name = $data['language'];
-			elseif ( 'full_name' == $text && isset($data['country']) )
-				$name = kcMultilingual::get_language_fullname( $lang, $data['country'], $sep );
+			elseif ( 'full_name' == $text )
+				$name = $item['full_name'];
 			else
 				$name = kcMultilingual::get_language_fullname( $lang );
 		}
