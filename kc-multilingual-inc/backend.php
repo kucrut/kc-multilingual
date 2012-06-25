@@ -267,7 +267,7 @@ class kcMultilingual_backend {
 			array(
 				'id'    => 'custom_name',
 				'type'  => 'text',
-				'label'   => __('Custom name', 'kc-ml')
+				'label'   => __('Name')
 			),
 			array(
 				'id'    => 'date_format',
