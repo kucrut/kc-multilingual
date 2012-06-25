@@ -39,7 +39,7 @@ class kcMultilingual_table extends WP_List_Table {
   }
 
 
-  function column_name( $item, $column_name ) {
+  function column_name( $item ) {
 		return isset( $item['custom_name'] ) ? $item['custom_name'] : '';
 	}
 
