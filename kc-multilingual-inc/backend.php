@@ -68,6 +68,7 @@ class kcMultilingual_backend {
 		add_action( 'widgets_init', array(__CLASS__, 'fields_widget_prepare'), 100 );
 		add_action( 'in_widget_form', array(__CLASS__, 'fields_widget_render'), 10, 3 );
 		add_filter( 'widget_update_callback', array(__CLASS__, 'fields_widget_save'), 10, 4 );
+		add_action( 'widgets_init', array(__CLASS__, 'register_widget') );
 	}
 
 
@@ -887,6 +888,12 @@ jQuery(document).ready(function($) {
 			$instance['kcml'] = $translation;
 
 		return $instance;
+	}
+
+
+	public static function register_widget() {
+		require_once dirname( __FILE__ ) . '/widget.php';
+		register_widget( 'kc_ml_widget_languages' );
 	}
 }
 

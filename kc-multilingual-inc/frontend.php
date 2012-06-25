@@ -360,7 +360,7 @@ function kc_ml_get_languages( $exclude_current = true, $text = 'custom_name', $s
  * @return bool|void
  */
 function kc_ml_list_languages( $exclude_current = true, $text = 'custom_name', $sep = ' / ', $echo = true ) {
-	$languages = kc_ml_get_languages( $exclude_current, $text );
+	$languages = kc_ml_get_languages( $exclude_current, $text, $sep );
 	if ( !$languages )
 		return false;
 
