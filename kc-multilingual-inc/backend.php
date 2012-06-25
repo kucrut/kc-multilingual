@@ -33,7 +33,10 @@ class kcMultilingual_backend {
 		$languages = array();
 		$locales   = array();
 		foreach ( $settings['general']['languages']['current'] as $url => $data ) {
-			$data['name'] = kcMultilingual::get_language_fullname($data['language'], $data['country']);
+			if ( isset($data['country']) )
+				$data['name']  = kcMultilingual::get_language_fullname($data['language'], $data['country']);
+			else
+				$data['name']  = kcMultilingual::get_language_fullname($data['language']);
 			$languages[$url] = $data;
 			$locales[$url]   = $data['locale'];
 		}
@@ -289,7 +292,7 @@ class kcMultilingual_backend {
 				'id'   => "kcml-{$name_prefix}-{$field['id']}",
 				'name' => "{$args['field']['name']}[{$name_prefix}][{$field['id']}]"
 			);
-			$field['current'] = $value[$field['id']];
+			$field['current'] = isset($value[$field['id']]) ? $value[$field['id']] : '';
 
 			$out .= "<p>";
 			$out .= "<label for='{$field['attr']['id']}' class='fw'>{$field['label']}</label>";
@@ -584,9 +587,13 @@ class kcMultilingual_backend {
 
 		self::$post_types = $post_types;
 
-		add_action( 'edit_page_form', array(__CLASS__, 'fields_post_render') );
-		add_action( 'edit_form_advanced', array(__CLASS__, 'fields_post_render') );
+		add_action( 'add_meta_boxes', array(__CLASS__, 'fields_post_meta_box'), 11, 2 );
 		add_action( 'save_post', array(__CLASS__, 'fields_post_save'), 1, 2 );
+	}
+
+
+	public static function fields_post_meta_box( $post_type, $post ) {
+		add_meta_box( "kcml-post-metabox", 'KC Multilingual', array(__CLASS__, 'fields_post_render'), $post_type, 'normal', 'default' );
 	}
 
 
@@ -599,7 +606,6 @@ class kcMultilingual_backend {
 		$post_id = $post->ID;
 		?>
 <div class="kcml-wrap">
-	<h3>KC Multilingual</h3>
 	<ul class='kcml-langs kcs-tabs'>
 		<?php foreach ( self::$languages as $lang => $data ) { if ( self::$default === $lang ) continue; ?>
 		<li><a href='#kcml-<?php echo $lang ?>'><?php echo $data['name'] ?></a></li>
@@ -626,8 +632,8 @@ class kcMultilingual_backend {
 			<?php
 				wp_editor(
 					kcMultilingual_frontend::get_translation($lang, 'post', $post_id, 'content'),
-					'kcmlposteditor' . str_replace('-', '', $lang),
-					array( 'textarea_name' => "kc-postmeta[kcml][kcml-translation][{$lang}][content]" )
+					'kcmlposteditor' . strtolower( str_replace(array('-', '_'), '', $lang) ),
+					array( 'textarea_name' => "kc-postmeta[kcml][kcml-translation][{$lang}][content]", 'tinymce' => array('height' => '350px') )
 				);
 			?>
 		<?php break; } ?>

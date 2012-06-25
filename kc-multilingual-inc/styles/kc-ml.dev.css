@@ -70,3 +70,5 @@ ul.kcml-langs .tabs a {
 	margin-left:10px;
 }
 .kcml-post-meta h5 {margin-bottom:.75em}
+.kcml-wrap .mceIframeContainer {background:#fff;}
+#kcml-post-metabox ul.kcml-langs {padding:10px 0;}
