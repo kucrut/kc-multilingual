@@ -440,14 +440,14 @@ jQuery(document).ready(function($) {
 			return;
 
 		$meta = $_meta;
-		$allowed_field_types = array('text', 'textarea', 'url', 'tel', 'month', 'week', 'time', 'datetime-local', 'datetime', 'color', 'number', 'multiinput');
+		$not_supported = array( 'multiselect', 'special', 'editor' );
 		foreach ( $_meta as $type => $object_types ) {
 			foreach ( $object_types as $object_type => $sections ) {
 				foreach ( $sections as $section_id => $section ) {
 					unset($meta[$type][$object_type]['kcml']);
 
 					foreach ( $section['fields'] as $field_id => $field ) {
-						if ( !in_array($field['type'], $allowed_field_types) || (isset($field['kcml']) && !$field['kcml']) )
+						if ( in_array($field['type'], $not_supported) || (isset($field['kcml']) && !$field['kcml']) )
 							unset( $meta[$type][$object_type][$section_id]['fields'][$field_id] );
 					}
 
@@ -509,8 +509,8 @@ jQuery(document).ready(function($) {
 			$db_value = array();
 
 		$screen = get_current_screen();
-		$_id = isset($args['object_id']) ? $args['object_id'] : 0;
-		$id_base = "{$args['section']}-{$args['mode']}-{$_id}-{$args['field']['id']}";
+		$object_id = isset($args['object_id']) ? $args['object_id'] : 0;
+		$id_base = "{$args['section']}-{$args['mode']}-{$object_id}-{$args['field']['id']}";
 
 		if ( $args['mode'] === 'attachment' ) {
 			$labels = array(
@@ -522,7 +522,7 @@ jQuery(document).ready(function($) {
 			$input_class = '';
 			$object_type = 'post';
 			$object_name = 'attachment';
-			$hidden_meta = true;
+			$hidden = true;
 		}
 		else {
 			$labels = array(
@@ -532,7 +532,7 @@ jQuery(document).ready(function($) {
 			$input_class = " class='widefat kcs-input'";
 			$object_type = 'term';
 			$object_name = $screen->taxonomy;
-			$hidden_meta = false;
+			$hidden = false;
 		}
 		$list   = "<ul class='kcml-langs kcs-tabs'>\n";
 		$fields = '';
@@ -553,7 +553,7 @@ jQuery(document).ready(function($) {
 			$fields .= "<input{$input_class} type='text' value='".esc_attr($value['title'])."' name='{$args['field']['name']}[{$lang}][title]' id='{$id_base}-{$lang}-title' />\n";
 			$fields .= "</div>\n";
 			if ( $args['mode'] === 'attachment' ) {
-				if ( strpos(get_post_mime_type($args['object_id']), 'image') !== false ) {
+				if ( strpos(get_post_mime_type($object_id), 'image') !== false ) {
 					$fields .= "<div class='field'>\n";
 					$fields .= "<label for='{$id_base}-{$lang}-image_alt'>{$labels['image_alt']}</label>\n";
 					$fields .= "<input type='text' value='".esc_attr($value['image_alt'])."' name='{$args['field']['name']}[{$lang}][image_alt]' id='{$id_base}-{$lang}-image_alt' />\n";
@@ -569,8 +569,15 @@ jQuery(document).ready(function($) {
 			$fields .= "<textarea{$input_class} name='{$args['field']['name']}[{$lang}][content]' id='{$id_base}-{$lang}-content' cols='50' rows='5'>".esc_textarea($value['content'])."</textarea>\n";
 			$fields .= "</div>\n";
 			if ( $meta_fields = kc_array_multi_get_value(self::$meta_fields, array($object_type, $object_name)) ) {
-				$meta_values = $_id ? kcMultilingual_frontend::get_translation( $lang, $object_type, $_id, 'meta' ) : array();
-				$fields .= self::fields_metadata_render( $meta_fields, $meta_values, $lang, $args['field']['name'], $hidden_meta, false );
+				$fields .= self::fields_metadata_render( array(
+					'meta_fields' => $meta_fields,
+					'meta_values' => $object_id ? kcMultilingual_frontend::get_translation( $lang, $object_type, $object_id, 'meta' ) : array(),
+					'lang'        => $lang,
+					'name_prefix' => $args['field']['name'],
+					'hidden'      => $hidden,
+					'parent'      => $object_id,
+					'display'     => false
+				) );
 			}
 			$fields .= "</div>\n";
 		}
@@ -658,8 +665,17 @@ jQuery(document).ready(function($) {
 		</div>
 		<?php } ?>
 		<?php
-			if ( $meta_fields = kc_array_multi_get_value(self::$meta_fields, array('post', $screen->post_type)) )
-				self::fields_metadata_render( $meta_fields, kcMultilingual_frontend::get_translation( $lang, 'post', $post_id, 'meta' ), $lang, "kc-postmeta[kcml][kcml-translation]", true );
+			if ( $meta_fields = kc_array_multi_get_value(self::$meta_fields, array('post', $screen->post_type)) ) {
+				self::fields_metadata_render( array(
+					'meta_fields' => $meta_fields,
+					'meta_values' => kcMultilingual_frontend::get_translation( $lang, 'post', $post_id, 'meta' ),
+					'lang'        => $lang,
+					'name_prefix' => "kc-postmeta[kcml][kcml-translation]",
+					'hidden'      => true,
+					'parent'      => $post_id,
+					'display'     => true
+				) );
+			}
 		?>
 	</div>
 	<?php } ?>
@@ -668,7 +684,8 @@ jQuery(document).ready(function($) {
 	<?php }
 
 
-	private static function fields_metadata_render( $meta_fields, $meta_values, $lang, $name_prefix, $hidden = true, $display = true ) {
+	private static function fields_metadata_render( $args = array() ) {
+		extract( $args, EXTR_OVERWRITE );
 		if ( !$display ) ob_start(); ?>
 
 		<div class="kcml-post-meta">
@@ -688,24 +705,35 @@ jQuery(document).ready(function($) {
 					$field_html_name = "{$name_prefix}[{$lang}][meta][{$field_id}]";
 					$field_value = isset( $meta_values[$field_id] ) ? $meta_values[$field_id] : '';
 
-					if ( $field['type'] === 'multiinput' ) {
-						$field['_id'] = $field_html_id;
-						echo _kc_field_multiinput( $field_html_name, $field_value, $field );
-					}
-					else {
-						$field_args = array(
-							'type' => $field['type'],
-							'attr' => array(
-								'id'    => $field_html_id,
-								'name'  => $field_html_name,
-								'class' => "kcs-{$field['type']} kcs-input"
-							),
-							'current' => $field_value
-						);
-						if ( isset($field['attr']) )
-							$field_args['attr'] = array_merge( $field['attr'], $_args['attr'] );
+					switch ( $field['type'] ) {
+						case 'multiinput' :
+							$field['_id'] = $field_html_id;
+							echo _kc_field_multiinput( $field_html_name, $field_value, $field );
+						break;
+						case 'file' :
+							echo _kc_field_file( array(
+								'id'       => $field_html_id,
+								'name'     => $field_html_name,
+								'field'    => $field,
+								'db_value' => $field_value,
+								'parent'   => isset( $parent ) ? $parent : 0
+							) );
+						break;
+						default :
+							$field_args = array(
+								'type' => $field['type'],
+								'attr' => array(
+									'id'    => $field_html_id,
+									'name'  => $field_html_name,
+									'class' => "kcs-{$field['type']} kcs-input"
+								),
+								'current' => $field_value
+							);
+							if ( isset($field['attr']) )
+								$field_args['attr'] = array_merge( $field['attr'], $_args['attr'] );
 
-						echo kcForm::field( $field_args );
+							echo kcForm::field( $field_args );
+						break;
 					}
 					if ( isset($field['desc']) && !empty($field['desc']) ) { ?>
 				<p class="description"><?php echo esc_html( $field['desc'] ) ?></p>
