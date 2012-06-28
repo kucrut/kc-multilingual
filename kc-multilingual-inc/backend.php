@@ -697,11 +697,11 @@ jQuery(document).ready(function($) {
 				<?php if ( $field['type'] === 'multiinput' ) { ?>
 				<label><?php echo $field['title'] ?></label>
 				<?php } else { ?>
-				<label for="kcmlpost-meta-<?php echo "{$section['id']}-{$field['id']}-{$lang}" ?>"><?php echo $field['title'] ?></label>
+				<label for="kcml-meta-<?php echo "{$section['id']}-{$field['id']}-{$lang}" ?>"><?php echo $field['title'] ?></label>
 				<?php } ?>
 				<?php
 					$field_id = $hidden ? "_{$field['id']}" : $field['id'];
-					$field_html_id = "kcmlpost-meta-{$section['id']}-{$field['id']}-{$lang}";
+					$field_html_id = "kcml-meta-{$section['id']}-{$field['id']}-{$lang}";
 					$field_html_name = "{$name_prefix}[{$lang}][meta][{$field_id}]";
 					$field_value = isset( $meta_values[$field_id] ) ? $meta_values[$field_id] : '';
 
