@@ -292,7 +292,7 @@ class kcMultilingual_frontend {
 	private static function filter_meta( $meta_type, $value, $object_id, $meta_key, $single ) {
 		if ( $_value = kcMultilingual_frontend::get_translation( kcMultilingual_backend::$lang, $meta_type, $object_id, 'meta' ) ) {
 			if ( isset($_value[$meta_key]) && !empty($_value[$meta_key]) )
-				$value = $_value[$meta_key];
+				$value = array( $_value[$meta_key] );
 		}
 
 		return $value;
