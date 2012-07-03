@@ -440,7 +440,7 @@ jQuery(document).ready(function($) {
 			return;
 
 		$meta = $_meta;
-		$not_supported = array( 'multiselect', 'special', 'editor' );
+		$not_supported = array( 'select', 'multiselect', 'special', 'editor' );
 		foreach ( $_meta as $type => $object_types ) {
 			foreach ( $object_types as $object_type => $sections ) {
 				foreach ( $sections as $section_id => $section ) {
