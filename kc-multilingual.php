@@ -32,6 +32,9 @@ class kcMultilingual {
 		);
 		self::$data = $data;
 
+		# Register to KC Settings
+		add_filter( 'kc_settings_kids', array(__CLASS__, '_register') );
+
 		# i18n
 		$mo_file = $paths['inc'].'/languages/kc-ml-'.get_locale().'.mo';
 		if ( is_readable($mo_file) )
@@ -77,6 +80,17 @@ class kcMultilingual {
 
 
 	# Register to KC Settings
+	public static function _register( $kids ) {
+		$kids['kc_multilingual'] = array(
+			'name' => 'KC Multilingual',
+			'type' => 'plugin',
+			'file' => self::$data['paths']['p_file']
+		);
+
+		return $kids;
+	}
+
+
 	public static function _activate() {
 		if ( version_compare(get_bloginfo('version'), '3.3', '<') )
 			wp_die( 'Please upgrade your WordPress to version 3.3 before using this plugin.' );
@@ -84,24 +98,12 @@ class kcMultilingual {
 		if ( !class_exists('kcSettings') )
 			wp_die( 'Please install and activate <a href="http://wordpress.org/extend/plugins/kc-settings/">KC Settings</a> before activating this plugin.<br /> <a href="'.wp_get_referer().'">&laquo; Go back</a> to plugins page.' );
 
-		$kcs = kcSettings::get_data('status');
-		$kcs['kids']['kc_multilingual'] = array(
-			'name' => 'KC Multilingual',
-			'type' => 'plugin',
-			'file' => kc_plugin_file(__FILE__)
-		);
-		update_option( 'kc_settings', $kcs );
-
 		flush_rewrite_rules();
 	}
 
 
 	# Unregister from KC Settings
 	public static function _deactivate() {
-		$kcs = kcSettings::get_data('status');
-		unset( $kcs['kids']['kc_multilingual'] );
-		update_option( 'kc_settings', $kcs );
-
 		remove_filter( 'rewrite_rules_array', array('kcMultilingual_backend', 'add_rewrite_rules') );
 		flush_rewrite_rules();
 	}
