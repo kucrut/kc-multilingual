@@ -19,14 +19,14 @@ class kcMultilingual_table extends WP_List_Table {
 	function prepare_items() {
 		$columns = $this->get_columns();
 		$this->_column_headers = array( $columns, array(), array() );
-		$this->items = kcMultilingual_backend::$languages;
+		$this->items = kcMultilingual_backend::get_data('languages');
   }
 
 
   function column_lc( $item ) {
 		$url = "?page={$_REQUEST['page']}&lang={$item['url']}&_nonce=".wp_create_nonce('__kc_ml__');
 		$actions = array( 'edit' => "<a href='{$url}&action=edit'>".__('Edit')."</a>" );
-		if ( kcMultilingual_backend::$default === $item['url'] ) {
+		if ( kcMultilingual_backend::get_data('default') === $item['url'] ) {
 			$name = sprintf('%1$s (%2$s)', "<strong>{$item['name']}</strong>", __('default', 'kc-ml') );
 		}
 		else {

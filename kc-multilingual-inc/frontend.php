@@ -1,11 +1,13 @@
 <?php
 
 class kcMultilingual_frontend {
-	public static $is_active = false;
+	public static $data = array( 'is_active' => false );
 
 
 	public static function init( $destroy = false ) {
-		self::$is_active = !$destroy;
+		self::$data['lang'] = kcMultilingual_backend::get_data('lang');
+		self::$data['is_active'] = !$destroy;
+
 		$func = $destroy ? 'remove_filter' : 'add_filter';
 
 		call_user_func( $func, 'query_vars', array(__CLASS__, 'query_vars'), 0 );
@@ -58,13 +60,13 @@ class kcMultilingual_frontend {
 
 
 	public static function filter_home_url( $url, $path, $orig_scheme, $blog_id ) {
-		return self::filter_url( $url, kcMultilingual_backend::$lang, kcMultilingual_backend::$prettyURL );
+		return self::filter_url( $url, self::$data['lang'], kcMultilingual_backend::get_data('prettyURL') );
 	}
 
 
 	public static function filter_url( $url, $lang, $pretty = false ) {
 		if ( $pretty && is_string($lang) && !empty($lang) ) {
-			$url = preg_replace('/'.str_replace('/', '\/', kcMultilingual_backend::$home_url ).'/', kcMultilingual_backend::$home_url . "/{$lang}", $url, 1 );
+			$url = preg_replace('/'.str_replace('/', '\/', kcMultilingual_backend::get_data('home_url') ).'/', kcMultilingual_backend::get_data('home_url') . "/{$lang}", $url, 1 );
 		}
 		else {
 			if ( !empty($lang) && is_string($lang) )
@@ -78,17 +80,17 @@ class kcMultilingual_frontend {
 
 
 	public static function get_current_url() {
-		if ( self::$is_active )
+		if ( self::$data['is_active'] )
 			remove_filter( 'home_url', array(__CLASS__, 'filter_home_url'), 0, 4 );
 
 		global $wp;
-		if ( kcMultilingual_backend::$prettyURL )
+		if ( kcMultilingual_backend::get_data('prettyURL') )
 			$current_url = home_url( $wp->request );
 		else {
 			$current_url = add_query_arg( $wp->query_string, '', home_url() );
 		}
 
-		if ( self::$is_active )
+		if ( self::$data['is_active'] )
 			add_filter( 'home_url', array(__CLASS__, 'filter_home_url'), 0, 4 );
 
 		return $current_url;
@@ -124,7 +126,7 @@ class kcMultilingual_frontend {
 
 
 	public static function filter_post_title( $title, $id ) {
-		if ( $translation = self::get_translation( kcMultilingual_backend::$lang, 'post', $id, 'title', get_post_type($id) === 'attachment' ) )
+		if ( $translation = self::get_translation( self::$data['lang'], 'post', $id, 'title', get_post_type($id) === 'attachment' ) )
 			$title = $translation;
 
 		return $title;
@@ -140,7 +142,7 @@ class kcMultilingual_frontend {
 			$id = $post->ID;
 		}
 
-		if ( $translation = self::get_translation( kcMultilingual_backend::$lang, 'post', $id, 'content', get_post_type($id) === 'attachment' ) )
+		if ( $translation = self::get_translation( self::$data['lang'], 'post', $id, 'content', get_post_type($id) === 'attachment' ) )
 			$content = $translation;
 
 		return $content;
@@ -153,7 +155,7 @@ class kcMultilingual_frontend {
 			$id = $post->ID;
 		}
 
-		if ( $translation = self::get_translation( kcMultilingual_backend::$lang, 'post', $id, 'excerpt', get_post_type($id) === 'attachment' ) )
+		if ( $translation = self::get_translation( self::$data['lang'], 'post', $id, 'excerpt', get_post_type($id) === 'attachment' ) )
 			$excerpt = $translation;
 
 		return $excerpt;
@@ -161,9 +163,9 @@ class kcMultilingual_frontend {
 
 
 	public static function filter_attachment_attributes( $attr, $attachment ) {
-		if ( $alt = self::get_translation( kcMultilingual_backend::$lang, 'post', $attachment->ID, 'image_alt', true ) )
+		if ( $alt = self::get_translation( self::$data['lang'], 'post', $attachment->ID, 'image_alt', true ) )
 			$attr['alt'] = $alt;
-		if ( $title = self::get_translation( kcMultilingual_backend::$lang, 'post', $attachment->ID, 'title', true ) )
+		if ( $title = self::get_translation( self::$data['lang'], 'post', $attachment->ID, 'title', true ) )
 			$attr['title'] = $title;
 
 		return $attr;
@@ -191,7 +193,7 @@ class kcMultilingual_frontend {
 
 
 	public static function filter_term_field( $string, $id, $field ) {
-		if ( $translation = self::get_translation( kcMultilingual_backend::$lang, 'term', $id, $field ) )
+		if ( $translation = self::get_translation( self::$data['lang'], 'term', $id, $field ) )
 			$string = $translation;
 
 		return $string;
@@ -208,23 +210,20 @@ class kcMultilingual_frontend {
 
 
 	public static function filter_date_format( $value ) {
-		$value = kcMultilingual_backend::$languages[kcMultilingual_backend::$lang]['date_format'];
+		$value = kcMultilingual_backend::get_data('languages', self::$data['lang'], 'date_format');
 		return $value;
 	}
 
 
 	public static function filter_time_format( $value ) {
-		$value = kcMultilingual_backend::$languages[kcMultilingual_backend::$lang]['time_format'];
+		$value = kcMultilingual_backend::get_data('languages', self::$data['lang'], 'time_format');
 		return $value;
 	}
 
 
 	public static function get_global_translation( $value, $field ) {
-		if (
-			isset(kcMultilingual_backend::$settings['translations']['global'][kcMultilingual_backend::$lang][$field])
-			&& !empty(kcMultilingual_backend::$settings['translations']['global'][kcMultilingual_backend::$lang][$field])
-		)
-			$value = kcMultilingual_backend::$settings['translations']['global'][kcMultilingual_backend::$lang][$field];
+		if ( $_val = kcMultilingual_backend::get_data( 'settings', 'translations', 'global', self::$data['lang'], $field ) )
+			$value = $_val;
 
 		return $value;
 	}
@@ -241,16 +240,27 @@ class kcMultilingual_frontend {
 
 
 	public static function filter_widget( $instance, $widget, $args ) {
-		if ( !isset(kcMultilingual_backend::$widget_fields[$widget->option_name])
-			|| empty(kcMultilingual_backend::$widget_fields[$widget->option_name])
-			|| !isset($instance['kcml'][kcMultilingual_backend::$lang])
-			|| empty($instance['kcml'][kcMultilingual_backend::$lang])
+		if (
+			!( $fields = kcMultilingual_backend::get_data('widget_fields', $widget->option_name) )
+			|| !isset($instance['kcml'][self::$data['lang']])
+			|| empty($instance['kcml'][self::$data['lang']])
 		)
 			return $instance;
 
-		foreach ( kcMultilingual_backend::$widget_fields[$widget->option_name] as $field ) {
-			if ( isset($instance['kcml'][kcMultilingual_backend::$lang][$field['id']]) && !empty($instance['kcml'][kcMultilingual_backend::$lang][$field['id']]) )
-				$instance[$field['id']] = apply_filters( 'kcml_widget_translation', $instance['kcml'][kcMultilingual_backend::$lang][$field['id']], $field['id'], $instance, $widget, $args );
+		foreach ( $fields as $field ) {
+			if (
+				isset($instance['kcml'][self::$data['lang']][$field['id']])
+				&& !empty($instance['kcml'][self::$data['lang']][$field['id']])
+			) {
+				$instance[$field['id']] = apply_filters(
+					'kcml_widget_translation',
+					$instance['kcml'][self::$data['lang']][$field['id']],
+					$field['id'],
+					$instance,
+					$widget,
+					$args
+				);
+			}
 		}
 
 		return $instance;
@@ -290,10 +300,12 @@ class kcMultilingual_frontend {
 
 
 	private static function filter_meta( $meta_type, $value, $object_id, $meta_key, $single ) {
-		if ( $_value = kcMultilingual_frontend::get_translation( kcMultilingual_backend::$lang, $meta_type, $object_id, 'meta' ) ) {
-			if ( isset($_value[$meta_key]) && !empty($_value[$meta_key]) )
-				$value = array( $_value[$meta_key] );
-		}
+		if (
+			( $_value = self::get_translation( self::$data['lang'], $meta_type, $object_id, 'meta' ) )
+			&& isset( $_value[$meta_key] )
+			&& !empty( $_value[$meta_key] )
+		)
+			$value = array( $_value[$meta_key] );
 
 		return $value;
 	}
@@ -312,20 +324,21 @@ class kcMultilingual_frontend {
  * @return bool|array
  */
 function kc_ml_get_languages( $exclude_current = true, $text = 'custom_name', $sep = ' / ' ) {
-	$_languages = kcMultilingual_backend::$languages;
+	$_languages = kcMultilingual_backend::get_data('languages');
 	if ( empty($_languages) )
 		return false;
 
+	$current = kcMultilingual_backend::get_data( 'lang' );
 	if ( $exclude_current )
-		unset( $_languages[kcMultilingual_backend::$lang] );
+		unset( $_languages[$current] );
 
 	$languages = array();
 	$_url = trailingslashit( kcMultilingual_frontend::get_current_url() );
 	foreach ( $_languages as $lang => $data ) {
 		$item = array(
 			'locale'    => $data['locale'],
-			'url'       => ( $lang === kcMultilingual_backend::$default ) ? $_url : kcMultilingual_frontend::filter_url( $_url, $lang, kcMultilingual_backend::$prettyURL ),
-			'current'   => kcMultilingual_backend::$lang === $lang,
+			'url'       => ( $lang === kcMultilingual_backend::get_data('default') ) ? $_url : kcMultilingual_frontend::filter_url( $_url, $lang, kcMultilingual_backend::get_data('prettyURL') ),
+			'current'   => $current === $lang,
 			'full_name' => isset($data['country']) ? kcMultilingual::get_language_fullname( $lang, $data['country'], $sep ) : kcMultilingual::get_language_fullname( $lang )
 		);
 

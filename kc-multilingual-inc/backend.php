@@ -1,24 +1,22 @@
 <?php
 
 class kcMultilingual_backend {
-	public static $home_url    = '';
-	public static $settings    = array();
-	public static $prettyURL   = false;
-	public static $locales     = array();
-	public static $default     = '';
-	public static $locale      = '';
-	public static $lang        = '';
-	public static $languages   = array();
-	public static $post_types  = array();
-	public static $taxonomies  = array();
-	private static $doing_edit = false;
-	public static $widget_fields = array();
-	public static $meta_fields = array();
+	private static $data = array( 'lang' => '' );
+
+
+	public static function get_data() {
+		$data = self::$data;
+		if ( !func_num_args() )
+			return $data;
+
+		$args = func_get_args();
+		return kc_array_multi_get_value( $data, $args );
+	}
 
 
 	public static function init() {
-		self::$home_url = preg_replace('/^(\w+\:\/\/)/i', '', get_option('home'), 1 );
-		self::$prettyURL = (bool) get_option('permalink_structure');
+		self::$data['home_url'] = preg_replace('/^(\w+\:\/\/)/i', '', get_option('home'), 1 );
+		self::$data['prettyURL'] = (bool) get_option('permalink_structure');
 
 		add_filter( 'rewrite_rules_array', array(__CLASS__, 'add_rewrite_rules'), 999 );
 		add_filter( 'kc_plugin_settings', array(__CLASS__, 'settings') );
@@ -26,7 +24,7 @@ class kcMultilingual_backend {
 		add_filter( 'kcv_setting_kc_ml_general_languages', array(__CLASS__, 'validate_settings_general_languages') );
 		add_action( 'update_option_kc_ml_settings', array(__CLASS__, 'settings_update'), 0, 2 );
 
-		self::$settings = $settings = kcMultilingual::get_data( 'settings' );
+		self::$data['settings'] = $settings = kcMultilingual::get_data( 'settings' );
 		if ( !isset($settings['general']['languages']['current']) || empty($settings['general']['languages']['current']) )
 			return;
 
@@ -41,19 +39,19 @@ class kcMultilingual_backend {
 			$locales[$url]   = $data['locale'];
 		}
 		ksort( $languages );
-		self::$languages = $languages;
+		self::$data['languages'] = $languages;
 		ksort( $locales );
-		self::$locales = $locales;
-		self::$default = $settings['general']['languages']['default'];
+		self::$data['locales'] = $locales;
+		self::$data['default'] = $settings['general']['languages']['default'];
 
 		if ( !is_admin() )
 			self::_set_locale();
 
-		if ( count(self::$locales) < 2 )
+		if ( count(self::$data['locales']) < 2 )
 			return;
 
 		require_once dirname( __FILE__ ) . '/frontend.php';
-		if ( self::$lang !== self::$default && !is_admin() )
+		if ( self::$data['lang'] !== self::$data['default'] && !is_admin() )
 			kcMultilingual_frontend::init();
 
 		add_action( 'init', array(__CLASS__, 'prepare_meta_fields'), 999 );
@@ -73,7 +71,7 @@ class kcMultilingual_backend {
 
 
 	public static function get_locale() {
-		return self::$locale;
+		return self::$data['locale'];
 	}
 
 
@@ -83,7 +81,7 @@ class kcMultilingual_backend {
 		if ( isset($_REQUEST['lang']) && !empty($_REQUEST['lang']) ) {
 			$lang = $_REQUEST['lang'];
 		}
-		elseif ( self::$prettyURL ) {
+		elseif ( self::$data['prettyURL'] ) {
 			$r_uri = $_SERVER['REQUEST_URI'];
 			if ( $subdir = end( array_intersect(explode('/', home_url()), explode('/', $_SERVER['REQUEST_URI'])) ) )
 				$r_uri = preg_replace('/\/'.$subdir.'/', '', $r_uri );
@@ -93,13 +91,13 @@ class kcMultilingual_backend {
 				$lang = $matches[1];
 		}
 		if ( !isset($lang) )
-			$lang = self::$default;
+			$lang = self::$data['default'];
 
-		if ( !isset(self::$locales[$lang]) )
+		if ( !isset(self::$data['locales'][$lang]) )
 			return $locale;
 
-		self::$locale = $locale = self::$locales[$lang];
-		self::$lang   = $lang;
+		self::$data['locale'] = $locale = self::$data['locales'][$lang];
+		self::$data['lang'] = $lang;
 
 		$locales = array(
 			$locale.'.utf8',
@@ -117,8 +115,8 @@ class kcMultilingual_backend {
 
 	public static function add_rewrite_rules( $rules ) {
 		$new = array();
-		foreach ( self::$locales as $lang => $locale ) {
-			if ( $lang === self::$default )
+		foreach ( self::$data['locales'] as $lang => $locale ) {
+			if ( $lang === self::$data['default'] )
 				continue;
 
 			$new[$lang.'/?$'] = "index.php?lang={$lang}"; // Homepage
@@ -139,9 +137,9 @@ class kcMultilingual_backend {
 				$locales[$url] = $data['locale'];
 			ksort($locales);
 		}
-		self::$locales = $locales;
-		self::$default = $new['general']['languages']['default'];
-		self::$locale  = self::$default ? $new['general']['languages']['current'][self::$default]['locale'] : WPLANG;
+		self::$data['locales'] = $locales;
+		self::$data['default'] = $new['general']['languages']['default'];
+		self::$data['locale']  = self::$data['default'] ? $new['general']['languages']['current'][self::$data['default']]['locale'] : WPLANG;
 
 		flush_rewrite_rules();
 	}
@@ -190,29 +188,29 @@ class kcMultilingual_backend {
 		if (
 			!isset($_REQUEST['action']) || empty($_REQUEST['action'])
 			|| !isset($_REQUEST['_nonce']) || !wp_verify_nonce($_REQUEST['_nonce'], '__kc_ml__')
-			|| !isset($_REQUEST['lang']) || !isset(kcMultilingual_backend::$locales[$_REQUEST['lang']])
+			|| !isset($_REQUEST['lang']) || !isset(self::$data['locales'][$_REQUEST['lang']])
 		)
 			return;
 
 		$redirect = false;
 		switch ( $_REQUEST['action'] ) {
 			case 'edit' :
-				if ( isset(self::$languages[$_REQUEST['lang']]) )
-					self::$doing_edit = self::$languages[$_REQUEST['lang']];
+				if ( isset(self::$data['languages'][$_REQUEST['lang']]) )
+					self::$data['doing_edit'] = self::$data['languages'][$_REQUEST['lang']];
 			break;
 			case 'set_default' :
-				$settings = self::$settings;
+				$settings = self::$data['settings'];
 				$settings['general']['languages']['default'] = $_REQUEST['lang'];
 				$settings['general']['languages'] = self::validate_settings_general_languages( $settings['general']['languages'] );
-				self::$settings = $settings;
-				update_option('kc_ml_settings', self::$settings);
+				self::$data['settings'] = $settings;
+				update_option('kc_ml_settings', self::$data['settings']);
 				$redirect = true;
 			break;
 			case 'delete' :
-				$settings = self::$settings;
+				$settings = self::$data['settings'];
 				unset($settings['general']['languages']['current'][$_REQUEST['lang']]);
 				$settings['general']['languages'] = self::validate_settings_general_languages( $settings['general']['languages'] );
-				self::$settings = $settings;
+				self::$data['settings'] = $settings;
 				update_option('kc_ml_settings', $settings);
 				$redirect = true;
 			break;
@@ -224,7 +222,7 @@ class kcMultilingual_backend {
 
 
 	public static function settings_table( $group ) {
-		if ( empty(self::$languages) || self::$doing_edit )
+		if ( empty(self::$data['languages']) || self::$data['doing_edit'] )
 			return;
 
 		require_once kcMultilingual::get_data('paths', 'inc') . '/table.php';
@@ -240,10 +238,10 @@ class kcMultilingual_backend {
 		$current = isset($db_value['current']) ? $db_value['current'] : array();
 		$out .= "<input type='hidden' name='{$args['field']['name']}[current]' value='".serialize($current)."' />";
 
-		if ( self::$doing_edit ) {
+		if ( self::$data['doing_edit'] ) {
 			$name_prefix = 'edit';
-			$value = self::$doing_edit;
-			$out .= "<input type='hidden' name='{$args['field']['name']}[edit][_lang]' value='".self::$doing_edit['url']."' />";
+			$value = self::$data['doing_edit'];
+			$out .= "<input type='hidden' name='{$args['field']['name']}[edit][_lang]' value='".self::$data['doing_edit']['url']."' />";
 		}
 		else {
 			$name_prefix = 'add';
@@ -291,7 +289,7 @@ class kcMultilingual_backend {
 		);
 
 		$out .= "<div class='field'>\n";
-		$title = self::$doing_edit ? __('Edit language', 'kcml') : __('Add language', 'kcml');
+		$title = self::$data['doing_edit'] ? __('Edit language', 'kcml') : __('Add language', 'kcml');
 		$out .= "<h4>{$title}</h4>\n";
 		foreach ( $fields as $field ) {
 			$field['attr'] = array(
@@ -332,8 +330,8 @@ jQuery(document).ready(function($) {
 		$list   = "<ul class='kcml-langs kcs-tabs'>\n";
 		$fields = '';
 
-		foreach ( self::$languages as $lang => $data ) {
-			if ( self::$default === $lang )
+		foreach ( self::$data['languages'] as $lang => $data ) {
+			if ( self::$data['default'] === $lang )
 				continue;
 
 			$id_base = "{$args['section']}-{$args['field']['id']}-{$lang}";
@@ -463,7 +461,7 @@ jQuery(document).ready(function($) {
 				unset( $meta[$type] );
 		}
 
-		self::$meta_fields = $meta;
+		self::$data['meta_fields'] = $meta;
 	}
 
 
@@ -496,7 +494,7 @@ jQuery(document).ready(function($) {
 
 		foreach ( $taxonomies as $taxonomy ) {
 			$groups[] = array( $taxonomy => $section );
-			self::$taxonomies[] = $taxonomy;
+			self::$data['taxonomies'][] = $taxonomy;
 			add_filter( "kcv_termmeta_{$taxonomy}_kcml_kcml-translation", array(__CLASS__, 'validate_translation') );
 		}
 
@@ -537,8 +535,8 @@ jQuery(document).ready(function($) {
 		$list   = "<ul class='kcml-langs kcs-tabs'>\n";
 		$fields = '';
 
-		foreach ( self::$languages as $lang => $data ) {
-			if ( self::$default === $lang )
+		foreach ( self::$data['languages'] as $lang => $data ) {
+			if ( self::$data['default'] === $lang )
 				continue;
 
 			$value = isset($db_value[$lang]) ? $db_value[$lang] : array();
@@ -568,7 +566,7 @@ jQuery(document).ready(function($) {
 			$fields .= "<label for='{$id_base}-{$lang}-content'>{$labels['content']}</label>\n";
 			$fields .= "<textarea{$input_class} name='{$args['field']['name']}[{$lang}][content]' id='{$id_base}-{$lang}-content' cols='50' rows='5'>".esc_textarea($value['content'])."</textarea>\n";
 			$fields .= "</div>\n";
-			if ( $meta_fields = kc_array_multi_get_value(self::$meta_fields, array($object_type, $object_name)) ) {
+			if ( $meta_fields = kc_array_multi_get_value(self::$data['meta_fields'], array($object_type, $object_name)) ) {
 				$fields .= self::fields_metadata_render( array(
 					'meta_fields' => $meta_fields,
 					'meta_values' => $object_id ? kcMultilingual_frontend::get_translation( $lang, $object_type, $object_id, 'meta' ) : array(),
@@ -610,7 +608,7 @@ jQuery(document).ready(function($) {
 		if ( !$post_types )
 			return;
 
-		self::$post_types = $post_types;
+		self::$data['post_types'] = $post_types;
 
 		add_action( 'add_meta_boxes', array(__CLASS__, 'fields_post_meta_box'), 11, 2 );
 		add_action( 'save_post', array(__CLASS__, 'fields_post_save'), 1, 2 );
@@ -624,7 +622,7 @@ jQuery(document).ready(function($) {
 
 	public static function fields_post_render() {
 		$screen = get_current_screen();
-		if ( !isset(self::$post_types[$screen->post_type]) )
+		if ( !isset(self::$data['post_types'][$screen->post_type]) )
 			return;
 
 		global $post;
@@ -632,19 +630,19 @@ jQuery(document).ready(function($) {
 		?>
 <div class="kcml-wrap">
 	<ul class='kcml-langs kcs-tabs'>
-		<?php foreach ( self::$languages as $lang => $data ) { if ( self::$default === $lang ) continue; ?>
+		<?php foreach ( self::$data['languages'] as $lang => $data ) { if ( self::$data['default'] === $lang ) continue; ?>
 		<li><a href='#kcml-<?php echo $lang ?>'><?php echo $data['name'] ?></a></li>
 		<?php } ?>
 	</ul>
 	<?php wp_nonce_field( '___kcml_nonce___', "{$screen->post_type}_kcml_nonce" ) ?>
 	<?php
-		foreach ( self::$languages as $lang => $data ) {
-			if ( self::$default === $lang )
+		foreach ( self::$data['languages'] as $lang => $data ) {
+			if ( self::$data['default'] === $lang )
 				continue;
 	?>
 	<div id="kcml-<?php echo $lang ?>">
 		<h4 class="screen-reader-text"><?php echo $data['name'] ?></h4>
-		<?php foreach ( self::$post_types[$screen->post_type] as $field ) { ?>
+		<?php foreach ( self::$data['post_types'][$screen->post_type] as $field ) { ?>
 		<div class="field">
 		<?php switch ( $field ) { case 'title' : ?>
 			<label for="kcmlpost<?php echo $field . $lang ?>"><?php _e('Title') ?></label>
@@ -665,7 +663,7 @@ jQuery(document).ready(function($) {
 		</div>
 		<?php } ?>
 		<?php
-			if ( $meta_fields = kc_array_multi_get_value(self::$meta_fields, array('post', $screen->post_type)) ) {
+			if ( $meta_fields = kc_array_multi_get_value(self::$data['meta_fields'], array('post', $screen->post_type)) ) {
 				self::fields_metadata_render( array(
 					'meta_fields' => $meta_fields,
 					'meta_values' => kcMultilingual_frontend::get_translation( $lang, 'post', $post_id, 'meta' ),
@@ -750,7 +748,7 @@ jQuery(document).ready(function($) {
 
 
 	public static function fields_post_save( $post_id, $post ) {
-		if ( !isset(self::$post_types[$post->post_type])
+		if ( !isset(self::$data['post_types'][$post->post_type])
 		      || ( isset($_POST['action']) && in_array($_POST['action'], array('inline-save', 'trash', 'untrash')) )
 		      || $post->post_status == 'auto-draft'
 		      || !isset($_POST["{$post->post_type}_kcml_nonce"]) )
@@ -785,8 +783,8 @@ jQuery(document).ready(function($) {
 			'menu_items' => array()
 		);
 
-		foreach ( self::$languages as $lang => $data ) {
-			if ( self::$default === $lang )
+		foreach ( self::$data['languages'] as $lang => $data ) {
+			if ( self::$data['default'] === $lang )
 				continue;
 
 			$response['languages'][$lang] = $data['name'];
@@ -796,8 +794,8 @@ jQuery(document).ready(function($) {
 		foreach( explode(',', $_REQUEST['items']) as $id ) {
 			$item_data = array( 'id' => $id, 'translation' => array() );
 
-			foreach ( self::$languages as $lang => $data ) {
-				if ( self::$default === $lang )
+			foreach ( self::$data['languages'] as $lang => $data ) {
+				if ( self::$data['default'] === $lang )
 					continue;
 
 				$item_data['translation'][$lang] = array(
@@ -853,13 +851,13 @@ jQuery(document).ready(function($) {
 			'attr' => array('cols' => 20, 'rows' => 16)
 		);
 
-		self::$widget_fields = (array) apply_filters( 'kcml_widget_fields', $widgets );
+		self::$data['widget_fields'] = (array) apply_filters( 'kcml_widget_fields', $widgets );
 	}
 
 
 	public static function fields_widget_render( &$widget, &$return, $instance ) {
 		$return = null;
-		if ( !isset(self::$widget_fields[$widget->option_name]) || empty(self::$widget_fields[$widget->option_name]) )
+		if ( !isset(self::$data['widget_fields'][$widget->option_name]) || empty(self::$data['widget_fields'][$widget->option_name]) )
 			return;
 
 		$translation = isset( $instance['kcml'] ) ? $instance['kcml'] : array();
@@ -867,8 +865,8 @@ jQuery(document).ready(function($) {
 		$list   = "<ul class='kcml-langs kcs-tabs'>\n";
 		$fields = '';
 
-		foreach ( self::$languages as $lang => $data ) {
-			if ( self::$default === $lang )
+		foreach ( self::$data['languages'] as $lang => $data ) {
+			if ( self::$data['default'] === $lang )
 				continue;
 
 			$value = isset($translation[$lang]) ? $translation[$lang] : array();
@@ -878,7 +876,7 @@ jQuery(document).ready(function($) {
 
 			$fields .= "<div id='{$id_base}-{$lang}'>\n";
 			$fields .= "<h4 class='screen-reader-text'>{$data['name']}</h4>\n";
-			foreach ( self::$widget_fields[$widget->option_name] as $_field ) {
+			foreach ( self::$data['widget_fields'][$widget->option_name] as $_field ) {
 				$fields .= "<div class='field'>\n";
 				if ( isset($_field['label']) && $_field['label'] )
 					$fields .= "<label for='{$id_base}-{$lang}-{$_field['id']}'>{$_field['label']}</label>\n";
