@@ -1,7 +1,10 @@
 <?php
 
 class kcMultilingual_backend {
-	private static $data = array( 'lang' => '' );
+	private static $data = array(
+		'lang' => '',
+		'doing_edit' => false
+	);
 
 
 	public static function get_data() {
