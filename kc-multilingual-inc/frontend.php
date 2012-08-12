@@ -50,6 +50,12 @@ class kcMultilingual_frontend {
 		# Meta
 		foreach ( array('post', 'term', 'user', 'comment') as $meta_type )
 			call_user_func( $func, "get_{$meta_type}_metadata", array(__CLASS__, "filter_{$meta_type}_meta"), 0, 4 );
+
+		# Author URL
+		call_user_func( $func, 'author_link', array(__CLASS__, 'filter_author_url'), 0, 3 );
+
+		# Paged URL
+		call_user_func( $func, 'get_pagenum_link', array(__CLASS__, 'filter_get_pagenum_link'), 0 );
 	}
 
 
@@ -76,6 +82,24 @@ class kcMultilingual_frontend {
 		}
 
 		return $url;
+	}
+
+
+	public static function filter_author_url( $link, $author_id, $author_nicename ) {
+		if ( !kcMultilingual_backend::get_data('prettyURL') && self::$data['is_active'] )
+			$link = str_replace( '?author=', '&author=', $link );
+
+		return $link;
+	}
+
+
+	public static function filter_get_pagenum_link( $result ) {
+		if ( !kcMultilingual_backend::get_data('prettyURL') && self::$data['is_active'] ) {
+			$result = urldecode( $result );
+			$result = str_replace( '?lang='.kcMultilingual_backend::get_data('lang').'/?', '?', $result );
+		}
+
+		return $result;
 	}
 
 
