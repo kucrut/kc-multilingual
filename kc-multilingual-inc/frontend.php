@@ -83,12 +83,7 @@ class kcMultilingual_frontend {
 		if ( self::$data['is_active'] )
 			remove_filter( 'home_url', array(__CLASS__, 'filter_home_url'), 0, 4 );
 
-		global $wp;
-		if ( kcMultilingual_backend::get_data('prettyURL') )
-			$current_url = home_url( $wp->request );
-		else {
-			$current_url = add_query_arg( $wp->query_string, '', home_url() );
-		}
+		$current_url = kc_get_current_url();
 
 		if ( self::$data['is_active'] )
 			add_filter( 'home_url', array(__CLASS__, 'filter_home_url'), 0, 4 );

@@ -149,7 +149,7 @@ class kcMultilingual_backend {
 
 
 	public static function settings( $groups ) {
-		$groups[] = array(
+		$groups['kc-ml'] = array(
 			'prefix'       => 'kc_ml',
 			'menu_title'   => 'KC Multilingual',
 			'page_title'   => __('KC Multilingual Settings', 'kc-ml'),
@@ -167,21 +167,23 @@ class kcMultilingual_backend {
 							'cb'    => array(__CLASS__, 'cb_settings_general_languages')
 						)
 					)
-				),
-				array(
-					'id'     => 'translations',
-					'title'  => __('Global Translations', 'kc-ml'),
-					'fields' => array(
-						array(
-							'id'    => 'global',
-							'title' => __('Global translations', 'kc-ml'),
-							'type'  => 'special',
-							'cb'    => array(__CLASS__, 'cb_settings_general_translations_global')
-						)
-					)
 				)
 			)
 		);
+
+		if ( isset(self::$data['languages']) && count(self::$data['languages']) > 1 )
+			$groups['kc-ml']['options'][] = array(
+				'id'     => 'translations',
+				'title'  => __('Global Translations', 'kc-ml'),
+				'fields' => array(
+					array(
+						'id'    => 'global',
+						'title' => __('Global translations', 'kc-ml'),
+						'type'  => 'special',
+						'cb'    => array(__CLASS__, 'cb_settings_general_translations_global')
+					)
+				)
+			);
 
 		return $groups;
 	}
@@ -437,6 +439,7 @@ jQuery(document).ready(function($) {
 	public static function prepare_meta_fields() {
 		$_meta = kcSettings::get_data('settings');
 		unset( $_meta['plugin'] );
+		unset( $_meta['theme'] );
 		if ( empty($_meta) )
 			return;
 
