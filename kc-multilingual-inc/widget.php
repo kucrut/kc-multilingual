@@ -99,5 +99,3 @@ class kc_ml_widget_languages extends WP_Widget {
 	}
 }
 add_filter( 'kcml_widget_fields' , array('kc_ml_widget_languages', 'kcml_fields') );
-
-?>

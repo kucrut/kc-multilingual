@@ -928,5 +928,3 @@ jQuery(document).ready(function($) {
 		register_widget( 'kc_ml_widget_languages' );
 	}
 }
-
-?>

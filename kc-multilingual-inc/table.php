@@ -53,5 +53,3 @@ class kcMultilingual_table extends WP_List_Table {
 		_e('No language found.', 'kc-ml');
 	}
 }
-
-?>

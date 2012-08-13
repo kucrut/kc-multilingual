@@ -666,5 +666,3 @@ if ( !function_exists('kc_plugin_file') ) {
 }
 
 register_activation_hook( kc_plugin_file(__FILE__), array('kcMultilingual', '_activate') );
-
-?>

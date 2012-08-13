@@ -410,5 +410,3 @@ function kc_ml_list_languages( $exclude_current = true, $text = 'custom_name', $
 	else
 		return $out;
 }
-
-?>
