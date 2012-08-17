@@ -144,7 +144,15 @@ class kcMultilingual_frontend {
 	}
 
 
-	public static function filter_post_title( $title, $id ) {
+	public static function filter_post_title( $title, $id = 0 ) {
+		if ( !$id ) {
+			global $post;
+			if ( !is_object($post) || (isset($post->kcml_filtered) && $post->kcml_filtered) )
+				return $title;
+
+			$id = $post->ID;
+		}
+
 		if ( $translation = self::get_translation( self::$data['lang'], 'post', $id, 'title', get_post_type($id) === 'attachment' ) )
 			$title = $translation;
 
@@ -155,7 +163,7 @@ class kcMultilingual_frontend {
 	public static function filter_post_content( $content, $id = 0 ) {
 		if ( !$id ) {
 			global $post;
-			if ( isset($post->kcml_filtered) && $post->kcml_filtered )
+			if ( !is_object($post) || (isset($post->kcml_filtered) && $post->kcml_filtered) )
 				return $content;
 
 			$id = $post->ID;
@@ -220,6 +228,9 @@ class kcMultilingual_frontend {
 
 
 	public static function filter_term( $term ) {
+		if ( !is_object($term) || is_wp_error($term) )
+			return $term;
+
 		$term->name = self::filter_term_field( $term->name, $term->term_id, 'title' );
 		$term->description = self::filter_term_field( $term->description, $term->term_id, 'content' );
 		$term->kcml_filtered = true;
