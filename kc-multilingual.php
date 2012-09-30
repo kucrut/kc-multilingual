@@ -67,7 +67,6 @@ class kcMultilingual {
  		if ( in_array($screen->base, array('settings_page_kc-settings-kc_ml', 'post', 'edit-tags', 'media', 'media-upload', 'nav-menus', 'widgets')) ) {
 			wp_enqueue_style( 'kc_ml', self::$data['paths']['styles']."/kc-ml{$suffix}.css", array('kc-settings'), self::version );
 			wp_enqueue_script( 'kc_ml', self::$data['paths']['scripts']."/kc-ml{$suffix}.js", array('kc-settings'), self::version, true );
-			add_action( 'admin_print_footer_scripts', array('kcSettings', '_sns_vars'), 9 );
 		}
 
 		if ( $screen->base === 'nav-menus' )
