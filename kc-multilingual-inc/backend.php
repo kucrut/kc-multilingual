@@ -890,15 +890,15 @@ jQuery(document).ready(function($) {
 <details>
 	<summary>KC Multilingual</summary>
 	<ul class='kcml-langs kcs-tabs'>
-		<?php
-			foreach ( $languages as $lang => $data ) :
-				$value = isset($translation[$lang]) ? $translation[$lang] : array();
-		?>
+		<?php foreach ( $languages as $lang => $data ) : ?>
 		<li><a href="#<?php echo esc_attr("{$id_prefix}-{$lang}") ?>"><?php echo esc_html( $data['name'] ) ?></a></li>
 		<?php endforeach; ?>
 	</ul>
 	<div class="kcml-langs-panels">
-		<?php foreach ( $languages as $lang => $data ) : ?>
+		<?php
+			foreach ( $languages as $lang => $data ) :
+				$value = !empty($translation[$lang]) ? $translation[$lang] : array();
+		?>
 		<div id="<?php echo esc_attr("{$id_prefix}-{$lang}") ?>">
 			<h4 class="screen-reader-text"><?php echo esc_html( $data['name'] ) ?></h4>
 			<?php
