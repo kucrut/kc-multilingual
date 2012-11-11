@@ -28,7 +28,7 @@ class kcMultilingual_backend {
 		add_action( 'update_option_kc_ml_settings', array(__CLASS__, 'settings_update'), 0, 2 );
 
 		self::$data['settings'] = $settings = kcMultilingual::get_data( 'settings' );
-		if ( !isset($settings['general']['languages']['current']) || empty($settings['general']['languages']['current']) )
+		if ( empty($settings['general']['languages']['current']) )
 			return;
 
 		$languages = array();
@@ -60,10 +60,10 @@ class kcMultilingual_backend {
 		add_action( 'init', array(__CLASS__, 'prepare_meta_fields'), 999 );
 		add_filter( 'kc_term_settings', array(__CLASS__, 'fields_term_attachment_prepare'), 99 );
 		add_filter( 'kc_post_settings', array(__CLASS__, 'fields_term_attachment_prepare'), 99 );
+		add_filter( 'kc_menu_nav_settings', array(__CLASS__, 'fields_term_attachment_prepare'), 99 );
+		add_filter( 'kc_menu_item_settings', array(__CLASS__, 'fields_term_attachment_prepare'), 99 );
 		add_filter( 'kcv_postmeta_attachment_kcml_kcml-translation', array(__CLASS__, 'validate_translation') );
 		add_action( 'init', array(__CLASS__, 'fields_post_prepare'), 999 );
-		add_action( 'wp_ajax_kc_ml_get_menu_translations', array(__CLASS__, 'get_menu_translations') );
-		add_action( 'wp_update_nav_menu', array(__CLASS__, 'save_menu_translations') );
 
 		# Widgets
 		add_action( 'widgets_init', array(__CLASS__, 'fields_widget_prepare'), 100 );
@@ -454,9 +454,14 @@ jQuery(document).ready(function($) {
 		$meta = $_meta;
 		$not_supported = array( 'select', 'multiselect', 'special', 'editor' );
 		foreach ( $_meta as $type => $object_types ) {
+			if ( $type == 'menu_nav' )
+				continue;
+
 			foreach ( $object_types as $object_type => $sections ) {
 				foreach ( $sections as $section_id => $section ) {
 					unset($meta[$type][$object_type]['kcml']);
+					if ( empty($section['fields']) )
+						continue;
 
 					foreach ( $section['fields'] as $field_id => $field ) {
 						if ( in_array($field['type'], $not_supported) || (isset($field['kcml']) && !$field['kcml']) )
@@ -496,8 +501,13 @@ jQuery(document).ready(function($) {
 		);
 
 		# Attachment
-		if ( current_filter() === 'kc_post_settings' ) {
+		$current_filter = current_filter();
+		if (  $current_filter == 'kc_post_settings' ) {
 			$groups[] = array( 'attachment' => $section );
+			return $groups;
+		}
+		elseif ( in_array( $current_filter, array( 'kc_menu_nav_settings', 'kc_menu_item_settings' ) ) ) {
+			$groups[] = $section;
 			return $groups;
 		}
 
@@ -517,12 +527,15 @@ jQuery(document).ready(function($) {
 
 
 	public static function fields_term_attachment_render( $args, $db_value ) {
-		if ( !$db_value )
+		if ( empty($db_value) )
 			$db_value = array();
 
 		$screen = get_current_screen();
 		$object_id = isset($args['object_id']) ? $args['object_id'] : 0;
 		$id_base = "{$args['section']}-{$args['mode']}-{$object_id}-{$args['field']['id']}";
+
+		$field_tag_open  = "<div class='field'>\n";
+		$field_tag_close = "</div>\n";
 
 		if ( $args['mode'] === 'attachment' ) {
 			$labels = array(
@@ -535,6 +548,18 @@ jQuery(document).ready(function($) {
 			$object_type = 'post';
 			$object_name = 'attachment';
 			$hidden = true;
+		}
+		elseif ( $args['mode'] === 'menu_item' ) {
+			$labels = array(
+				'title'   => __('Navigation Label'),
+				'excerpt' => __('Title Attribute'),
+				'content' => __('Description')
+			);
+			$input_class = " class='widefat kcs-input'";
+			$object_type = 'term';
+			$object_name = 'nav_menu';
+			$field_tag_open  = "<p class='description description-thin'>\n";
+			$field_tag_close = "</p>\n";
 		}
 		else {
 			$labels = array(
@@ -560,26 +585,33 @@ jQuery(document).ready(function($) {
 
 			$fields .= "<div id='{$id_base}-{$lang}'>\n";
 			$fields .= "<h4 class='screen-reader-text'>{$data['name']}</h4>\n";
-			$fields .= "<div class='field'>\n";
+
+			$fields .= $field_tag_open;
 			$fields .= "<label for='{$id_base}-{$lang}-title'>{$labels['title']}</label>\n";
 			$fields .= "<input{$input_class} type='text' value='".esc_attr($value['title'])."' name='{$args['field']['name']}[{$lang}][title]' id='{$id_base}-{$lang}-title' />\n";
-			$fields .= "</div>\n";
+			$fields .= $field_tag_close;
+
 			if ( $args['mode'] === 'attachment' ) {
 				if ( strpos(get_post_mime_type($object_id), 'image') !== false ) {
-					$fields .= "<div class='field'>\n";
+					$fields .= $field_tag_open;
 					$fields .= "<label for='{$id_base}-{$lang}-image_alt'>{$labels['image_alt']}</label>\n";
 					$fields .= "<input type='text' value='".esc_attr($value['image_alt'])."' name='{$args['field']['name']}[{$lang}][image_alt]' id='{$id_base}-{$lang}-image_alt' />\n";
-					$fields .= "</div>\n";
+					$fields .= $field_tag_close;
 				}
-				$fields .= "<div class='field'>\n";
+			}
+
+			if ( in_array($args['mode'], array('attachment', 'menu_item')) ) {
+				$fields .= $field_tag_open;
 				$fields .= "<label for='{$id_base}-{$lang}-excerpt'>{$labels['excerpt']}</label>\n";
 				$fields .= "<input type='text' value='".esc_attr($value['excerpt'])."' name='{$args['field']['name']}[{$lang}][excerpt]' id='{$id_base}-{$lang}-excerpt' />\n";
-				$fields .= "</div>\n";
+				$fields .= $field_tag_close;
 			}
-			$fields .= "<div class='field'>\n";
+
+			$fields .= ( $args['mode'] == 'menu_item' ) ? "<p class='description description-wide'>\n" : $field_tag_open;
 			$fields .= "<label for='{$id_base}-{$lang}-content'>{$labels['content']}</label>\n";
 			$fields .= "<textarea{$input_class} name='{$args['field']['name']}[{$lang}][content]' id='{$id_base}-{$lang}-content' cols='50' rows='5'>".esc_textarea($value['content'])."</textarea>\n";
-			$fields .= "</div>\n";
+			$fields .= $field_tag_close;
+
 			if ( $meta_fields = kc_array_multi_get_value(self::$data['meta_fields'], array($object_type, $object_name)) ) {
 				$fields .= self::fields_metadata_render( array(
 					'meta_fields' => $meta_fields,
@@ -591,6 +623,7 @@ jQuery(document).ready(function($) {
 					'display'     => false
 				) );
 			}
+
 			$fields .= "</div>\n";
 		}
 
@@ -790,52 +823,23 @@ jQuery(document).ready(function($) {
 	}
 
 
-	public static function get_menu_translations() {
-		$response = array(
-			'languages'  => array(),
-			'menu_names' => array(),
-			'menu_items' => array()
+	public static function fields_menu_nav_prepare( $groups ) {
+		$groups['kc_ml'] = array(
+			array(
+				'id'     => 'kc_ml',
+				'title'  => 'KC Multilingual',
+				'fields'  => array(
+					array(
+						'id'    => 'languages',
+						'title' => __('Languages', 'kc-ml'),
+						'type'  => 'special',
+						'cb'    => array(__CLASS__, 'fields_term_attachment_render')
+					)
+				)
+			)
 		);
 
-		foreach ( self::$data['languages'] as $lang => $data ) {
-			if ( self::$data['default'] === $lang )
-				continue;
-
-			$response['languages'][$lang] = $data['name'];
-			$response['menu_names'][$lang] = esc_attr( (string) kcMultilingual_frontend::get_translation( $lang, 'term', $_REQUEST['menuID'], 'title' ) );
-		}
-
-		foreach( explode(',', $_REQUEST['items']) as $id ) {
-			$item_data = array( 'id' => $id, 'translation' => array() );
-
-			foreach ( self::$data['languages'] as $lang => $data ) {
-				if ( self::$data['default'] === $lang )
-					continue;
-
-				$item_data['translation'][$lang] = array(
-					'title'   => esc_attr( (string) kcMultilingual_frontend::get_translation( $lang, 'post', $id, 'title' ) ),
-					'excerpt' => esc_attr( (string) kcMultilingual_frontend::get_translation( $lang, 'post', $id, 'excerpt' ) ),
-					'content' => esc_textarea( (string) kcMultilingual_frontend::get_translation( $lang, 'post', $id, 'content' ) )
-				);
-			}
-
-			$response['menu_items'][] = $item_data;
-		}
-
-		echo json_encode($response);
-		die();
-	}
-
-
-	public static function save_menu_translations( $menu_id ) {
-		foreach ( array('term', 'post') as $type ) {
-			$meta_key = $type === 'post' ? '_kcml-translation' : 'kcml-translation';
-
-			if ( isset($_POST["kc-{$type}meta"]['kcml']['kcml-translation']) && !empty($_POST["kc-{$type}meta"]['kcml']['kcml-translation']) ) {
-				foreach( $_POST["kc-{$type}meta"]['kcml']['kcml-translation'] as $id => $data )
-					update_metadata( $type, $id, $meta_key, kc_array_remove_empty( (array) $data ) );
-			}
-		}
+		return $groups;
 	}
 
 
