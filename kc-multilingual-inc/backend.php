@@ -157,9 +157,12 @@ class kcMultilingual_backend {
 			'display'      => 'metabox',
 			'options'      => array(
 				array(
-					'id'     => 'general',
-					'title'  => __('General', 'kc-ml'),
-					'fields' => array(
+					'id'      => 'general',
+					'title'   => __('General', 'kc-ml'),
+					'metabox' => array(
+						'button_text' => __('Add language', 'kc-ml')
+					),
+					'fields'  => array(
 						array(
 							'id'    => 'languages',
 							'title' => __('Languages', 'kc-ml'),
@@ -311,20 +314,25 @@ class kcMultilingual_backend {
 			$out .= "</p>\n";
 		}
 		$out .= "</div>\n";
-		$out .= '
+		add_action( 'admin_print_footer_scripts', array( __CLASS__, '_settings_inline_script') );
+
+		return $out;
+	}
+
+
+	public static function _settings_inline_script() {
+	?>
 <script>
 jQuery(document).ready(function($) {
-	var $lang_sel  = $("#kcml-edit-language, #kcml-add-language"),
-	    $lang_name = $("#kcml-edit-custom_name, #kcml-add-custom_name");
+	var $lang_sel  = $('#kcml-edit-language, #kcml-add-language'),
+	    $lang_name = $('#kcml-edit-custom_name, #kcml-add-custom_name');
 
 	$lang_sel.on("change", function() {
-		$lang_name.val( $lang_sel.children(\'[value="\'+$lang_sel.val()+\'"]\').text() );
+		$lang_name.val( $lang_sel.children('[value="'+$lang_sel.val()+'"]').text() );
 	});
 });
 </script>
-';
-
-		return $out;
+	<?php
 	}
 
 
