@@ -869,53 +869,63 @@ jQuery(document).ready(function($) {
 	}
 
 
-	public static function fields_widget_render( &$widget, &$return, $instance ) {
+	public static function fields_widget_render( $widget, $return, $instance ) {
 		$return = null;
-		if ( !isset(self::$data['widget_fields'][$widget->option_name]) || empty(self::$data['widget_fields'][$widget->option_name]) )
+		if (
+			empty( self::$data['widget_fields'][$widget->option_name] )
+			|| empty( self::$data['widget_fields'][$widget->option_name] )
+		)
 			return;
 
-		$translation = isset( $instance['kcml'] ) ? $instance['kcml'] : array();
-
-		$list   = "<ul class='kcml-langs kcs-tabs'>\n";
-		$fields = '';
-
-		foreach ( self::$data['languages'] as $lang => $data ) {
-			if ( self::$data['default'] === $lang )
-				continue;
-
-			$value = isset($translation[$lang]) ? $translation[$lang] : array();
-
-			$id_base = "kcml-{$widget->id}";
-			$list .= "<li><a href='#{$id_base}-{$lang}'>{$data['name']}</a></li>\n";
-
-			$fields .= "<div id='{$id_base}-{$lang}'>\n";
-			$fields .= "<h4 class='screen-reader-text'>{$data['name']}</h4>\n";
-			foreach ( self::$data['widget_fields'][$widget->option_name] as $_field ) {
-				$fields .= "<div class='field'>\n";
-				if ( isset($_field['label']) && $_field['label'] )
-					$fields .= "<label for='{$id_base}-{$lang}-{$_field['id']}'>{$_field['label']}</label>\n";
-				$_args = array(
-					'type'    => $_field['type'],
-					'current' => isset($value[$_field['id']]) ? $value[$_field['id']] : '',
-					'attr'    => array(
-						'name'  => $widget->get_field_name('kcml')."[{$lang}][{$_field['id']}]",
-						'id'    => "{$id_base}-{$lang}-{$_field['id']}",
-						'class' => 'widefat'
-					)
-				);
-				if ( isset($_field['attr']) && is_array($_field['attr']) && !empty($_field['attr']) ) {
-					unset($_field['attr']['id']);
-					unset($_field['attr']['name']);
-					$_args['attr'] = array_merge($_field['attr'], $_args['attr'] );
-				}
-				$fields .= kcForm::field( $_args );
-				$fields .= "</div>\n";
-			}
-			$fields .= "</div>\n";
-		}
-		$list .= "</ul>\n";
-
-		echo "<h5 class='kcw-head'>KC Multilingual</h5>\n<div class='kcw-control-block kcml-wrap'>\n{$list}{$fields}</div>\n";
+		$languages = self::$data['languages'];
+		unset( $languages[self::$data['default']] );
+		$id_prefix = "kcml-{$widget->id}";
+		$name_prefix = $widget->get_field_name( 'kcml' );
+		$translation = !empty( $instance['kcml'] ) ? $instance['kcml'] : array();
+	?>
+<details>
+	<summary>KC Multilingual</summary>
+	<ul class='kcml-langs kcs-tabs'>
+		<?php
+			foreach ( $languages as $lang => $data ) :
+				$value = isset($translation[$lang]) ? $translation[$lang] : array();
+		?>
+		<li><a href="#<?php echo esc_attr("{$id_prefix}-{$lang}") ?>"><?php echo esc_html( $data['name'] ) ?></a></li>
+		<?php endforeach; ?>
+	</ul>
+	<div class="kcml-langs-panels">
+		<?php foreach ( $languages as $lang => $data ) : ?>
+		<div id="<?php echo esc_attr("{$id_prefix}-{$lang}") ?>">
+			<h4 class="screen-reader-text"><?php echo esc_html( $data['name'] ) ?></h4>
+			<?php
+				foreach ( self::$data['widget_fields'][$widget->option_name] as $_field ) :
+					$_args = array(
+						'type'    => $_field['type'],
+						'current' => isset($value[$_field['id']]) ? $value[$_field['id']] : '',
+						'attr'    => array(
+							'name'  => "{$name_prefix}[{$lang}][{$_field['id']}]",
+							'id'    => "{$id_prefix}-{$lang}-{$_field['id']}",
+							'class' => 'widefat'
+						)
+					);
+					if ( !empty($_field['attr']) && is_array($_field['attr']) ) {
+						unset( $_field['attr']['id'] );
+						unset( $_field['attr']['name'] );
+						$_args['attr'] = array_merge( $_field['attr'], $_args['attr'] );
+					}
+			?>
+			<p>
+				<?php if ( isset($_field['label']) && $_field['label'] ) : ?>
+				<label for="<?php echo esc_attr( "{$id_prefix}-{$lang}-{$_field['id']}" ) ?>"><?php echo esc_html( $_field['label'] ) ?></label>
+				<?php endif; ?>
+				<?php echo kcForm::field( $_args ) ?>
+			</p>
+			<?php endforeach; ?>
+		</div>
+		<?php endforeach; ?>
+	</div>
+</details>
+		<?php
 	}
 
 

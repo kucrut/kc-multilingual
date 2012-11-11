@@ -57,25 +57,22 @@ class kcMultilingual {
 	}
 
 
-	public static function admin_sns( $hook_suffix ) {
-		if ( !defined('KC_ML_SNS_DEBUG') )
-			define( 'KC_ML_SNS_DEBUG', false );
-
-		$suffix = KC_ML_SNS_DEBUG ? '.dev' : '';
-
+	public static function admin_sns() {
+		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 		$screen = get_current_screen();
+
  		if ( in_array($screen->base, array('settings_page_kc-settings-kc_ml', 'post', 'edit-tags', 'media', 'media-upload', 'nav-menus', 'widgets')) ) {
 			wp_enqueue_style( 'kc_ml', self::$data['paths']['styles']."/kc-ml{$suffix}.css", array('kc-settings'), self::version );
 			wp_enqueue_script( 'kc_ml', self::$data['paths']['scripts']."/kc-ml{$suffix}.js", array('kc-settings'), self::version, true );
 		}
-
-		if ( $screen->base === 'nav-menus' )
+		if ( $screen->base === 'nav-menus' ) {
 			wp_localize_script( 'kc_ml', 'kcml_texts', array(
 				'menuNameLabel' => __('Menu Name'),
 				'title'         => __('Navigation Label'),
 				'excerpt'       => __('Title Attribute'),
 				'content'       => __('Description')
 			) );
+		}
 	}
 
 
