@@ -452,7 +452,7 @@ jQuery(document).ready(function($) {
 			return;
 
 		$meta = $_meta;
-		$not_supported = array( 'select', 'multiselect', 'special', 'editor' );
+		$not_supported = array( 'select', 'multiselect', 'special', 'editor', 'multiinput' );
 		foreach ( $_meta as $type => $object_types ) {
 			if ( $type == 'menu_nav' )
 				continue;
@@ -460,7 +460,7 @@ jQuery(document).ready(function($) {
 			foreach ( $object_types as $object_type => $sections ) {
 				foreach ( $sections as $section_id => $section ) {
 					unset($meta[$type][$object_type]['kcml']);
-					if ( empty($section['fields']) )
+					if ( empty($section['fields']) || !is_array($section['fields']) )
 						continue;
 
 					foreach ( $section['fields'] as $field_id => $field ) {
