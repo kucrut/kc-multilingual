@@ -796,26 +796,37 @@ jQuery(document).ready(function($) {
 
 	public static function fields_post_save( $post_id, $post ) {
 		if ( !isset(self::$data['post_types'][$post->post_type])
-		      || ( isset($_POST['action']) && in_array($_POST['action'], array('inline-save', 'trash', 'untrash')) )
-		      || $post->post_status == 'auto-draft'
-		      || !isset($_POST["{$post->post_type}_kcml_nonce"]) )
+			|| ( isset($_POST['action']) && in_array($_POST['action'], array('inline-save', 'trash', 'untrash')) )
+			|| $post->post_status == 'auto-draft'
+			|| empty($_POST["{$post->post_type}_kcml_nonce"])
+		) {
 			return $post_id;
+		}
 
 		$post_type_obj = get_post_type_object( $post->post_type );
-		if ( ( wp_verify_nonce($_POST["{$post->post_type}_kcml_nonce"], '___kcml_nonce___') && current_user_can($post_type_obj->cap->edit_post) ) !== true )
+		if ( ( wp_verify_nonce($_POST["{$post->post_type}_kcml_nonce"], '___kcml_nonce___') && current_user_can( 'edit_post', $post_id ) ) !== true )
 			return $post_id;
 
-		_kc_update_meta( 'post', $post->post_type, $post_id, array('id' => 'kcml'), array('id' => 'kcml-translation', 'type' => 'special'), false );
+		_kc_update_meta( 'post', $post->post_type, $post_id, array('id' => 'kcml'), array('id' => 'kcml-translation', 'type' => 'special') );
 	}
 
 
 	public static function validate_translation( $value ) {
 		$value = kc_array_remove_empty( (array) $value );
+		$allow_unfiltered = ( current_user_can('unfiltered_html') );
+		$_keys = array( 'content', 'excerpt' );
 		if ( !empty($value) ) {
 			foreach ( $value as $lang => $data ) {
-				foreach ( array('content', 'excerpt') as $field )
-					if ( isset($data[$field]) )
+				if ( empty($data['title']) )
+					$value[$lang]['title'] = wp_filter_kses( $value[$lang][$field] );
+
+				foreach ( $_keys as $field ) {
+					if ( empty($data[$field]) )
+						continue;
+
+					if ( !$allow_unfiltered )
 						$value[$lang][$field] = wp_kses_post( $value[$lang][$field] );
+				}
 			}
 		}
 
