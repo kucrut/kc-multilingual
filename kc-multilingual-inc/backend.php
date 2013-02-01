@@ -452,7 +452,7 @@ jQuery(document).ready(function($) {
 			return;
 
 		$meta = $_meta;
-		$not_supported = array( 'select', 'multiselect', 'special', 'editor', 'multiinput' );
+		$not_supported = array( 'select', 'multiselect', 'special', 'editor', 'multiinput', 'radio', 'checkbox' );
 		foreach ( $_meta as $type => $object_types ) {
 			if ( $type == 'menu_nav' )
 				continue;
